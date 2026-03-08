@@ -1,0 +1,107 @@
+# .github/workflows/ci.yml
+#
+# Automated pipeline for the MerkleForge workspace.
+# Mirrors the "Reliability & CI/CD (The Pipeline)" section of the
+# architecture slide:
+#   GitHub Actions → Build & Validate → ProofVerifier module → End Users
+#
+# Jobs:
+#   1. test     — unit tests, property-based tests, doc tests
+#   2. lint     — clippy (pedantic) + rustfmt check
+#   3. bench-dry — ensures benchmarks compile (no regression)
+#   4. docs     — rustdoc build check
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-D warnings"   # treat all warnings as errors
+
+jobs:
+  # ── 1. Test ───────────────────────────────────────────────────────────────
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [stable, beta]   # catch breakage early on beta channel
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust ${{ matrix.rust }}
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust }}
+          components: rustfmt, clippy
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ matrix.rust }}-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build (all workspace members)
+        run: cargo build --workspace --all-features
+
+      - name: Unit tests + doc tests
+        run: cargo test --workspace --all-features -- --include-ignored
+
+  # ── 2. Lint ───────────────────────────────────────────────────────────────
+  lint:
+    name: Clippy + Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install stable Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: rustfmt check
+        run: cargo fmt --all -- --check
+
+      - name: Clippy (pedantic)
+        run: >
+          cargo clippy --workspace --all-features --
+          -W clippy::pedantic
+          -W clippy::nursery
+          -A clippy::module_name_repetitions
+          -D warnings
+
+  # ── 3. Bench dry-run ─────────────────────────────────────────────────────
+  bench-dry:
+    name: Benchmarks compile check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install stable Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Compile benchmarks (no run)
+        run: cargo bench --workspace --no-run
+
+  # ── 4. Docs ───────────────────────────────────────────────────────────────
+  docs:
+    name: Rustdoc
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install stable Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build docs (deny broken intra-doc links)
+        run: >
+          RUSTDOCFLAGS="-D warnings"
+          cargo doc --workspace --all-features --no-deps

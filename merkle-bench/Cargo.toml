@@ -1,0 +1,21 @@
+[package]
+name        = "merkle-bench"
+description = "Isolated Criterion benchmarking suite for the MerkleForge workspace"
+publish     = false   # never publish this internal crate to crates.io
+version.workspace    = true
+edition.workspace    = true
+authors.workspace    = true
+license.workspace    = true
+
+[dev-dependencies]
+merkle-core = { workspace = true }
+merkle-hash = { workspace = true }
+criterion   = { workspace = true }
+
+[[bench]]
+name    = "baseline_construction"
+harness = false
+
+[[bench]]
+name    = "hash_throughput"
+harness = false
