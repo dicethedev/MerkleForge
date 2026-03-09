@@ -1,5 +1,5 @@
 [package]
-name        = "merkle-core"
+name = "merkle-core"
 description = "Shared traits, types, and error handling for the MerkleForge workspace"
 inherit     = { workspace = true }
 version.workspace    = true
