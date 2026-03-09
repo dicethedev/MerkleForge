@@ -1,11 +1,2 @@
-error: failed to load manifest for workspace member `/home/dice/Projects/MerkleForge/merkle-hash`
-referenced by workspace at `/home/dice/Projects/MerkleForge/Cargo.toml`
-
-Caused by:
-  failed to load manifest for dependency `merkle-core`
-
-Caused by:
-  failed to read `/home/dice/Projects/MerkleForge/merkle-hash/merkle-core/Cargo.toml`
-
-Caused by:
-  No such file or directory (os error 2)
+warning: /home/dice/Projects/MerkleForge/merkle-core/Cargo.toml: unused manifest key: package.inherit
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s

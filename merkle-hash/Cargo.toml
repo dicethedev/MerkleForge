@@ -9,7 +9,7 @@ repository.workspace = true
 keywords.workspace   = true
 
 [dependencies]
-merkle-core = { path = "merkle-core", version = "0.1.0" }
+merkle-core = { workspace = true }
 sha2        = { workspace = true }
 tiny-keccak = { workspace = true }
 blake3      = { workspace = true }
