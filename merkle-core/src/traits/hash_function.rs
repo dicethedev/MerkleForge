@@ -1,4 +1,4 @@
-//! # merkle-core :: traits :: hash_function
+//! # merkle-core :: traits :: `hash_function`
 //!
 //! The `HashFunction` trait is the **pluggable crypto abstraction** at the
 //! heart of the library.  By parameterising every tree type over
@@ -52,6 +52,7 @@ pub trait HashFunction: Send + Sync + 'static {
     // ── Core hashing ──────────────────────────────────────────────────────
 
     /// Hash arbitrary bytes and return the digest.
+    #[must_use]
     fn hash(data: &[u8]) -> Self::Digest;
 
     /// Hash two child digests together to produce a parent digest.
@@ -59,6 +60,7 @@ pub trait HashFunction: Send + Sync + 'static {
     /// The default implementation concatenates `left || right` and calls
     /// `Self::hash`.  Override this to use domain separation or a different
     /// concatenation strategy.
+    #[must_use]
     fn hash_nodes(left: &Self::Digest, right: &Self::Digest) -> Self::Digest {
         let mut combined = Vec::with_capacity(left.as_ref().len() + right.as_ref().len());
         combined.extend_from_slice(left.as_ref());
@@ -70,6 +72,7 @@ pub trait HashFunction: Send + Sync + 'static {
     /// power-of-two size, or to represent vacant slots in sparse trees.
     ///
     /// The default is the hash of a zero-length byte slice.
+    #[must_use]
     fn empty() -> Self::Digest {
         Self::hash(&[])
     }
@@ -77,9 +80,11 @@ pub trait HashFunction: Send + Sync + 'static {
     // ── Metadata ──────────────────────────────────────────────────────────
 
     /// Human-readable name of the algorithm, e.g. `"SHA-256"` or `"BLAKE3"`.
+    #[must_use]
     fn algorithm_name() -> &'static str;
 
     /// Output size of the digest in bytes.
+    #[must_use]
     fn digest_size() -> usize;
 }
 

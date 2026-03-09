@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 
 // ── NodeIndex ──────────────────────────────────────────────────────────────
+
 /// A strongly-typed index into the flat node array of a Merkle tree.
 ///
 /// Nodes are numbered with 0 being the first *leaf*.  Internal nodes start
@@ -20,6 +21,7 @@ impl NodeIndex {
     /// The node index of the root of a tree with `leaf_count` leaves.
     ///
     /// For a power-of-two tree the root sits at index `2 * leaf_count - 1`.
+    #[must_use]
     #[inline]
     pub fn root(leaf_count: usize) -> Self {
         debug_assert!(leaf_count > 0, "leaf_count must be positive");
@@ -27,8 +29,9 @@ impl NodeIndex {
     }
 
     /// Returns the raw `usize` value.
+    #[must_use]
     #[inline]
-    pub fn value(self) -> usize {
+    pub const fn value(self) -> usize {
         self.0
     }
 }
@@ -51,14 +54,16 @@ pub struct LeafIndex(pub usize);
 
 impl LeafIndex {
     /// Convert to the corresponding `NodeIndex` in the flat array layout.
+    #[must_use]
     #[inline]
-    pub fn to_node_index(self) -> NodeIndex {
+    pub const fn to_node_index(self) -> NodeIndex {
         NodeIndex(self.0)
     }
 
     /// Returns the raw `usize` value.
+    #[must_use]
     #[inline]
-    pub fn value(self) -> usize {
+    pub const fn value(self) -> usize {
         self.0
     }
 }
@@ -133,14 +138,15 @@ pub struct MerkleProof<D> {
 impl<D: fmt::Debug> MerkleProof<D> {
     /// Returns the depth of this proof, i.e. the number of hashing steps
     /// required to recompute the root.
+    #[must_use]
     #[inline]
-    pub fn depth(&self) -> usize {
+    pub const fn depth(&self) -> usize {
         self.path.len()
     }
-
     /// Returns `true` if the proof path is empty (degenerate single-leaf tree).
+    #[must_use]
     #[inline]
-    pub fn is_trivial(&self) -> bool {
+    pub const fn is_trivial(&self) -> bool {
         self.path.is_empty()
     }
 }

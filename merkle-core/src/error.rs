@@ -11,7 +11,7 @@
 
 use std::fmt;
 
-/// All errors that can arise from the MerkleForge crates.
+/// All errors that can arise from the `MerkleForge` crates.
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[non_exhaustive]
 pub enum MerkleError {

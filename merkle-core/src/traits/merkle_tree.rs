@@ -1,4 +1,4 @@
-//! # merkle-core :: traits :: merkle_tree
+//! # merkle-core :: traits :: `merkle_tree`
 //!
 //! The `MerkleTree` trait defines the **universal interface** that every
 //! tree variant (binary, sparse, Patricia) must implement.  It is

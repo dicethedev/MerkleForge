@@ -55,7 +55,7 @@ impl HashFunction for Sha256 {
     #[inline]
     fn hash(data: &[u8]) -> [u8; 32] {
         let mut hasher = Sha2_256::new();
-        hasher.update([0x00]); // leaf domain separator
+        hasher.update([0x00]); // Leaf domain separator
         hasher.update(data);
         hasher.finalize().into()
     }
@@ -85,13 +85,12 @@ impl HashFunction for Sha256 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use merkle_core::traits::HashFunction;
 
-    /// SHA-256("") = e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-    const SHA256_EMPTY_PREIMAGE: [u8; 32] = [
-        0xe3, 0xb0, 0xc4, 0x42, 0x98, 0xfc, 0x1c, 0x14, 0x9a, 0xfb, 0xf4, 0xc8, 0x99, 0x6f, 0xb9,
-        0x24, 0x27, 0xae, 0x41, 0xe4, 0x64, 0x9b, 0x93, 0x4c, 0xa4, 0x95, 0x99, 0x1b, 0x78, 0x52,
-        0xb8, 0x55,
+    /// SHA-256(0x00) — The domain-separated empty leaf hash for MerkleForge.
+    const MERKLE_EMPTY_SENTINEL: [u8; 32] = [
+        0x6e, 0x34, 0x0b, 0x9c, 0xff, 0xb3, 0x7a, 0x98, 0x9c, 0xa5, 0x44, 0xe6, 0xbb, 0x78,
+        0x0a, 0x2c, 0x78, 0x90, 0x1d, 0x3f, 0xb3, 0x37, 0x38, 0x76, 0x85, 0x11, 0xa3, 0x06,
+        0x17, 0xaf, 0xa0, 0x1d,
     ];
 
     #[test]
@@ -106,39 +105,43 @@ mod tests {
 
     #[test]
     fn hash_is_deterministic() {
-        assert_eq!(Sha256::hash(b"abc"), Sha256::hash(b"abc"));
-    }
-
-    #[test]
-    fn hash_nodes_non_commutative() {
-        // Swapping left/right must produce a different digest.
-        let a = [0xAAu8; 32];
-        let b = [0xBBu8; 32];
-        assert_ne!(Sha256::hash_nodes(&a, &b), Sha256::hash_nodes(&b, &a));
+        let input = b"merkleforge-test";
+        assert_eq!(Sha256::hash(input), Sha256::hash(input));
     }
 
     #[test]
     fn empty_matches_precomputed() {
-        // The precomputed sentinel must equal SHA-256(0x00).
-        let computed = {
-            use sha2::{Digest, Sha256 as Sha2};
-            let mut h = Sha2::new();
-            h.update([0x00u8]);
-            let r: [u8; 32] = h.finalize().into();
-            r
-        };
-        assert_eq!(Sha256::empty(), computed);
-        assert_eq!(computed, SHA256_EMPTY_PREIMAGE);
+        // This ensures the library's precomputed constant matches a fresh runtime hash of the 0x00 prefix.
+        let mut h = Sha2_256::new();
+        h.update([0x00u8]); 
+        let manual_compute: [u8; 32] = h.finalize().into();
+        
+        assert_eq!(Sha256::empty(), manual_compute, "Precomputed empty() must match SHA-256(0x00)");
+        assert_eq!(Sha256::empty(), MERKLE_EMPTY_SENTINEL);
     }
 
     #[test]
-    fn leaf_and_node_hashes_differ_for_same_bytes() {
-        // Domain separation: hash("data") ≠ hash_nodes("dat", "a").
-        // (Not a precise test, but confirms the prefixes differ.)
-        let leaf = Sha256::hash(b"hello");
-        let left = Sha256::hash(b"hel");
-        let right = Sha256::hash(b"lo");
-        let node = Sha256::hash_nodes(&left, &right);
-        assert_ne!(leaf, node);
+    fn hash_nodes_non_commutative() {
+        let a = [0x11u8; 32];
+        let b = [0x22u8; 32];
+        assert_ne!(Sha256::hash_nodes(&a, &b), Sha256::hash_nodes(&b, &a));
+    }
+
+    #[test]
+    fn leaf_and_node_domain_separation() {
+        let data = [0xAAu8; 32];
+        let dummy = [0x00u8; 32];
+        
+        // hash(data) uses 0x00 prefix; hash_nodes(data, dummy) uses 0x01 prefix.
+        // Even if the input starts similarly, the prefixes ensure the digests differ.
+        let leaf_h = Sha256::hash(&data);
+        let node_h = Sha256::hash_nodes(&data, &dummy);
+        
+        assert_ne!(leaf_h, node_h, "Leaf and Internal Node hashes must be domain-separated");
+    }
+
+    #[test]
+    fn different_inputs_different_hashes() {
+        assert_ne!(Sha256::hash(b"leaf1"), Sha256::hash(b"leaf2"));
     }
 }

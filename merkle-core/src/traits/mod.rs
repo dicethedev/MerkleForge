@@ -1,4 +1,4 @@
-//! All core traits for the MerkleForge workspace.
+//! All core traits for the `MerkleForge` workspace.
 pub mod hash_function;
 pub mod merkle_tree;
 pub mod serializable;

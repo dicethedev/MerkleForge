@@ -1,4 +1,4 @@
-//! # merkle-core :: traits :: serializable
+//! # merkle-core :: traits :: `serializable`
 //!
 //! The `Serializable` trait ensures that both tree state *and* generated
 //! proofs can be persisted to a database or transmitted over a network
@@ -35,6 +35,10 @@ pub trait Serializable: Sized {
     ///
     /// The default implementation serialises and measures — override for
     /// O(1) size calculation where the size is statically known.
+    ///
+    /// # Errors
+    /// Returns [`MerkleError::SerializationError`] if the underlying
+    /// `to_bytes` call fails.
     fn serialized_size(&self) -> Result<usize, MerkleError> {
         Ok(self.to_bytes()?.len())
     }
