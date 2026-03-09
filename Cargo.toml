@@ -31,5 +31,5 @@ criterion  = { version = "0.5", features = ["html_reports"] }
 proptest   = "1.4"
 
 # Shared internal crates
-merkle-core = { path = "merkle-core" }
-merkle-hash = { path = "merkle-hash" }
+merkle-core = { path = "merkle-core", version = "0.1.0" }  
+merkle-hash = { path = "merkle-hash", version = "0.1.0" }

@@ -241,10 +241,10 @@ that checks only the final root, not whether the proof path is valid.
 
 | Adapter | Leaf | Internal node |
 |---------|------|---------------|
-| `Sha256` | `SHA-256(0x00 \|\| data)` | `SHA-256(0x01 \|\| left \|\| right)` |
+| `Sha256` | `SHA-256(0x00 \|d\| data)` | `SHA-256(0x01 \|\| left \|\| right)` |
 | `Keccak256` | `Keccak-256(0x00 \|\| data)` | `Keccak-256(0x01 \|\| left \|\| right)` |
-| `Blake3` | `derive_key("merkle-lib 2024 leaf v1", data)` | `derive_key("merkle-lib 2024 internal-node v1", left \|\| right)` |
-
+| `Blake3` | `derive_key("MerkleForge 2026 leaf v1", data)` | `derive_key("MerkleForge 2026 internal-node v1", left \|\| right)` |
+d
 The `0x00`/`0x01` byte prefix used by `Sha256` and `Keccak256` follows RFC 6962 (Certificate Transparency). BLAKE3's `derive_key` mode is equivalent but uses full context strings instead of a single byte, which is both more readable and more collision-resistant at the domain boundary.
 
 If you implement a custom `HashFunction`, you **must** apply the same separation. The `ProofVerifier` in `merkle-core` assumes it.

@@ -25,9 +25,9 @@
 use merkle_core::traits::HashFunction;
 
 /// Leaf domain-separation context string.
-const LEAF_CONTEXT: &str = "merkle-lib 2024 leaf v1";
+const LEAF_CONTEXT: &str = "MerkleForge 2026 leaf v1";
 /// Internal node domain-separation context string.
-const NODE_CONTEXT: &str = "merkle-lib 2024 internal-node v1";
+const NODE_CONTEXT: &str = "MerkleForge 2026 internal-node v1";
 
 /// BLAKE3 implementation of [`HashFunction`].
 ///
@@ -40,14 +40,14 @@ pub struct Blake3;
 impl HashFunction for Blake3 {
     type Digest = [u8; 32];
 
-    /// Leaf hashing using BLAKE3's derive-key mode with context `"merkle-lib 2024 leaf v1"`.
+    /// Leaf hashing using BLAKE3's derive-key mode with context `"MerkleForge 2026 leaf v1"`.
     #[inline]
     fn hash(data: &[u8]) -> [u8; 32] {
         blake3::derive_key(LEAF_CONTEXT, data)
     }
 
     /// Internal node hashing using BLAKE3's derive-key mode with context
-    /// `"merkle-lib 2024 internal-node v1"` applied to `left || right`.
+    /// `"MerkleForge 2026 internal-node v1"` applied to `left || right`.
     #[inline]
     fn hash_nodes(left: &[u8; 32], right: &[u8; 32]) -> [u8; 32] {
         let mut combined = [0u8; 64];

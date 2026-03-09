@@ -1,0 +1,17 @@
+[package]
+name        = "merkle-core"
+description = "Shared traits, types, and error handling for the MerkleForge workspace"
+inherit     = { workspace = true }
+version.workspace    = true
+edition.workspace    = true
+authors.workspace    = true
+license.workspace    = true
+repository.workspace = true
+keywords.workspace   = true
+
+[dependencies]
+serde  = { workspace = true }
+bincode = { workspace = true }
+
+[dev-dependencies]
+proptest = { workspace = true }

@@ -48,6 +48,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ---
 
 ## [0.1.0] — 2026-03-09
+## [0.1.1] — 2026-03-09
+
+### Fixed
+- Edited merkle-lib to MerkleForge Folder name
 
 Phase 1 complete: core infrastructure. Establishes the entire foundation
 the workspace builds on — trait hierarchy, type system, hash adapters, error
@@ -123,8 +127,8 @@ handling, benchmarking scaffold, and CI/CD pipeline.
   **not** NIST SHA-3 (different padding); correct choice for any tree
   whose roots must be verifiable by Ethereum tooling
 - `Blake3` — BLAKE3 adapter using `blake3::derive_key` for domain separation;
-  leaf context `"merkle-lib 2024 leaf v1"`; node context
-  `"merkle-lib 2024 internal-node v1"`; eliminates the need for prefix bytes
+  leaf context `"MerkleForge 2024 leaf v1"`; node context
+  `"MerkleForge 2024 internal-node v1"`; eliminates the need for prefix bytes
   and removes any length-extension risk at domain boundaries
 - All three adapters are `Copy + Clone + Debug + PartialEq + Eq`
 - `merkle_hash::HashFunction` re-export for single-crate imports
@@ -178,5 +182,6 @@ handling, benchmarking scaffold, and CI/CD pipeline.
 
 ---
 
-[Unreleased]: https://github.com/dicethedev/MerkleForge/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/dicethedev/MerkleForge/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/dicethedev/MerkleForge/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/dicethedev/MerkleForge/releases/tag/v0.1.0
