@@ -1,6 +1,6 @@
 //! # merkle-core
 //!
-//! Shared traits, types, and error handling for the **MerkleForge** workspace.
+//! Shared traits, types, and error handling for the **merkle-lib** workspace.
 //!
 //! This crate is the foundation that every other crate in the workspace
 //! depends on.  It contains no concrete tree logic — that lives in
@@ -10,9 +10,9 @@
 //! ## Contents
 //! | Module | Description |
 //! |--------|-------------|
-//! | [`error`] | Unified [`MerkleError`] enum |
-//! | [`traits`] | [`HashFunction`], [`MerkleTree`], [`ProofVerifier`], [`Serializable`] |
-//! | [`types`] | [`LeafIndex`], [`NodeIndex`], [`MerkleProof`], [`TreeMetadata`], etc. |
+//! | [`error`] | Unified [`error::MerkleError`] enum |
+//! | [`traits`] | [`traits::HashFunction`], [`traits::MerkleTree`], [`traits::ProofVerifier`], [`traits::Serializable`] |
+//! | [`types`] | [`types::LeafIndex`], [`types::NodeIndex`], [`types::MerkleProof`], [`types::TreeMetadata`], etc. |
 //!
 //! ## Quick start
 //!

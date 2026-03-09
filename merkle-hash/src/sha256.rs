@@ -130,6 +130,7 @@ mod tests {
             r
         };
         assert_eq!(Sha256::empty(), computed);
+        assert_eq!(computed, SHA256_EMPTY_PREIMAGE);
     }
 
     #[test]

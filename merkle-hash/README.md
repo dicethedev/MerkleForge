@@ -156,11 +156,11 @@ println!("{}", Blake3::algorithm_name()); // "BLAKE3"
 
 ```rust
 // Internally, Blake3 uses:
-const LEAF_CONTEXT: &str = "MerkleForge 2024 leaf v1";
+const LEAF_CONTEXT: &str = "MerkleForge 2026 leaf v1";
 const NODE_CONTEXT: &str = "MerkleForge 2024 internal-node v1";
 
-// Leaf:  blake3::derive_key("MerkleForge 2024 leaf v1",          data)
-// Node:  blake3::derive_key("MerkleForge 2024 internal-node v1", left || right)
+// Leaf:  blake3::derive_key("MerkleForge 2026 leaf v1",          data)
+// Node:  blake3::derive_key("MerkleForge 2026 internal-node v1", left || right)
 ```
 
 Because the context strings are distinct and fixed, leaf and internal-node digests are guaranteed to never collide regardless of input.

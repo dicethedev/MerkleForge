@@ -36,7 +36,9 @@ impl Keccak256 {
     }
 
     /// Compute `Keccak-256(data)` and write the result into `out`.
+   
     #[inline]
+    #[expect(dead_code)]
     fn digest_into(data: &[u8], out: &mut [u8; 32]) {
         let mut h = Self::new_hasher();
         h.update(data);

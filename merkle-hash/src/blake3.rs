@@ -25,9 +25,9 @@
 use merkle_core::traits::HashFunction;
 
 /// Leaf domain-separation context string.
-const LEAF_CONTEXT: &str = "MerkleForge 2024 leaf v1";
+const LEAF_CONTEXT: &str = "MerkleForge 2026 leaf v1";
 /// Internal node domain-separation context string.
-const NODE_CONTEXT: &str = "MerkleForge 2024 internal-node v1";
+const NODE_CONTEXT: &str = "MerkleForge 2026 internal-node v1";
 
 /// BLAKE3 implementation of [`HashFunction`].
 ///
@@ -61,6 +61,7 @@ impl HashFunction for Blake3 {
     /// Pre-computed for the default context string — avoids a function call
     /// on every empty-slot lookup in sparse trees.
     fn empty() -> [u8; 32] {
+        // derive_key("MerkleForge 2026 leaf v1", b"")
         blake3::derive_key(LEAF_CONTEXT, b"")
     }
 
