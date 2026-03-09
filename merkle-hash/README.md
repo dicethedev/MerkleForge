@@ -37,7 +37,7 @@ merkle-hash = "0.1"
 merkle-core = "0.1"
 ```
 
-All three adapters are compiled by default. There are no feature flags — the upstream crates (`sha2`, `tiny-keccak`, `blake3`) are small and compile quickly.
+All three adapters are compiled by default. There are no feature flags, the upstream crates (`sha2`, `tiny-keccak`, `blake3`) are small and compile quickly.
 
 ---
 
