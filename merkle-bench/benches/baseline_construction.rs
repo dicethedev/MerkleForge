@@ -16,7 +16,7 @@
 //! ```
 //! Reports are written to `target/criterion/baseline_construction/`.
 
-use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
+use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main};
 use merkle_hash::{Blake3, HashFunction, Keccak256, Sha256};
 
 // ── Leaf sizes to test (bytes) ─────────────────────────────────────────────
@@ -64,15 +64,21 @@ fn bench_blake3_leaf(c: &mut Criterion) {
 // ── Hash two nodes together (internal-node latency) ───────────────────────
 
 fn bench_node_hashing(c: &mut Criterion) {
-    let left  = [0xABu8; 32];
+    let left = [0xABu8; 32];
     let right = [0xCDu8; 32];
 
     let mut group = c.benchmark_group("node_hash");
     group.throughput(Throughput::Bytes(64)); // 32 + 32 bytes input
 
-    group.bench_function("SHA-256",    |b| b.iter(|| Sha256::hash_nodes(black_box(&left), black_box(&right))));
-    group.bench_function("Keccak-256", |b| b.iter(|| Keccak256::hash_nodes(black_box(&left), black_box(&right))));
-    group.bench_function("BLAKE3",     |b| b.iter(|| Blake3::hash_nodes(black_box(&left), black_box(&right))));
+    group.bench_function("SHA-256", |b| {
+        b.iter(|| Sha256::hash_nodes(black_box(&left), black_box(&right)))
+    });
+    group.bench_function("Keccak-256", |b| {
+        b.iter(|| Keccak256::hash_nodes(black_box(&left), black_box(&right)))
+    });
+    group.bench_function("BLAKE3", |b| {
+        b.iter(|| Blake3::hash_nodes(black_box(&left), black_box(&right)))
+    });
 
     group.finish();
 }

@@ -46,8 +46,8 @@ impl HashFunction for Blake3 {
         blake3::derive_key(LEAF_CONTEXT, data)
     }
 
-    /// Internal node hashing using BLAKE3's derive-key mode with
-    /// [`NODE_CONTEXT`] applied to `left || right`.
+    /// Internal node hashing using BLAKE3's derive-key mode with context
+    /// `"MerkleForge 2026 internal-node v1"` applied to `left || right`.
     #[inline]
     fn hash_nodes(left: &[u8; 32], right: &[u8; 32]) -> [u8; 32] {
         let mut combined = [0u8; 64];

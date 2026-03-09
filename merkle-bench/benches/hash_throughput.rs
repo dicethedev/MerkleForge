@@ -10,14 +10,14 @@
 //! cargo bench --bench hash_throughput
 //! ```
 
-use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
+use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main};
 use merkle_hash::{Blake3, HashFunction, Keccak256, Sha256};
 
 const BUFFER_SIZES: &[usize] = &[
-    1_024,          //  1 KB
-    16_384,         // 16 KB
-    65_536,         // 64 KB
-    1_048_576,      //  1 MB
+    1_024,     //  1 KB
+    16_384,    // 16 KB
+    65_536,    // 64 KB
+    1_048_576, //  1 MB
 ];
 
 fn throughput_benchmarks(c: &mut Criterion) {
@@ -27,21 +27,15 @@ fn throughput_benchmarks(c: &mut Criterion) {
         let data: Vec<u8> = (0..size).map(|i| i as u8).collect();
         group.throughput(Throughput::Bytes(size as u64));
 
-        group.bench_with_input(
-            BenchmarkId::new("SHA-256", size),
-            &data,
-            |b, d| b.iter(|| Sha256::hash(black_box(d))),
-        );
-        group.bench_with_input(
-            BenchmarkId::new("Keccak-256", size),
-            &data,
-            |b, d| b.iter(|| Keccak256::hash(black_box(d))),
-        );
-        group.bench_with_input(
-            BenchmarkId::new("BLAKE3", size),
-            &data,
-            |b, d| b.iter(|| Blake3::hash(black_box(d))),
-        );
+        group.bench_with_input(BenchmarkId::new("SHA-256", size), &data, |b, d| {
+            b.iter(|| Sha256::hash(black_box(d)))
+        });
+        group.bench_with_input(BenchmarkId::new("Keccak-256", size), &data, |b, d| {
+            b.iter(|| Keccak256::hash(black_box(d)))
+        });
+        group.bench_with_input(BenchmarkId::new("BLAKE3", size), &data, |b, d| {
+            b.iter(|| Blake3::hash(black_box(d)))
+        });
     }
 
     group.finish();

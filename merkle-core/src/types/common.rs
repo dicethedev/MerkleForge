@@ -203,8 +203,14 @@ mod tests {
             leaf_index: LeafIndex(0),
             leaf_count: 4,
             path: vec![
-                ProofNode { hash: [0u8; 32], side: ProofSide::Right },
-                ProofNode { hash: [1u8; 32], side: ProofSide::Right },
+                ProofNode {
+                    hash: [0u8; 32],
+                    side: ProofSide::Right,
+                },
+                ProofNode {
+                    hash: [1u8; 32],
+                    side: ProofSide::Right,
+                },
             ],
         };
         assert!(!two_level.is_trivial());

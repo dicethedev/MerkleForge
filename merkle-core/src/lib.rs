@@ -35,7 +35,5 @@ pub mod types;
 pub mod prelude {
     pub use crate::error::MerkleError;
     pub use crate::traits::{HashFunction, MerkleTree, ProofVerifier, Serializable};
-    pub use crate::types::{
-        LeafIndex, MerkleProof, NodeIndex, ProofNode, ProofSide, TreeMetadata,
-    };
+    pub use crate::types::{LeafIndex, MerkleProof, NodeIndex, ProofNode, ProofSide, TreeMetadata};
 }

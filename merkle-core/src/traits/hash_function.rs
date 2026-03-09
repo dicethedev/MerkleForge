@@ -47,14 +47,7 @@ use std::fmt::Debug;
 /// calling through `H: HashFunction` bounds.
 pub trait HashFunction: Send + Sync + 'static {
     /// The concrete digest type produced by this hash function.
-    type Digest: AsRef<[u8]>
-        + Clone
-        + Debug
-        + PartialEq
-        + Eq
-        + Send
-        + Sync
-        + 'static;
+    type Digest: AsRef<[u8]> + Clone + Debug + PartialEq + Eq + Send + Sync + 'static;
 
     // ── Core hashing ──────────────────────────────────────────────────────
 
@@ -67,9 +60,7 @@ pub trait HashFunction: Send + Sync + 'static {
     /// `Self::hash`.  Override this to use domain separation or a different
     /// concatenation strategy.
     fn hash_nodes(left: &Self::Digest, right: &Self::Digest) -> Self::Digest {
-        let mut combined = Vec::with_capacity(
-            left.as_ref().len() + right.as_ref().len(),
-        );
+        let mut combined = Vec::with_capacity(left.as_ref().len() + right.as_ref().len());
         combined.extend_from_slice(left.as_ref());
         combined.extend_from_slice(right.as_ref());
         Self::hash(&combined)

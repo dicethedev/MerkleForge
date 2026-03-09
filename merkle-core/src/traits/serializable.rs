@@ -9,7 +9,7 @@
 //! (e.g. JSON, CBOR, RLP) by overriding the methods.
 
 use crate::error::MerkleError;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 
 /// Trait for types that can be serialised to / deserialised from bytes.
 ///
@@ -52,8 +52,7 @@ impl<T: Serialize + DeserializeOwned> Serializable for T {
     }
 
     fn from_bytes(bytes: &[u8]) -> Result<Self, MerkleError> {
-        bincode::deserialize(bytes)
-            .map_err(|e| MerkleError::DeserializationError(e.to_string()))
+        bincode::deserialize(bytes).map_err(|e| MerkleError::DeserializationError(e.to_string()))
     }
 }
 
@@ -69,8 +68,14 @@ mod tests {
             leaf_index: LeafIndex(1),
             leaf_count: 4,
             path: vec![
-                ProofNode { hash: [0xAB; 32], side: ProofSide::Left },
-                ProofNode { hash: [0xCD; 32], side: ProofSide::Right },
+                ProofNode {
+                    hash: [0xAB; 32],
+                    side: ProofSide::Left,
+                },
+                ProofNode {
+                    hash: [0xCD; 32],
+                    side: ProofSide::Right,
+                },
             ],
         }
     }

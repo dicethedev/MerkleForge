@@ -105,11 +105,7 @@ pub trait ProofVerifier<H: HashFunction> {
     /// - `expected_root`: The trusted root hash (e.g. from a block header).
     /// - `leaf_data`: The raw pre-image bytes of the leaf being verified.
     /// - `proof`: The [`MerkleProof`] for this leaf.
-    fn verify(
-        expected_root: &H::Digest,
-        leaf_data: &[u8],
-        proof: &MerkleProof<H::Digest>,
-    ) -> bool;
+    fn verify(expected_root: &H::Digest, leaf_data: &[u8], proof: &MerkleProof<H::Digest>) -> bool;
 }
 
 // ── Tests ──────────────────────────────────────────────────────────────────
