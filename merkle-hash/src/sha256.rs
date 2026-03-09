@@ -88,9 +88,9 @@ mod tests {
 
     /// SHA-256(0x00) — The domain-separated empty leaf hash for MerkleForge.
     const MERKLE_EMPTY_SENTINEL: [u8; 32] = [
-        0x6e, 0x34, 0x0b, 0x9c, 0xff, 0xb3, 0x7a, 0x98, 0x9c, 0xa5, 0x44, 0xe6, 0xbb, 0x78,
-        0x0a, 0x2c, 0x78, 0x90, 0x1d, 0x3f, 0xb3, 0x37, 0x38, 0x76, 0x85, 0x11, 0xa3, 0x06,
-        0x17, 0xaf, 0xa0, 0x1d,
+        0x6e, 0x34, 0x0b, 0x9c, 0xff, 0xb3, 0x7a, 0x98, 0x9c, 0xa5, 0x44, 0xe6, 0xbb, 0x78, 0x0a,
+        0x2c, 0x78, 0x90, 0x1d, 0x3f, 0xb3, 0x37, 0x38, 0x76, 0x85, 0x11, 0xa3, 0x06, 0x17, 0xaf,
+        0xa0, 0x1d,
     ];
 
     #[test]
@@ -113,10 +113,14 @@ mod tests {
     fn empty_matches_precomputed() {
         // This ensures the library's precomputed constant matches a fresh runtime hash of the 0x00 prefix.
         let mut h = Sha2_256::new();
-        h.update([0x00u8]); 
+        h.update([0x00u8]);
         let manual_compute: [u8; 32] = h.finalize().into();
-        
-        assert_eq!(Sha256::empty(), manual_compute, "Precomputed empty() must match SHA-256(0x00)");
+
+        assert_eq!(
+            Sha256::empty(),
+            manual_compute,
+            "Precomputed empty() must match SHA-256(0x00)"
+        );
         assert_eq!(Sha256::empty(), MERKLE_EMPTY_SENTINEL);
     }
 
@@ -131,13 +135,16 @@ mod tests {
     fn leaf_and_node_domain_separation() {
         let data = [0xAAu8; 32];
         let dummy = [0x00u8; 32];
-        
+
         // hash(data) uses 0x00 prefix; hash_nodes(data, dummy) uses 0x01 prefix.
         // Even if the input starts similarly, the prefixes ensure the digests differ.
         let leaf_h = Sha256::hash(&data);
         let node_h = Sha256::hash_nodes(&data, &dummy);
-        
-        assert_ne!(leaf_h, node_h, "Leaf and Internal Node hashes must be domain-separated");
+
+        assert_ne!(
+            leaf_h, node_h,
+            "Leaf and Internal Node hashes must be domain-separated"
+        );
     }
 
     #[test]
