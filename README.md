@@ -1,4 +1,4 @@
-# merkleforge
+# MerkleForge
 
 > A high-performance, unified Merkle tree library for the Rust ecosystem.
 
