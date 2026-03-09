@@ -17,7 +17,7 @@
 //! Reports are written to `target/criterion/baseline_construction/`.
 
 use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main};
-use merkle_hash::{Blake3, HashFunction, Keccak256, Sha256};
+use merkleforge_hash::{Blake3, HashFunction, Keccak256, Sha256};
 
 // ── Leaf sizes to test (bytes) ─────────────────────────────────────────────
 

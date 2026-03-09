@@ -491,7 +491,7 @@ version = "0.1.1"
 dependencies = [
  "criterion",
  "merkle-core",
- "merkle-hash",
+ "merkleforge-hash",
 ]
 
 [[package]]
@@ -504,7 +504,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "merkle-hash"
+name = "merkleforge-hash"
 version = "0.1.1"
 dependencies = [
  "blake3",

@@ -11,7 +11,7 @@
 //! ```
 
 use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main};
-use merkle_hash::{Blake3, HashFunction, Keccak256, Sha256};
+use merkleforge_hash::{Blake3, HashFunction, Keccak256, Sha256};
 
 const BUFFER_SIZES: &[usize] = &[
     1_024,     //  1 KB

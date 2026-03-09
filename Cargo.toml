@@ -32,4 +32,4 @@ proptest   = "1.4"
 
 # Shared internal crates
 merkle-core = { path = "merkle-core", version = "0.1.1" }
-merkle-hash = { path = "merkle-hash", version = "0.1.1" }
+merkleforge-hash = { path = "merkle-hash", version = "0.1.1" }
