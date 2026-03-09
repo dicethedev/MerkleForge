@@ -1,0 +1,20 @@
+[package]
+name = "merkleforge-hash"
+description = "Pluggable hash function adapters for MerkleForge (SHA-256, Keccak-256, BLAKE3)"
+version.workspace    = true
+edition.workspace    = true
+authors.workspace    = true
+license.workspace    = true
+repository.workspace = true
+keywords.workspace   = true
+
+[dependencies]
+merkle-core = { workspace = true }
+sha2        = { workspace = true }
+tiny-keccak = { workspace = true }
+blake3      = { workspace = true }
+serde       = { workspace = true }
+
+[dev-dependencies]
+proptest  = { workspace = true }
+criterion = { workspace = true }
