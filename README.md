@@ -14,6 +14,20 @@ The Rust ecosystem for Merkle trees is fragmented. Libraries like `rs-merkle` co
 This library is the implementation artifact of a final-year Software Engineering research project at MIVA Open University, supervised by Dr. Oluwasegun Ishaya Adelaiye.
 
 ---
+## Disclaimers
+
+> ⚠️ **Research Software — Not Production Ready**
+>
+> MerkleForge is a final-year academic research project exploring the design,
+> implementation, and benchmarking of Merkle tree variants in Rust. The codebase
+> has not been independently security-audited. While correctness is a core goal
+> and the library is covered by unit, property-based, and integration tests,
+> no guarantees are made about its fitness for use in production systems,
+> financial applications, or any environment where cryptographic correctness
+> is safety-critical.
+>
+> Use at your own risk. Feedback, bug reports, and contributions are welcome.
+
 
 ## Table of Contents
 
