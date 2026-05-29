@@ -379,7 +379,3 @@ Licensed under either of:
 - [Apache License, Version 2.0](LICENSE-APACHE)
 
 at your option.
-
----
-
-*Developed by [Blessing Samuel](https://github.com/dicethedev)*
