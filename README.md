@@ -155,6 +155,13 @@ MerkleForge/
 │       ├── keccak256.rs
 │       └── blake3.rs
 │
+├── merkle-variants/                  # concrete tree implementations
+│   └── src/
+│       ├── lib.rs
+│       ├── binary.rs                 # Phase 2
+│       ├── sparse.rs                 # Phase 3
+│       └── patricia.rs               # Phase 4
+│
 ├── merkle-bench/                     # isolated benchmarking crate
 │   ├── benches/
 │   │   ├── baseline_construction.rs  # leaf + node hashing latency
@@ -178,10 +185,10 @@ Add the crates you need to your `Cargo.toml`:
 [dependencies]
 merkle-core = "0.1"
 merkleforge-hash = "0.1"
-# merkle-variants = "0.1"   # coming in Phase 2–4
+merkle-variants = "0.1"   # implementations arrive across Phase 2–4
 ```
 
-### Quick example (once `merkle-variants` lands in Phase 2)
+### Quick example (once `BinaryMerkleTree` lands in Phase 2)
  
 ```rust
 use merkleforge_hash::Sha256;
@@ -215,6 +222,22 @@ fn main() -> Result<(), MerkleError> {
 // From SHA-256 to BLAKE3 — one type parameter, zero other changes
 use merkleforge_hash::Blake3;
 let mut tree = BinaryMerkleTree::<Blake3>::new();
+```
+
+### Building and testing
+
+Cargo is the workspace build system, with `make` providing convenient
+wrappers for common development tasks:
+
+```bash
+# Format all Rust code
+make fmt
+
+# Run Clippy across the workspace with warnings denied
+make lint
+
+# Run all workspace tests in release mode
+make test
 ```
 
 ---

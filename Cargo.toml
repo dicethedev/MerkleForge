@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "merkle-core",
     "merkle-hash",
+    "merkle-variants",
     "merkle-bench",
 ]
 

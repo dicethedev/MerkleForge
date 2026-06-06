@@ -1,0 +1,1 @@
+//! Sparse Merkle tree implementation.

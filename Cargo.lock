@@ -504,6 +504,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "merkle-variants"
+version = "0.1.1"
+dependencies = [
+ "merkle-core",
+ "merkleforge-hash",
+]
+
+[[package]]
 name = "merkleforge-hash"
 version = "0.1.1"
 dependencies = [
