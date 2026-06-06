@@ -20,12 +20,12 @@ pub struct NodeIndex(pub usize);
 impl NodeIndex {
     /// The node index of the root of a tree with `leaf_count` leaves.
     ///
-    /// For a power-of-two tree the root sits at index `2 * leaf_count - 1`.
+    /// For a power-of-two tree the root sits at index `2 * leaf_count - 2`.
     #[must_use]
     #[inline]
     pub fn root(leaf_count: usize) -> Self {
         debug_assert!(leaf_count > 0, "leaf_count must be positive");
-        Self(2 * leaf_count - 1)
+        Self(2 * leaf_count - 2)
     }
 
     /// Returns the raw `usize` value.
@@ -178,14 +178,14 @@ mod tests {
 
     #[test]
     fn node_index_root_single_leaf() {
-        assert_eq!(NodeIndex::root(1), NodeIndex(1));
+        assert_eq!(NodeIndex::root(1), NodeIndex(0));
     }
 
     #[test]
     fn node_index_root_four_leaves() {
         // flat array: [L0, L1, L2, L3, P01, P23, Root]
-        // root index = 2*4 - 1 = 7
-        assert_eq!(NodeIndex::root(4), NodeIndex(7));
+        // root index = 2*4 - 2 = 6
+        assert_eq!(NodeIndex::root(4), NodeIndex(6));
     }
 
     #[test]

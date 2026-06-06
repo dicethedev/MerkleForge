@@ -1,0 +1,88 @@
+name: Daily Lines of Code Report
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Where to post the report"
+        required: true
+        default: "test"
+        type: choice
+        options:
+          - test
+          - prod
+      post_telegram:
+        description: "Post this manual report to Telegram"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+env:
+  CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+  CARGO_NET_RETRY: "10"
+
+jobs:
+  loc:
+    name: Count MerkleForge LoC and publish report
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.92.0"
+
+      - name: Setup cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-warloc
+        run: cargo install cargo-warloc --locked --version 0.1.1
+
+      - name: Restore previous LoC report
+        id: cache-loc-report
+        uses: actions/cache/restore@v5
+        with:
+          path: loc_report.json
+          key: loc-report-${{ github.repository_id }}-${{ github.run_id }}
+          restore-keys: |
+            loc-report-${{ github.repository_id }}-
+
+      - name: Keep previous report for delta computation
+        if: steps.cache-loc-report.outputs.cache-hit != ''
+        run: mv loc_report.json loc_report.json.old
+
+      - name: Generate LoC report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+          GH_SERVER_URL: ${{ github.server_url }}
+        run: python3 .github/scripts/generate_loc_report.py
+
+      - name: Save new LoC report
+        if: success()
+        uses: actions/cache/save@v5
+        with:
+          path: loc_report.json
+          key: loc-report-${{ github.repository_id }}-${{ github.run_id }}
+
+      - name: Add report to workflow summary
+        run: cat loc_report_github.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Post report to Telegram
+        if: github.event_name == 'schedule' || inputs.post_telegram == true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: >-
+            ${{ (github.event_name == 'schedule' || inputs.target == 'prod')
+                && secrets.TELEGRAM_CHAT_ID
+                || secrets.TELEGRAM_TEST_CHAT_ID }}
+        run: python3 .github/scripts/publish_telegram.py loc_report_telegram.txt
