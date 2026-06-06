@@ -1,0 +1,1 @@
+//! Binary Merkle tree implementation.
