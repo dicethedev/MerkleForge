@@ -10,3 +10,5 @@
 pub mod binary;
 pub mod patricia;
 pub mod sparse;
+
+pub use binary::BinaryMerkleTree;
