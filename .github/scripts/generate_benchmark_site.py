@@ -47,7 +47,11 @@ def collect_benchmarks(criterion_dir: Path) -> list[dict[str, Any]]:
                 "upper_ns": float(confidence["upper_bound"]),
                 "elements_per_second": (
                     float(elements) * 1_000_000_000 / mean_ns
-                    if elements is not None and mean_ns > 0
+                    if (
+                        operation == "construction"
+                        and elements is not None
+                        and mean_ns > 0
+                    )
                     else None
                 ),
                 "report": (
@@ -362,11 +366,19 @@ PAGE_TEMPLATE = r"""<!doctype html>
     .size { font-family: var(--mono); font-size: 13px; }
     .size small, .throughput small { display: block; margin-bottom: 5px; color: var(--muted); font-size: 8px; letter-spacing: .08em; text-transform: uppercase; }
     .throughput { color: var(--lime); font-family: var(--mono); font-size: 10px; }
+    .row-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 14px;
+      min-width: 120px;
+    }
     .report-link {
       display: inline-flex;
       justify-content: center;
       align-items: center;
-      min-height: 34px;
+      min-height: 38px;
+      padding: 0 14px;
       border: 1px solid var(--line-bright);
       color: var(--muted);
       font-family: var(--mono);
@@ -410,7 +422,7 @@ PAGE_TEMPLATE = r"""<!doctype html>
       .results-key { display: block; margin-top: 12px; }
       .benchmark-card { grid-template-columns: 24px 1fr; gap: 12px; padding: 18px 12px; }
       .benchmark-card .measurement { grid-column: 2; }
-      .benchmark-card .report-link { grid-column: 2; width: 140px; }
+      .benchmark-card .row-actions { grid-column: 2; width: 160px; }
       footer { flex-direction: column; }
     }
   </style>
@@ -583,7 +595,7 @@ PAGE_TEMPLATE = r"""<!doctype html>
             <div class="confidence">CI ${formatDuration(item.lower_ns)} - ${formatDuration(item.upper_ns)}</div>
           </div>
           <div class="size"><small>Input</small>${displaySize(item.size)} leaves</div>
-          <div>
+          <div class="row-actions">
             <span class="throughput"><small>Throughput</small>${item.elements_per_second ? compact(item.elements_per_second) + " leaves/s" : "latency only"}</span>
             <a class="report-link" href="${item.report}">Open report ↗</a>
           </div>
@@ -622,6 +634,12 @@ def main() -> None:
     parser.add_argument("--criterion-dir", type=Path, default=Path("target/criterion"))
     parser.add_argument("--output", type=Path, default=Path("_site/index.html"))
     parser.add_argument(
+        "--minimum-samples",
+        type=int,
+        default=0,
+        help="Fail when fewer completed Criterion samples are available.",
+    )
+    parser.add_argument(
         "--repository-url",
         default=os.environ.get(
             "GITHUB_SERVER_URL", "https://github.com"
@@ -633,6 +651,11 @@ def main() -> None:
     args = parser.parse_args()
 
     benchmarks = collect_benchmarks(args.criterion_dir)
+    if len(benchmarks) < args.minimum_samples:
+        raise SystemExit(
+            f"Expected at least {args.minimum_samples} completed benchmark samples, "
+            f"found {len(benchmarks)}"
+        )
     render_site(benchmarks, args.output, args.repository_url, args.commit)
     print(f"Generated {args.output} with {len(benchmarks)} benchmark samples")
 
