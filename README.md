@@ -184,12 +184,12 @@ Add the crates you need to your `Cargo.toml`:
  
 ```toml
 [dependencies]
-merkle-core = "0.1"
-merkleforge-hash = "0.1"
-merkle-variants = "0.1"   # implementations arrive across Phase 2–4
+merkle-core = "0.2"
+merkleforge-hash = "0.2"
+merkle-variants = "0.2"
 ```
 
-### Quick example (once `BinaryMerkleTree` lands in Phase 2)
+### Quick example
  
 ```rust
 use merkleforge_hash::Sha256;
@@ -265,7 +265,7 @@ across all three will be published after Phase 5.
  
 | Crate | Variant | Status | Best for |
 |-------|---------|--------|----------|
-| `merkle-variants` | `BinaryMerkleTree<H>` | 🔨 Phase 2 | Transaction batching, Bitcoin-style SPV |
+| `merkle-variants` | `BinaryMerkleTree<H>` | ✅ Phase 2 | Transaction batching, Bitcoin-style SPV |
 | `merkle-variants` | `SparseMerkleTree<H>` | ⏳ Phase 3 | Account state, Layer-2 rollups |
 | `merkle-variants` | `MerklePatriciaTrie<H>` | ⏳ Phase 4 | Ethereum state roots, EVM compatibility |
 
@@ -359,7 +359,7 @@ The latest published results are available on the
 | Phase | Scope | Status |
 |-------|-------|--------|
 | 1 — Core Infrastructure | Trait hierarchy, hash adapters, CI/CD | ✅ **Complete** |
-| 2 — Binary Merkle Tree | `BinaryMerkleTree<H>`, property tests | 🔨 **In Progress** |
+| 2 — Binary Merkle Tree | `BinaryMerkleTree<H>`, property tests | ✅ **Complete** |
 | 3 — Sparse Merkle Tree | `SparseMerkleTree<H>`, node batching | ⏳ Planned |
 | 4 — Merkle Patricia Trie | Ethereum-compatible MPT, RLP | ⏳ Planned |
 | 5 — Benchmarking | Full Criterion suite, comparative report | ⏳ Planned |
@@ -369,7 +369,7 @@ The latest published results are available on the
 
 ## Roadmap
  
-- [ ] `BinaryMerkleTree<H>` with iterative construction and stateless proof verification
+- [x] `BinaryMerkleTree<H>` with iterative construction and stateless proof verification
 - [ ] `SparseMerkleTree<H>` with shortcut nodes and one-phase batch updates
 - [ ] `MerklePatriciaTrie<H>` with RLP encoding, validated against Ethereum test vectors
 - [ ] Full Criterion benchmark suite with comparative results vs `rs-merkle` and `merkle_light`

@@ -13,13 +13,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
-### Planned — Phase 2 (Weeks 3–4)
-- `merkle-variants` crate with `BinaryMerkleTree<H>` implementation
-- Iterative bottom-up tree construction
-- Stateless proof generation and verification via `ProofVerifier`
-- Property-based tests: any leaf change must update root hash; tampered proof must fail verification
-- Criterion benchmarks for tree construction at 100 / 1 000 / 10 000 leaves
-
 ### Planned — Phase 3 (Weeks 5–6)
 - `SparseMerkleTree<H>` with 256-bit key space
 - Shortcut nodes and precomputed empty-hash caching (Buterin, 2018)
@@ -44,6 +37,31 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - mdBook user guide at `docs/`
 - Publish `merkle-core`, `merkle-hash`, `merkle-variants` to crates.io
 - Research paper draft on benchmark findings and tree-type trade-offs
+
+---
+
+## [0.2.0] — 2026-06-15
+
+Phase 2 complete: binary Merkle tree implementation and release preparation.
+
+### Added — `merkle-variants`
+
+- `BinaryMerkleTree<H>` with flat, cache-friendly node storage and automatic
+  power-of-two padding
+- `MerkleTree<H>` implementation covering insertion, removal, root queries,
+  leaf count, height, proof generation, and metadata
+- `ProofVerifier<H>` implementation for stateless inclusion-proof validation
+- Metadata reporting with `variant = "BinaryMerkleTree"` and the algorithm
+  name supplied by `H::algorithm_name()`
+- Unit, integration, property-based, and Criterion benchmark coverage across
+  SHA-256, Keccak-256, and BLAKE3
+- Copy-pasteable rustdoc example for tree construction and proof verification
+
+### Changed
+
+- Workspace crate version advanced to `0.2.0`
+- Removing from an empty binary tree now returns `MerkleError::EmptyTree` as
+  required by the `MerkleTree` trait contract
 
 ---
 
@@ -182,6 +200,7 @@ handling, benchmarking scaffold, and CI/CD pipeline.
 
 ---
 
-[Unreleased]: https://github.com/dicethedev/MerkleForge/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/dicethedev/MerkleForge/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/dicethedev/MerkleForge/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/dicethedev/MerkleForge/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/dicethedev/MerkleForge/releases/tag/v0.1.0
