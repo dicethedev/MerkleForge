@@ -2,7 +2,7 @@
 
 use merkle_core::{
     error::MerkleError,
-    traits::{HashFunction, MerkleTree},
+    traits::{HashFunction, MerkleTree, ProofVerifier},
     types::{LeafIndex, MerkleProof, ProofNode, ProofSide, TreeMetadata},
 };
 
@@ -195,6 +195,19 @@ impl<H: HashFunction> BinaryMerkleTree<H> {
         })
     }
 
+    /// Verifies an inclusion proof without accessing a tree instance.
+    ///
+    /// Returns `false` when the proof structure is inconsistent with its
+    /// claimed leaf index or leaf count.
+    #[must_use]
+    pub fn verify(
+        expected_root: &H::Digest,
+        leaf_data: &[u8],
+        proof: &MerkleProof<H::Digest>,
+    ) -> bool {
+        <Self as ProofVerifier<H>>::verify(expected_root, leaf_data, proof)
+    }
+
     const fn padded_leaf_count(leaf_count: usize) -> usize {
         leaf_count
             .checked_next_power_of_two()
@@ -298,6 +311,47 @@ impl<H: HashFunction> MerkleTree<H> for BinaryMerkleTree<H> {
             hash_algorithm: H::algorithm_name(),
             variant: "BinaryMerkleTree",
         }
+    }
+}
+
+impl<H: HashFunction> ProofVerifier<H> for BinaryMerkleTree<H> {
+    fn verify(expected_root: &H::Digest, leaf_data: &[u8], proof: &MerkleProof<H::Digest>) -> bool {
+        if leaf_data.is_empty()
+            || proof.leaf_count == 0
+            || proof.leaf_index.value() >= proof.leaf_count
+        {
+            return false;
+        }
+
+        let Some(leaf_capacity) = proof.leaf_count.checked_next_power_of_two() else {
+            return false;
+        };
+        let expected_depth = leaf_capacity.ilog2() as usize;
+        if proof.path.len() != expected_depth {
+            return false;
+        }
+
+        let mut current = H::hash(leaf_data);
+        let mut offset = proof.leaf_index.value();
+
+        for node in &proof.path {
+            let expected_side = if offset.is_multiple_of(2) {
+                ProofSide::Right
+            } else {
+                ProofSide::Left
+            };
+            if node.side != expected_side {
+                return false;
+            }
+
+            current = match node.side {
+                ProofSide::Left => H::hash_nodes(&node.hash, &current),
+                ProofSide::Right => H::hash_nodes(&current, &node.hash),
+            };
+            offset /= 2;
+        }
+
+        current == *expected_root
     }
 }
 
@@ -581,5 +635,126 @@ mod tests {
 
             assert_eq!(Some(&reconstructed), tree.root());
         }
+    }
+
+    #[test]
+    fn valid_proof_verifies() {
+        let mut tree = BinaryMerkleTree::<Sha256>::new();
+        for data in [b"alice".as_slice(), b"bob", b"carol"] {
+            tree.insert(data).unwrap();
+        }
+        let proof = tree.generate_proof(LeafIndex(1)).unwrap();
+
+        assert!(BinaryMerkleTree::<Sha256>::verify(
+            tree.root().unwrap(),
+            b"bob",
+            &proof
+        ));
+    }
+
+    #[test]
+    fn wrong_leaf_data_fails_verification() {
+        let mut tree = BinaryMerkleTree::<Sha256>::new();
+        tree.insert(b"alice").unwrap();
+        tree.insert(b"bob").unwrap();
+        let proof = tree.generate_proof(LeafIndex(0)).unwrap();
+
+        assert!(!BinaryMerkleTree::<Sha256>::verify(
+            tree.root().unwrap(),
+            b"mallory",
+            &proof
+        ));
+    }
+
+    #[test]
+    fn tampered_sibling_fails_verification() {
+        let mut tree = BinaryMerkleTree::<Sha256>::new();
+        tree.insert(b"alice").unwrap();
+        tree.insert(b"bob").unwrap();
+        let mut proof = tree.generate_proof(LeafIndex(0)).unwrap();
+        proof.path[0].hash = Sha256::hash(b"tampered");
+
+        assert!(!BinaryMerkleTree::<Sha256>::verify(
+            tree.root().unwrap(),
+            b"alice",
+            &proof
+        ));
+    }
+
+    #[test]
+    fn proof_from_different_tree_fails_verification() {
+        let mut first = BinaryMerkleTree::<Sha256>::new();
+        first.insert(b"alice").unwrap();
+        first.insert(b"bob").unwrap();
+        let proof = first.generate_proof(LeafIndex(0)).unwrap();
+
+        let mut second = BinaryMerkleTree::<Sha256>::new();
+        second.insert(b"alice").unwrap();
+        second.insert(b"carol").unwrap();
+
+        assert!(!BinaryMerkleTree::<Sha256>::verify(
+            second.root().unwrap(),
+            b"alice",
+            &proof
+        ));
+    }
+
+    #[test]
+    fn trivial_proof_verifies() {
+        let mut tree = BinaryMerkleTree::<Sha256>::new();
+        tree.insert(b"alice").unwrap();
+        let proof = tree.generate_proof(LeafIndex(0)).unwrap();
+
+        assert!(proof.is_trivial());
+        assert!(BinaryMerkleTree::<Sha256>::verify(
+            tree.root().unwrap(),
+            b"alice",
+            &proof
+        ));
+    }
+
+    #[test]
+    fn invalid_proof_index_returns_false() {
+        let proof = MerkleProof {
+            leaf_index: LeafIndex(1),
+            leaf_count: 1,
+            path: Vec::new(),
+        };
+
+        assert!(!BinaryMerkleTree::<Sha256>::verify(
+            &Sha256::hash(b"alice"),
+            b"alice",
+            &proof
+        ));
+    }
+
+    #[test]
+    fn invalid_path_length_returns_false() {
+        let mut tree = BinaryMerkleTree::<Sha256>::new();
+        tree.insert(b"alice").unwrap();
+        tree.insert(b"bob").unwrap();
+        let mut proof = tree.generate_proof(LeafIndex(0)).unwrap();
+        proof.path.clear();
+
+        assert!(!BinaryMerkleTree::<Sha256>::verify(
+            tree.root().unwrap(),
+            b"alice",
+            &proof
+        ));
+    }
+
+    #[test]
+    fn invalid_sibling_side_returns_false() {
+        let mut tree = BinaryMerkleTree::<Sha256>::new();
+        tree.insert(b"alice").unwrap();
+        tree.insert(b"bob").unwrap();
+        let mut proof = tree.generate_proof(LeafIndex(0)).unwrap();
+        proof.path[0].side = ProofSide::Left;
+
+        assert!(!BinaryMerkleTree::<Sha256>::verify(
+            tree.root().unwrap(),
+            b"alice",
+            &proof
+        ));
     }
 }
