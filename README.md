@@ -3,7 +3,7 @@
 > A high-performance, unified Merkle tree library for the Rust ecosystem.
 
 [![CI](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml/badge.svg)](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml)
-[![Benchmarks](https://github.com/dicethedev/MerkleForge/actions/workflows/benchmark_pages.yml/badge.svg)](https://dicethedev.github.io/MerkleForge/)
+[![Benchmarks](https://github.com/dicethedev/MerkleForge/actions/workflows/benchmark_pages.yml/badge.svg)](https://dicethedev.github.io/MerkleForge/benchmarks/)
 [![Crates.io](https://img.shields.io/crates/v/merkle-core.svg)](https://crates.io/crates/merkle-core)
 [![docs.rs](https://docs.rs/merkle-core/badge.svg)](https://docs.rs/merkle-core)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)

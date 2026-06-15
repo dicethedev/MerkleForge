@@ -41,7 +41,34 @@ jobs:
           mkdir -p _site/benchmarks
           cp -R target/criterion/. _site/benchmarks/
           touch _site/.nojekyll
-          python3 .github/scripts/generate_benchmark_site.py
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <title>MerkleForge Benchmarks</title>
+              <meta http-equiv="refresh" content="0; url=benchmarks/">
+            </head>
+            <body>
+              <p><a href="benchmarks/">Open the MerkleForge benchmark dashboard</a>.</p>
+            </body>
+          </html>
+          HTML
+          cat > _site/benchmarks/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <title>MerkleForge Binary Tree Benchmarks</title>
+              <meta http-equiv="refresh" content="0; url=binary_tree/report/index.html">
+            </head>
+            <body>
+              <p><a href="binary_tree/report/index.html">Open the Criterion report</a>.</p>
+            </body>
+          </html>
+          HTML
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
