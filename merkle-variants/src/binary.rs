@@ -3,7 +3,7 @@
 use merkle_core::{
     error::MerkleError,
     traits::{HashFunction, MerkleTree},
-    types::{LeafIndex, MerkleProof, TreeMetadata},
+    types::{LeafIndex, MerkleProof, ProofNode, ProofSide, TreeMetadata},
 };
 
 /// A cache-friendly binary Merkle tree backed by a flat node array.
@@ -144,6 +144,57 @@ impl<H: HashFunction> BinaryMerkleTree<H> {
         self.height
     }
 
+    /// Generates an inclusion proof for the leaf at `index`.
+    ///
+    /// Sibling hashes are collected from the leaf layer upward. Each proof
+    /// node records whether the sibling belongs on the left or right when
+    /// reconstructing the root.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MerkleError::EmptyTree`] when the tree has no logical leaves.
+    /// Returns [`MerkleError::IndexOutOfBounds`] when `index` is not a logical
+    /// leaf index.
+    pub fn generate_proof(&self, index: LeafIndex) -> Result<MerkleProof<H::Digest>, MerkleError> {
+        if self.is_empty() {
+            return Err(MerkleError::EmptyTree);
+        }
+        if index.value() >= self.leaf_count {
+            return Err(MerkleError::IndexOutOfBounds {
+                index: index.value(),
+                len: self.leaf_count,
+            });
+        }
+
+        let mut path = Vec::with_capacity(self.height.saturating_sub(1));
+        let mut layer_start = 0;
+        let mut layer_width = self.leaf_capacity();
+        let mut offset = index.value();
+
+        while layer_width > 1 {
+            let (sibling_offset, side) = if offset.is_multiple_of(2) {
+                (offset + 1, ProofSide::Right)
+            } else {
+                (offset - 1, ProofSide::Left)
+            };
+
+            path.push(ProofNode {
+                hash: self.nodes[layer_start + sibling_offset].clone(),
+                side,
+            });
+
+            offset /= 2;
+            layer_start += layer_width;
+            layer_width /= 2;
+        }
+
+        Ok(MerkleProof {
+            leaf_index: index,
+            leaf_count: self.leaf_count,
+            path,
+        })
+    }
+
     const fn padded_leaf_count(leaf_count: usize) -> usize {
         leaf_count
             .checked_next_power_of_two()
@@ -235,10 +286,8 @@ impl<H: HashFunction> MerkleTree<H> for BinaryMerkleTree<H> {
         Self::height(self)
     }
 
-    fn generate_proof(&self, _index: LeafIndex) -> Result<MerkleProof<H::Digest>, MerkleError> {
-        Err(MerkleError::UnsupportedOperation(
-            "binary Merkle proof generation is not implemented",
-        ))
+    fn generate_proof(&self, index: LeafIndex) -> Result<MerkleProof<H::Digest>, MerkleError> {
+        Self::generate_proof(self, index)
     }
 
     fn metadata(&self) -> TreeMetadata {
@@ -417,5 +466,120 @@ mod tests {
         assert_eq!(metadata.node_count, 1);
         assert_eq!(metadata.hash_algorithm, "SHA-256");
         assert_eq!(metadata.variant, "BinaryMerkleTree");
+    }
+
+    #[test]
+    fn proof_generation_rejects_empty_tree() {
+        let tree = BinaryMerkleTree::<Sha256>::new();
+
+        assert_eq!(
+            tree.generate_proof(LeafIndex(0)),
+            Err(MerkleError::EmptyTree)
+        );
+    }
+
+    #[test]
+    fn proof_generation_rejects_out_of_bounds_index() {
+        let mut tree = BinaryMerkleTree::<Sha256>::new();
+        tree.insert(b"alice").unwrap();
+
+        assert_eq!(
+            tree.generate_proof(LeafIndex(1)),
+            Err(MerkleError::IndexOutOfBounds { index: 1, len: 1 })
+        );
+    }
+
+    #[test]
+    fn single_leaf_proof_is_trivial() {
+        let mut tree = BinaryMerkleTree::<Sha256>::new();
+        tree.insert(b"alice").unwrap();
+
+        let proof = tree.generate_proof(LeafIndex(0)).unwrap();
+
+        assert!(proof.is_trivial());
+        assert_eq!(proof.depth(), 0);
+        assert_eq!(proof.leaf_index, LeafIndex(0));
+        assert_eq!(proof.leaf_count, 1);
+    }
+
+    #[test]
+    fn proof_path_has_one_node_per_non_leaf_level() {
+        let mut tree = BinaryMerkleTree::<Sha256>::new();
+        for data in [b"alice".as_slice(), b"bob", b"carol"] {
+            tree.insert(data).unwrap();
+        }
+
+        for index in 0..tree.leaf_count() {
+            let proof = tree.generate_proof(LeafIndex(index)).unwrap();
+            assert_eq!(proof.depth(), tree.height() - 1);
+        }
+    }
+
+    #[test]
+    fn proof_records_correct_siblings_and_sides() {
+        let mut tree = BinaryMerkleTree::<Sha256>::new();
+        for data in [b"alice".as_slice(), b"bob", b"carol", b"dave"] {
+            tree.insert(data).unwrap();
+        }
+
+        let alice = Sha256::hash(b"alice");
+        let bob = Sha256::hash(b"bob");
+        let carol = Sha256::hash(b"carol");
+        let dave = Sha256::hash(b"dave");
+        let left_parent = Sha256::hash_nodes(&alice, &bob);
+        let right_parent = Sha256::hash_nodes(&carol, &dave);
+
+        let left_proof = tree.generate_proof(LeafIndex(0)).unwrap();
+        assert_eq!(
+            left_proof.path,
+            vec![
+                ProofNode {
+                    hash: bob,
+                    side: ProofSide::Right,
+                },
+                ProofNode {
+                    hash: right_parent,
+                    side: ProofSide::Right,
+                },
+            ]
+        );
+
+        let right_proof = tree.generate_proof(LeafIndex(3)).unwrap();
+        assert_eq!(
+            right_proof.path,
+            vec![
+                ProofNode {
+                    hash: carol,
+                    side: ProofSide::Left,
+                },
+                ProofNode {
+                    hash: left_parent,
+                    side: ProofSide::Left,
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn every_valid_index_produces_a_root_reconstructing_proof() {
+        let data = [b"alice".as_slice(), b"bob", b"carol", b"dave", b"eve"];
+        let mut tree = BinaryMerkleTree::<Sha256>::new();
+        for leaf in data {
+            tree.insert(leaf).unwrap();
+        }
+
+        for (index, leaf) in data.iter().enumerate() {
+            let proof = tree.generate_proof(LeafIndex(index)).unwrap();
+            let reconstructed =
+                proof
+                    .path
+                    .iter()
+                    .fold(Sha256::hash(leaf), |current, node| match node.side {
+                        ProofSide::Left => Sha256::hash_nodes(&node.hash, &current),
+                        ProofSide::Right => Sha256::hash_nodes(&current, &node.hash),
+                    });
+
+            assert_eq!(Some(&reconstructed), tree.root());
+        }
     }
 }
