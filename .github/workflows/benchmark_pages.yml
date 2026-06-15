@@ -1,0 +1,94 @@
+name: Benchmark Pages
+
+on:
+  push:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: benchmark-pages
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+  CARGO_NET_RETRY: "10"
+
+jobs:
+  benchmark:
+    name: Build Criterion reports
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.92.0"
+
+      - name: Setup cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run binary-tree benchmarks
+        run: cargo bench --bench binary_tree
+
+      - name: Prepare Pages site
+        run: |
+          mkdir -p _site/benchmarks
+          cp -R target/criterion/. _site/benchmarks/
+          touch _site/.nojekyll
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <title>MerkleForge Benchmarks</title>
+              <meta http-equiv="refresh" content="0; url=benchmarks/">
+            </head>
+            <body>
+              <p><a href="benchmarks/">Open the MerkleForge benchmark dashboard</a>.</p>
+            </body>
+          </html>
+          HTML
+          cat > _site/benchmarks/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <title>MerkleForge Binary Tree Benchmarks</title>
+              <meta http-equiv="refresh" content="0; url=binary_tree/report/index.html">
+            </head>
+            <body>
+              <p><a href="binary_tree/report/index.html">Open the Criterion report</a>.</p>
+            </body>
+          </html>
+          HTML
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy benchmark dashboard
+    needs: benchmark
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

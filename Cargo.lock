@@ -491,6 +491,7 @@ version = "0.1.1"
 dependencies = [
  "criterion",
  "merkle-core",
+ "merkle-variants",
  "merkleforge-hash",
 ]
 

@@ -74,7 +74,7 @@ impl<H: HashFunction> BinaryMerkleTree<H> {
         self.nodes[index.value()] = H::hash(data);
         self.leaf_count += 1;
         self.height = self.leaf_capacity().ilog2() as usize + 1;
-        self.recompute_root();
+        self.recompute_path(index.value());
 
         Ok(index)
     }
@@ -109,7 +109,7 @@ impl<H: HashFunction> BinaryMerkleTree<H> {
         if required_capacity < self.leaf_capacity() {
             self.resize_leaf_layer(required_capacity);
         } else {
-            self.recompute_root();
+            self.recompute_path(index.value());
         }
         self.height = required_capacity.ilog2() as usize + 1;
 
@@ -267,6 +267,25 @@ impl<H: HashFunction> BinaryMerkleTree<H> {
                 self.nodes[parent_start + offset] = H::hash_nodes(&left, &right);
             }
 
+            layer_start = parent_start;
+            layer_width /= 2;
+            parent_start += layer_width;
+        }
+    }
+
+    fn recompute_path(&mut self, leaf_index: usize) {
+        let mut layer_start = 0;
+        let mut layer_width = self.leaf_capacity();
+        let mut parent_start = layer_width;
+        let mut offset = leaf_index;
+
+        while layer_width > 1 {
+            let pair_offset = offset & !1;
+            let left = self.nodes[layer_start + pair_offset].clone();
+            let right = self.nodes[layer_start + pair_offset + 1].clone();
+            self.nodes[parent_start + offset / 2] = H::hash_nodes(&left, &right);
+
+            offset /= 2;
             layer_start = parent_start;
             layer_width /= 2;
             parent_start += layer_width;
