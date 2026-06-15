@@ -11,3 +11,6 @@ keywords.workspace   = true
 [dependencies]
 merkle-core      = { workspace = true }
 merkleforge-hash = { workspace = true }
+
+[dev-dependencies]
+proptest = { workspace = true }
