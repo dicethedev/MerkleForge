@@ -9,8 +9,8 @@ repository.workspace = true
 keywords.workspace   = true
 
 [dependencies]
-merkle-core      = { workspace = true }
-merkleforge-hash = { workspace = true }
+merkle-core = { workspace = true }
 
 [dev-dependencies]
-proptest = { workspace = true }
+merkleforge-hash = { workspace = true }
+proptest         = { workspace = true }

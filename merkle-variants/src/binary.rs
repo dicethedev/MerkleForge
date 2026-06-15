@@ -1,4 +1,36 @@
 //! Binary Merkle tree implementation.
+//!
+//! [`BinaryMerkleTree`] stores leaves and internal nodes in one contiguous
+//! allocation and implements [`MerkleTree`] for every supported
+//! [`HashFunction`].
+//!
+//! # Example
+//!
+//! ```
+//! use merkle_core::{
+//!     traits::{MerkleTree, ProofVerifier},
+//!     types::LeafIndex,
+//! };
+//! use merkle_variants::BinaryMerkleTree;
+//! use merkleforge_hash::Sha256;
+//!
+//! let mut tree = BinaryMerkleTree::<Sha256>::new();
+//! tree.insert(b"alice:100")?;
+//! tree.insert(b"bob:250")?;
+//!
+//! let proof = tree.generate_proof(LeafIndex(0))?;
+//! let root = tree.root().expect("the tree contains two leaves");
+//! assert!(BinaryMerkleTree::<Sha256>::verify(
+//!     root,
+//!     b"alice:100",
+//!     &proof,
+//! ));
+//!
+//! let metadata = tree.metadata();
+//! assert_eq!(metadata.variant, "BinaryMerkleTree");
+//! assert_eq!(metadata.hash_algorithm, "SHA-256");
+//! # Ok::<(), merkle_core::error::MerkleError>(())
+//! ```
 
 use merkle_core::{
     error::MerkleError,
@@ -86,9 +118,13 @@ impl<H: HashFunction> BinaryMerkleTree<H> {
     ///
     /// # Errors
     ///
+    /// Returns [`MerkleError::EmptyTree`] when the tree has no logical leaves.
     /// Returns [`MerkleError::IndexOutOfBounds`] when `index` does not refer
     /// to a logical leaf.
     pub fn remove(&mut self, index: LeafIndex) -> Result<(), MerkleError> {
+        if self.is_empty() {
+            return Err(MerkleError::EmptyTree);
+        }
         if index.value() >= self.leaf_count {
             return Err(MerkleError::IndexOutOfBounds {
                 index: index.value(),
@@ -516,11 +552,19 @@ mod tests {
     #[test]
     fn out_of_bounds_remove_is_rejected() {
         let mut tree = BinaryMerkleTree::<Sha256>::new();
+        tree.insert(b"alice").unwrap();
 
         assert_eq!(
-            tree.remove(LeafIndex(0)),
-            Err(MerkleError::IndexOutOfBounds { index: 0, len: 0 })
+            tree.remove(LeafIndex(1)),
+            Err(MerkleError::IndexOutOfBounds { index: 1, len: 1 })
         );
+    }
+
+    #[test]
+    fn removing_from_empty_tree_is_rejected() {
+        let mut tree = BinaryMerkleTree::<Sha256>::new();
+
+        assert_eq!(tree.remove(LeafIndex(0)), Err(MerkleError::EmptyTree));
     }
 
     #[test]
