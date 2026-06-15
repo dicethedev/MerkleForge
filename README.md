@@ -332,14 +332,18 @@ open target/criterion/report/index.html
  
 # Run just the hash throughput comparison
 cargo bench --bench hash_throughput
+
+# Run binary-tree construction and proof benchmarks
+cargo bench --bench binary_tree
 ```
  
 | Metric | Status |
 |--------|--------|
 | Construction latency — leaf hash + node combine | ✅ Phase 1 |
 | Throughput — sustained MB/s per algorithm (32 B → 1 MB) | ✅ Phase 1 |
-| Tree construction — 100 / 1K / 10K / 100K / 1M leaves | 🔜 Phase 5 |
-| Proof generation & verification latency | 🔜 Phase 5 |
+| Binary tree construction — 100 / 1K / 10K / 100K leaves | ✅ Phase 2 |
+| Binary proof generation & verification latency | ✅ Phase 2 |
+| Sparse and Patricia tree benchmarks | 🔜 Phase 5 |
 | Proof size in bytes | 🔜 Phase 5 |
 | Peak memory consumption (RSS) | 🔜 Phase 5 |
 | Comparative results vs `rs-merkle` and `merkle_light` | 🔜 Phase 5 |
