@@ -1,4 +1,4 @@
-name: Benchmark Pages
+name: MerkleForge Website
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: benchmark-pages
+  group: merkleforge-website
   cancel-in-progress: true
 
 env:
@@ -19,7 +19,7 @@ env:
 
 jobs:
   benchmark:
-    name: Build Criterion reports
+    name: Build website and Criterion reports
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -38,10 +38,9 @@ jobs:
 
       - name: Prepare Pages site
         run: |
-          mkdir -p _site/benchmarks
-          cp -R target/criterion/. _site/benchmarks/
-          touch _site/.nojekyll
-          python3 .github/scripts/generate_benchmark_site.py --minimum-samples 36
+          mkdir -p _site/reports/criterion
+          cp -R target/criterion/. _site/reports/criterion/
+          python3 website/build.py --minimum-samples 36
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -52,7 +51,7 @@ jobs:
           path: _site
 
   deploy:
-    name: Deploy benchmark dashboard
+    name: Deploy official website
     needs: benchmark
     runs-on: ubuntu-latest
     permissions:
