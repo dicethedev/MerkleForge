@@ -1,6 +1,7 @@
 [package]
 name = "merkle-variants"
 description = "Binary, sparse, and Patricia Merkle tree implementations for MerkleForge"
+readme = "README.md"
 version.workspace    = true
 edition.workspace    = true
 authors.workspace    = true
