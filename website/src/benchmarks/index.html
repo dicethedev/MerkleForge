@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="MerkleForge Criterion benchmark results and reports.">
+  <title>Benchmarks / MerkleForge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="__ROOT__assets/styles.css">
+</head>
+<body data-page="benchmarks">
+  <div class="shell">
+    <nav class="nav">
+      <a class="brand" href="__ROOT__index.html">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 5 9.5v13L16 29l11-6.5v-13L16 3Z" fill="none" stroke="currentColor"/><path d="m5 9.5 11 6.4 11-6.4M16 15.9V29M10.5 12.7 16 9.5l5.5 3.2" fill="none" stroke="currentColor"/></svg>
+        <span>MerkleForge<small>Performance laboratory</small></span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" data-nav="docs" href="__ROOT__docs/">Docs</a>
+        <a class="nav-link" data-nav="examples" href="__ROOT__examples/">Examples</a>
+        <a class="nav-link" data-nav="benchmarks" href="__ROOT__benchmarks/">Benchmarks</a>
+        <a class="source-link" href="__REPOSITORY_URL__">GitHub ↗</a>
+      </div>
+    </nav>
+
+    <header class="page-hero">
+      <span class="status">Latest Criterion run indexed</span>
+      <h1>Performance,<span>with evidence.</span></h1>
+      <p>Compare construction, proof generation, and proof verification across supported hash functions and tree sizes. Every row links to Criterion's statistical report.</p>
+    </header>
+
+    <section class="signal-strip">
+      <div class="signal-cell"><span class="label">Reproduce</span><span class="signal-value"><code>cargo bench --bench binary_tree</code></span></div>
+      <div class="signal-cell"><span class="label">Harness</span><span class="signal-value">Criterion.rs</span></div>
+      <div class="signal-cell"><span class="label">Confidence</span><span class="signal-value">95%</span></div>
+      <div class="signal-cell"><span class="label">Commit</span><span class="signal-value" id="commit">loading</span></div>
+    </section>
+
+    <main>
+      <section class="section">
+        <div class="section-head">
+          <div><span class="label">Run inventory / 01</span><h2>The measured surface at a glance.</h2></div>
+          <p class="section-copy">The dashboard is generated from Criterion's machine-readable estimates after a successful GitHub Actions run.</p>
+        </div>
+        <div class="stats" id="stats"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><span class="label">Reports / 02</span><h2>Summary first. Raw evidence one click away.</h2></div>
+          <p class="section-copy">Use the dashboard for comparison and the generated Criterion pages for distributions, regression plots, confidence intervals, and outlier analysis.</p>
+        </div>
+        <div class="report-grid">
+          <article class="report-card">
+            <span class="label">Criterion summary</span>
+            <h3>Binary-tree report index</h3>
+            <p>Open Criterion's grouped violin plots and links to every benchmark case.</p>
+            <a class="button secondary" href="../reports/criterion/binary_tree/report/index.html">Open raw index ↗</a>
+          </article>
+          <article class="report-card">
+            <span class="label">Method</span>
+            <h3>Reproduce locally</h3>
+            <p>Run the benchmark on your own hardware and compare behavior rather than absolute runner timings.</p>
+            <div class="code-window"><pre><code>cargo bench --bench binary_tree</code></pre></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="results">
+        <div class="section-head">
+          <div><span class="label">Measured dataset / 03</span><h2>Every operation. Every hash. One view.</h2></div>
+          <p class="section-copy">Lower duration is better. Signal bars are normalized against samples with the same operation and leaf count.</p>
+        </div>
+        <div class="results-toolbar">
+          <div class="controls" id="controls"></div>
+          <span class="results-key">Mean latency / 95% confidence interval</span>
+        </div>
+        <div class="benchmark-grid" id="benchmark-grid"></div>
+        <div class="empty" id="empty">No completed benchmark samples were found.</div>
+      </section>
+    </main>
+
+    <footer><span>MERKLEFORGE / GENERATED <span id="generated-at"></span></span><span>RUNNER HARDWARE AFFECTS ABSOLUTE RESULTS</span></footer>
+  </div>
+  <script>window.MERKLEFORGE_BENCHMARKS = __BENCHMARK_DATA__;</script>
+  <script src="__ROOT__assets/app.js"></script>
+</body>
+</html>

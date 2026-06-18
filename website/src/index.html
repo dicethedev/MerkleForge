@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="MerkleForge is a generic, benchmarked Merkle tree toolkit for Rust.">
+  <title>MerkleForge / Verifiable Data Structures for Rust</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="__ROOT__assets/styles.css">
+</head>
+<body data-page="home">
+  <div class="shell">
+    <nav class="nav">
+      <a class="brand" href="__ROOT__index.html">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M16 3 5 9.5v13L16 29l11-6.5v-13L16 3Z" fill="none" stroke="currentColor"/>
+          <path d="m5 9.5 11 6.4 11-6.4M16 15.9V29M10.5 12.7 16 9.5l5.5 3.2" fill="none" stroke="currentColor"/>
+        </svg>
+        <span>MerkleForge<small>Verifiable data structures</small></span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" data-nav="docs" href="__ROOT__docs/">Docs</a>
+        <a class="nav-link" data-nav="examples" href="__ROOT__examples/">Examples</a>
+        <a class="nav-link" data-nav="benchmarks" href="__ROOT__benchmarks/">Benchmarks</a>
+        <a class="source-link" href="__REPOSITORY_URL__">GitHub ↗</a>
+      </div>
+    </nav>
+
+    <main>
+      <header class="hero">
+        <div class="hero-copy">
+          <span class="status">Rust crates available / v__CRATE_VERSION__</span>
+          <h1>Build roots.<span>Verify everything.</span></h1>
+          <p class="lede">
+            MerkleForge is a generic Rust toolkit for constructing Merkle trees,
+            generating compact inclusion proofs, and verifying data integrity
+            without carrying the full dataset.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="__ROOT__docs/">Start building</a>
+            <a class="button secondary" href="__ROOT__benchmarks/">Explore performance</a>
+          </div>
+        </div>
+        <div class="tree-stage" aria-label="Binary Merkle tree topology">
+          <svg class="tree-visual" viewBox="0 0 680 520" role="img">
+            <g fill="none">
+              <path class="tree-line hot" d="M340 76 180 190M340 76l160 114M180 190l-82 126M180 190l82 126M500 190l-82 126M500 190l82 126"/>
+              <path class="tree-line" d="m98 316-45 108m45-108 45 108m119-108-45 108m45-108 45 108m111-108-45 108m45-108 45 108m119-108-45 108m45-108 45 108"/>
+            </g>
+            <text class="root-label" x="340" y="33" text-anchor="middle">ROOT HASH</text>
+            <circle class="node root pulse" cx="340" cy="76" r="18"/>
+            <circle class="node" cx="180" cy="190" r="14"/><circle class="node" cx="500" cy="190" r="14"/>
+            <circle class="node" cx="98" cy="316" r="11"/><circle class="node" cx="262" cy="316" r="11"/>
+            <circle class="node" cx="418" cy="316" r="11"/><circle class="node" cx="582" cy="316" r="11"/>
+            <rect class="node leaf" x="43" y="414" width="20" height="20" rx="3"/>
+            <rect class="node leaf" x="133" y="414" width="20" height="20" rx="3"/>
+            <rect class="node leaf" x="207" y="414" width="20" height="20" rx="3"/>
+            <rect class="node leaf" x="297" y="414" width="20" height="20" rx="3"/>
+            <rect class="node leaf" x="363" y="414" width="20" height="20" rx="3"/>
+            <rect class="node leaf" x="453" y="414" width="20" height="20" rx="3"/>
+            <rect class="node leaf" x="527" y="414" width="20" height="20" rx="3"/>
+            <rect class="node leaf" x="617" y="414" width="20" height="20" rx="3"/>
+            <text class="node-label" x="53" y="458" text-anchor="middle">L0</text>
+            <text class="node-label" x="143" y="458" text-anchor="middle">L1</text>
+            <text class="node-label" x="217" y="458" text-anchor="middle">L2</text>
+            <text class="node-label" x="307" y="458" text-anchor="middle">L3</text>
+            <text class="node-label" x="373" y="458" text-anchor="middle">L4</text>
+            <text class="node-label" x="463" y="458" text-anchor="middle">L5</text>
+            <text class="node-label" x="537" y="458" text-anchor="middle">L6</text>
+            <text class="node-label" x="627" y="458" text-anchor="middle">L7</text>
+          </svg>
+        </div>
+      </header>
+
+      <section class="signal-strip">
+        <div class="signal-cell"><span class="label">Language</span><span class="signal-value">Rust 2024</span></div>
+        <div class="signal-cell"><span class="label">Hash adapters</span><span class="signal-value">SHA-256 / Keccak / BLAKE3</span></div>
+        <div class="signal-cell"><span class="label">Proof model</span><span class="signal-value">Stateless verification</span></div>
+        <div class="signal-cell"><span class="label">Safety</span><span class="signal-value">No unsafe code</span></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><span class="label">Explore / 01</span><h2>Everything needed to understand and use MerkleForge.</h2></div>
+          <p class="section-copy">The official site keeps implementation guidance, real examples, benchmark evidence, and generated Criterion reports in one place.</p>
+        </div>
+        <div class="card-grid">
+          <article class="card">
+            <span class="card-number">01 / Documentation</span>
+            <h3>Understand the architecture</h3>
+            <p>Learn the trait model, domain separation, proof structure, tree metadata, and crate boundaries.</p>
+            <a class="card-link" href="__ROOT__docs/">Read the docs →</a>
+          </article>
+          <article class="card">
+            <span class="card-number">02 / Examples</span>
+            <h3>Copy working Rust</h3>
+            <p>Construct a tree, swap hash functions, generate proofs, verify them, and serialize proof data.</p>
+            <a class="card-link" href="__ROOT__examples/">Open examples →</a>
+          </article>
+          <article class="card">
+            <span class="card-number">03 / Evidence</span>
+            <h3>Inspect measured performance</h3>
+            <p>Compare operations, tree sizes, and hash algorithms with direct links to statistical reports.</p>
+            <a class="card-link" href="__ROOT__benchmarks/">View benchmarks →</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><span class="label">Workspace / 02</span><h2>Small crates. Clear responsibilities.</h2></div>
+          <p class="section-copy">Use the foundation alone, add official hash adapters, or pull in the ready-made tree implementation.</p>
+        </div>
+        <div class="crate-grid">
+          <article class="crate-card">
+            <span class="badge">Foundation</span>
+            <h3>merkle-core</h3>
+            <p>Shared traits, proof types, metadata, serialization, and unified errors.</p>
+            <a class="card-link" href="https://docs.rs/merkle-core">API docs ↗</a>
+          </article>
+          <article class="crate-card">
+            <span class="badge">Cryptography</span>
+            <h3>merkleforge-hash</h3>
+            <p>Domain-separated SHA-256, Keccak-256, and BLAKE3 adapters.</p>
+            <a class="card-link" href="https://docs.rs/merkleforge-hash">API docs ↗</a>
+          </article>
+          <article class="crate-card">
+            <span class="badge">Trees</span>
+            <h3>merkle-variants</h3>
+            <p>Binary Merkle trees today, with sparse and Patricia variants on the roadmap.</p>
+            <a class="card-link" href="https://docs.rs/merkle-variants">API docs ↗</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><span class="label">Quick start / 03</span><h2>A root and an inclusion proof in a few lines.</h2></div>
+          <p class="section-copy">Tree behavior is generic over the hash adapter, so changing algorithms is a type-level decision with no runtime dispatch.</p>
+        </div>
+        <div class="code-window">
+          <div class="code-head"><span>src/main.rs</span><span>BinaryMerkleTree&lt;Sha256&gt;</span></div>
+          <pre><code>use merkle_core::{traits::MerkleTree, types::LeafIndex};
+use merkle_variants::BinaryMerkleTree;
+use merkleforge_hash::Sha256;
+
+fn main() -&gt; Result&lt;(), merkle_core::error::MerkleError&gt; {
+    let mut tree = BinaryMerkleTree::&lt;Sha256&gt;::new();
+    tree.insert(b"alice:100")?;
+    tree.insert(b"bob:250")?;
+
+    let proof = tree.generate_proof(LeafIndex(0))?;
+    let root = tree.root().expect("tree is not empty");
+
+    assert!(BinaryMerkleTree::&lt;Sha256&gt;::verify(
+        root,
+        b"alice:100",
+        &amp;proof,
+    ));
+    Ok(())
+}</code></pre>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>MERKLEFORGE / RESEARCH SOFTWARE</span>
+      <span>MIT OR APACHE-2.0</span>
+    </footer>
+  </div>
+  <script src="__ROOT__assets/app.js"></script>
+</body>
+</html>
