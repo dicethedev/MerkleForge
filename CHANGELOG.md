@@ -13,6 +13,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Documentation
+
+- Added a crate-specific `merkle-variants` README for crates.io and docs.rs.
+
 ### Planned — Phase 3 (Weeks 5–6)
 - `SparseMerkleTree<H>` with 256-bit key space
 - Shortcut nodes and precomputed empty-hash caching (Buterin, 2018)
