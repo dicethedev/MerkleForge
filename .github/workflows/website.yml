@@ -2,15 +2,15 @@ name: MerkleForge Website
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: merkleforge-website
-  cancel-in-progress: true
+  group: pages
+  cancel-in-progress: false
 
 env:
   CARGO_TERM_COLOR: always
