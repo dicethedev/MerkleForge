@@ -1,6 +1,6 @@
 # MerkleForge
 
-> A high-performance, unified Merkle tree library for the Rust ecosystem.
+### Building a Faster, More Efficient Data Verification Toolkit for Modern Blockchains
 
 [![CI](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml/badge.svg)](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml)
 [![Website](https://github.com/dicethedev/MerkleForge/actions/workflows/website.yml/badge.svg)](https://dicethedev.github.io/MerkleForge/index.html)
