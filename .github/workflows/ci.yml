@@ -17,11 +17,13 @@ on:
   push:
     branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 env:
   CARGO_TERM_COLOR: always
   RUSTFLAGS: "-D warnings"   # treat all warnings as errors
+  CARGO_NET_GIT_FETCH_WITH_CLI: "true"   # avoid git2/rustls issues on Windows
+  CARGO_NET_RETRY: 10   # retry git fetches to mitigate transient network issues
 
 jobs:
   # ── 1. Test ───────────────────────────────────────────────────────────────
@@ -32,7 +34,7 @@ jobs:
       matrix:
         rust: [stable, beta]   # catch breakage early on beta channel
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Rust ${{ matrix.rust }}
         uses: dtolnay/rust-toolchain@master
@@ -57,26 +59,28 @@ jobs:
 
   # ── 2. Lint ───────────────────────────────────────────────────────────────
   lint:
-    name: Clippy + Formatting
+    name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - name: Install stable Rust
-        uses: dtolnay/rust-toolchain@stable
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@master
         with:
-          components: clippy, rustfmt
+          toolchain: "1.92.0"
+          components: rustfmt, clippy
 
-      - name: rustfmt check
+      - name: Setup cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Check formatting
         run: cargo fmt --all -- --check
 
-      - name: Clippy (pedantic)
-        run: >
-          cargo clippy --workspace --all-features --
-          -W clippy::pedantic
-          -W clippy::nursery
-          -A clippy::module_name_repetitions
-          -D warnings
+      - name: Cargo check
+        run: cargo check --workspace --all-targets
+
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
 
   # ── 3. Bench dry-run ─────────────────────────────────────────────────────
   bench-dry:

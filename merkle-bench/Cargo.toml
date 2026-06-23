@@ -10,6 +10,7 @@ license.workspace    = true
 [dev-dependencies]
 merkle-core = { workspace = true }
 merkleforge-hash = { workspace = true }
+merkle-variants = { path = "../merkle-variants" }
 criterion   = { workspace = true }
 
 [[bench]]
@@ -18,4 +19,8 @@ harness = false
 
 [[bench]]
 name    = "hash_throughput"
+harness = false
+
+[[bench]]
+name    = "binary_tree"
 harness = false

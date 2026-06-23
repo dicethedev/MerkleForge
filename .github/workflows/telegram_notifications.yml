@@ -1,0 +1,46 @@
+name: Telegram Notifications
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+  issues:
+    types: [opened, reopened]
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  notify:
+    name: Send repository update
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout notification scripts
+        uses: actions/checkout@v6
+        with:
+          # Select only a trusted base branch; never execute scripts from a PR.
+          ref: >-
+            ${{ ((github.event_name == 'pull_request' && github.base_ref == 'main')
+                || (github.event_name == 'workflow_run'
+                    && github.event.workflow_run.head_branch == 'main'))
+                && 'main'
+                || 'develop' }}
+
+      - name: Build notification
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+          GH_SERVER_URL: ${{ github.server_url }}
+        run: python3 .github/scripts/generate_telegram_notification.py
+
+      - name: Send Telegram notification
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 .github/scripts/publish_telegram.py telegram_notification.txt

@@ -487,16 +487,17 @@ checksum = "f8ca58f447f06ed17d5fc4043ce1b10dd205e060fb3ce5b979b8ed8e59ff3f79"
 
 [[package]]
 name = "merkle-bench"
-version = "0.1.1"
+version = "0.2.1"
 dependencies = [
  "criterion",
  "merkle-core",
+ "merkle-variants",
  "merkleforge-hash",
 ]
 
 [[package]]
 name = "merkle-core"
-version = "0.1.1"
+version = "0.2.1"
 dependencies = [
  "bincode",
  "proptest",
@@ -504,8 +505,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "merkle-variants"
+version = "0.2.1"
+dependencies = [
+ "merkle-core",
+ "merkleforge-hash",
+ "proptest",
+]
+
+[[package]]
 name = "merkleforge-hash"
-version = "0.1.1"
+version = "0.2.1"
 dependencies = [
  "blake3",
  "criterion",

@@ -1,0 +1,17 @@
+[package]
+name = "merkle-variants"
+description = "Binary, sparse, and Patricia Merkle tree implementations for MerkleForge"
+readme = "README.md"
+version.workspace    = true
+edition.workspace    = true
+authors.workspace    = true
+license.workspace    = true
+repository.workspace = true
+keywords.workspace   = true
+
+[dependencies]
+merkle-core = { workspace = true }
+
+[dev-dependencies]
+merkleforge-hash = { workspace = true }
+proptest         = { workspace = true }

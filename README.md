@@ -3,6 +3,7 @@
 ### Building a Faster, More Efficient Data Verification Toolkit for Modern Blockchains
 
 [![CI](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml/badge.svg)](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml)
+[![Website](https://github.com/dicethedev/MerkleForge/actions/workflows/website.yml/badge.svg)](https://dicethedev.github.io/MerkleForge/index.html)
 [![Crates.io](https://img.shields.io/crates/v/merkle-core.svg)](https://crates.io/crates/merkle-core)
 [![docs.rs](https://docs.rs/merkle-core/badge.svg)](https://docs.rs/merkle-core)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
@@ -20,7 +21,9 @@
 > is safety-critical.
 >
 > Use at your own risk. Feedback and bug reports are welcome.
-> 
+
+---
+
 ## The Problem
  
 One of the major bottlenecks in modern blockchain networks is data verification. As blockchain systems process millions of transactions, verifying the integrity of state data becomes increasingly slow and resource-intensive. Every state lookup, transaction batch, and light-client proof depends on the speed, efficiency, and correctness of the underlying data structure.
@@ -153,6 +156,13 @@ MerkleForge/
 │       ├── keccak256.rs
 │       └── blake3.rs
 │
+├── merkle-variants/                  # concrete tree implementations
+│   └── src/
+│       ├── lib.rs
+│       ├── binary.rs                 # Phase 2
+│       ├── sparse.rs                 # Phase 3
+│       └── patricia.rs               # Phase 4
+│
 ├── merkle-bench/                     # isolated benchmarking crate
 │   ├── benches/
 │   │   ├── baseline_construction.rs  # leaf + node hashing latency
@@ -174,12 +184,12 @@ Add the crates you need to your `Cargo.toml`:
  
 ```toml
 [dependencies]
-merkle-core = "0.1"
-merkleforge-hash = "0.1"
-# merkle-variants = "0.1"   # coming in Phase 2–4
+merkle-core = "0.2"
+merkleforge-hash = "0.2"
+merkle-variants = "0.2"
 ```
 
-### Quick example (once `merkle-variants` lands in Phase 2)
+### Quick example
  
 ```rust
 use merkleforge_hash::Sha256;
@@ -215,6 +225,22 @@ use merkleforge_hash::Blake3;
 let mut tree = BinaryMerkleTree::<Blake3>::new();
 ```
 
+### Building and testing
+
+Cargo is the workspace build system, with `make` providing convenient
+wrappers for common development tasks:
+
+```bash
+# Format all Rust code
+make fmt
+
+# Run Clippy across the workspace with warnings denied
+make lint
+
+# Run all workspace tests in release mode
+make test
+```
+
 ---
 
 ## Hash Functions
@@ -239,7 +265,7 @@ across all three will be published after Phase 5.
  
 | Crate | Variant | Status | Best for |
 |-------|---------|--------|----------|
-| `merkle-variants` | `BinaryMerkleTree<H>` | 🔨 Phase 2 | Transaction batching, Bitcoin-style SPV |
+| `merkle-variants` | `BinaryMerkleTree<H>` | ✅ Phase 2 | Transaction batching, Bitcoin-style SPV |
 | `merkle-variants` | `SparseMerkleTree<H>` | ⏳ Phase 3 | Account state, Layer-2 rollups |
 | `merkle-variants` | `MerklePatriciaTrie<H>` | ⏳ Phase 4 | Ethereum state roots, EVM compatibility |
 
@@ -307,14 +333,22 @@ open target/criterion/report/index.html
  
 # Run just the hash throughput comparison
 cargo bench --bench hash_throughput
+
+# Run binary-tree construction and proof benchmarks
+cargo bench --bench binary_tree
 ```
+
+The [official MerkleForge site](https://dicethedev.github.io/MerkleForge/index.html)
+includes documentation, examples, benchmark comparisons, and the generated
+Criterion reports.
  
 | Metric | Status |
 |--------|--------|
 | Construction latency — leaf hash + node combine | ✅ Phase 1 |
 | Throughput — sustained MB/s per algorithm (32 B → 1 MB) | ✅ Phase 1 |
-| Tree construction — 100 / 1K / 10K / 100K / 1M leaves | 🔜 Phase 5 |
-| Proof generation & verification latency | 🔜 Phase 5 |
+| Binary tree construction — 100 / 1K / 10K / 100K leaves | ✅ Phase 2 |
+| Binary proof generation & verification latency | ✅ Phase 2 |
+| Sparse and Patricia tree benchmarks | 🔜 Phase 5 |
 | Proof size in bytes | 🔜 Phase 5 |
 | Peak memory consumption (RSS) | 🔜 Phase 5 |
 | Comparative results vs `rs-merkle` and `merkle_light` | 🔜 Phase 5 |
@@ -326,7 +360,7 @@ cargo bench --bench hash_throughput
 | Phase | Scope | Status |
 |-------|-------|--------|
 | 1 — Core Infrastructure | Trait hierarchy, hash adapters, CI/CD | ✅ **Complete** |
-| 2 — Binary Merkle Tree | `BinaryMerkleTree<H>`, property tests | 🔨 **In Progress** |
+| 2 — Binary Merkle Tree | `BinaryMerkleTree<H>`, property tests | ✅ **Complete** |
 | 3 — Sparse Merkle Tree | `SparseMerkleTree<H>`, node batching | ⏳ Planned |
 | 4 — Merkle Patricia Trie | Ethereum-compatible MPT, RLP | ⏳ Planned |
 | 5 — Benchmarking | Full Criterion suite, comparative report | ⏳ Planned |
@@ -336,7 +370,7 @@ cargo bench --bench hash_throughput
 
 ## Roadmap
  
-- [ ] `BinaryMerkleTree<H>` with iterative construction and stateless proof verification
+- [x] `BinaryMerkleTree<H>` with iterative construction and stateless proof verification
 - [ ] `SparseMerkleTree<H>` with shortcut nodes and one-phase batch updates
 - [ ] `MerklePatriciaTrie<H>` with RLP encoding, validated against Ethereum test vectors
 - [ ] Full Criterion benchmark suite with comparative results vs `rs-merkle` and `merkle_light`
@@ -379,3 +413,7 @@ Licensed under either of:
 - [Apache License, Version 2.0](LICENSE-APACHE)
 
 at your option.
+
+---
+
+*Developed by [Blessing Samuel](https://github.com/dicethedev)*
