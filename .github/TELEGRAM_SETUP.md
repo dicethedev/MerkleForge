@@ -1,6 +1,6 @@
 # Telegram Notifications Setup
 
-The repository uses Telegram for daily lines-of-code reports, CI results, and
+The repository uses Telegram for weekly lines-of-code reports, CI results, and
 new or reopened pull request and issue notifications.
 
 ## Required Secrets
@@ -18,10 +18,10 @@ or chat ID is missing.
 
 ## Workflows
 
-- `daily_loc_report.yml` runs every day at `00:00 UTC` and can also be run
+- `daily_loc_report.yml` runs every Monday at `00:00 UTC` and can also be run
   manually from the Actions tab.
 - `telegram_notifications.yml` reports completed CI runs and newly opened or
   reopened pull requests and issues.
 
-Use the manual **Daily Lines of Code Report** workflow with `target=test` and
+Use the manual **Weekly Lines of Code Report** workflow with `target=test` and
 `post_telegram=true` to verify the bot configuration.
