@@ -246,12 +246,10 @@ impl<H: HashFunction> SparseMerkleTree<H> {
 
     fn recompute_path(&mut self, key: [u8; 32]) {
         let leaf_key = NodeKey::leaf(key);
-        let mut current_hash = self
-            .nodes
-            .get(&leaf_key)
-            .cloned()
-            .unwrap_or_else(|| self.empty_hashes[0].clone());
-        let mut current_exists = self.nodes.contains_key(&leaf_key);
+        let (mut current_hash, mut current_exists) = match self.nodes.get(&leaf_key) {
+            Some(digest) => (digest.clone(), true),
+            None => (self.empty_hashes[0].clone(), false),
+        };
 
         for depth in (1..=self.depth).rev() {
             let sibling_key = NodeKey::sibling(key, depth);
