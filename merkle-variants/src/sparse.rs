@@ -26,7 +26,7 @@ use merkle_core::traits::HashFunction;
 /// Fixed tree depth for MerkleForge sparse Merkle trees.
 pub const SPARSE_TREE_DEPTH: usize = 256;
 
-/// Number of cached empty hashes in a 256-level sparse Merkle tree.
+/// Number of cached empty hashes (levels 0..=256) in a 256-depth sparse Merkle tree.
 pub const EMPTY_HASH_LEVELS: usize = SPARSE_TREE_DEPTH + 1;
 
 /// A sparse Merkle tree over a 256-bit key space.
