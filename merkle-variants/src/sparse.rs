@@ -14,8 +14,10 @@
 //!
 //! assert!(tree.is_empty());
 //! assert_eq!(tree.leaf_count(), 0);
-//! assert_eq!(tree.height(), 256);
-//! assert_eq!(tree.root(), tree.empty_hash_at(256));
+//! assert_eq!(tree.height(), 0);
+//! assert_eq!(tree.depth(), 256);
+//! assert_eq!(tree.root(), None);
+//! assert_eq!(tree.empty_root(), tree.empty_hash_at(256));
 //! assert_eq!(tree.empty_hash_at(0), &Sha256::empty());
 //! ```
 
@@ -66,12 +68,25 @@ impl<H: HashFunction> SparseMerkleTree<H> {
         }
     }
 
-    /// Returns the current root hash.
+    /// Returns the current root hash, or `None` when the tree has no
+    /// non-empty leaves.
     ///
-    /// For a newly-created empty tree this is the cached empty hash at level
-    /// `256`.
+    /// Use [`Self::empty_root`] when callers need the canonical root of a
+    /// fully empty sparse tree.
     #[must_use]
-    pub fn root(&self) -> &H::Digest {
+    pub fn root(&self) -> Option<&H::Digest> {
+        if self.is_empty() {
+            return None;
+        }
+
+        Some(&self.empty_hashes[self.depth])
+    }
+
+    /// Returns the root hash of a fully empty sparse Merkle tree.
+    ///
+    /// This is the cached empty hash at level `256`.
+    #[must_use]
+    pub fn empty_root(&self) -> &H::Digest {
         &self.empty_hashes[self.depth]
     }
 
@@ -87,9 +102,18 @@ impl<H: HashFunction> SparseMerkleTree<H> {
         self.leaf_count == 0
     }
 
-    /// Returns the fixed sparse tree height.
+    /// Returns the current Merkle tree height.
+    ///
+    /// This follows the shared [`merkle_core::traits::MerkleTree`] contract:
+    /// an empty tree has height `0`.
     #[must_use]
     pub const fn height(&self) -> usize {
+        if self.leaf_count == 0 { 0 } else { self.depth }
+    }
+
+    /// Returns the fixed sparse key-space depth.
+    #[must_use]
+    pub const fn depth(&self) -> usize {
         self.depth
     }
 
@@ -145,7 +169,8 @@ mod tests {
 
         assert!(tree.is_empty());
         assert_eq!(tree.leaf_count(), 0);
-        assert_eq!(tree.height(), SPARSE_TREE_DEPTH);
+        assert_eq!(tree.height(), 0);
+        assert_eq!(tree.depth(), SPARSE_TREE_DEPTH);
         assert_eq!(tree.stored_node_count(), 0);
     }
 
@@ -153,7 +178,8 @@ mod tests {
     fn empty_tree_root_is_cached_root_level() {
         let tree = SparseMerkleTree::<Sha256>::new();
 
-        assert_eq!(tree.root(), tree.empty_hash_at(SPARSE_TREE_DEPTH));
+        assert_eq!(tree.root(), None);
+        assert_eq!(tree.empty_root(), tree.empty_hash_at(SPARSE_TREE_DEPTH));
     }
 
     #[test]
