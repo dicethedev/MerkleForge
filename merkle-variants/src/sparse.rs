@@ -254,12 +254,10 @@ impl<H: HashFunction> SparseMerkleTree<H> {
         for depth in (1..=self.depth).rev() {
             let sibling_key = NodeKey::sibling(key, depth);
             let empty_level = self.depth - depth;
-            let sibling_hash = self
-                .nodes
-                .get(&sibling_key)
-                .cloned()
-                .unwrap_or_else(|| self.empty_hashes[empty_level].clone());
-            let sibling_exists = self.nodes.contains_key(&sibling_key);
+            let (sibling_hash, sibling_exists) = match self.nodes.get(&sibling_key) {
+                Some(digest) => (digest.clone(), true),
+                None => (self.empty_hashes[empty_level].clone(), false),
+            };
 
             let parent_hash = if bit_at(&key, depth - 1) {
                 H::hash_nodes(&sibling_hash, &current_hash)
