@@ -102,6 +102,12 @@ impl<H: HashFunction> SparseMerkleTree<H> {
     /// Panics when `level` is greater than [`SPARSE_TREE_DEPTH`].
     #[must_use]
     pub fn empty_hash_at(&self, level: usize) -> &H::Digest {
+        assert!(
+            level <= self.depth,
+            "empty_hash_at: level {} out of range (max {})",
+            level,
+            self.depth
+        );
         &self.empty_hashes[level]
     }
 
