@@ -54,8 +54,8 @@ impl<H: HashFunction> SparseMerkleTree<H> {
         empty_hashes.push(H::empty());
 
         for level in 1..=SPARSE_TREE_DEPTH {
-            let previous = empty_hashes[level - 1].clone();
-            empty_hashes.push(H::hash_nodes(&previous, &previous));
+            let previous = &empty_hashes[level - 1];
+            empty_hashes.push(H::hash_nodes(previous, previous));
         }
 
         Self {
