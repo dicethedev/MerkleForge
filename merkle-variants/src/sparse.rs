@@ -24,12 +24,28 @@
 use std::collections::HashMap;
 
 use merkle_core::{error::MerkleError, traits::HashFunction};
+use serde::{Deserialize, Serialize};
 
-/// Fixed tree depth for MerkleForge sparse Merkle trees.
+/// Fixed tree depth for `MerkleForge` sparse Merkle trees.
 pub const SPARSE_TREE_DEPTH: usize = 256;
 
 /// Number of cached empty hashes (levels 0..=256) in a 256-depth sparse Merkle tree.
 pub const EMPTY_HASH_LEVELS: usize = SPARSE_TREE_DEPTH + 1;
+
+/// A key-addressed sparse Merkle membership proof.
+///
+/// `siblings` are ordered from leaf level to root level and always contain
+/// 256 entries. `None` means the sibling subtree is empty and can be
+/// reconstructed from the verifier's empty-hash cache.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SparseMerkleProof<D> {
+    /// The 256-bit key this proof is for.
+    pub key: [u8; 32],
+    /// Sibling hashes from leaf to root; `None` represents an empty sibling.
+    pub siblings: Vec<Option<D>>,
+    /// The stored leaf hash, or `None` for a non-membership proof.
+    pub leaf: Option<D>,
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct NodeKey {
@@ -163,13 +179,47 @@ impl<H: HashFunction> SparseMerkleTree<H> {
         self.nodes.get(&NodeKey::leaf(key))
     }
 
+    /// Generates a sparse Merkle membership proof for `key`.
+    ///
+    /// The proof contains the stored leaf hash when `key` exists and `None`
+    /// otherwise. Empty sibling subtrees are compactly represented as `None`;
+    /// verifiers reconstruct those hashes from the canonical empty-hash cache.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MerkleError::InvalidProofStructure`] if the tree depth cannot
+    /// be represented by the proof format. This should not happen for the
+    /// fixed `MerkleForge` sparse tree depth.
+    pub fn generate_membership_proof(
+        &self,
+        key: [u8; 32],
+    ) -> Result<SparseMerkleProof<H::Digest>, MerkleError> {
+        if self.depth != SPARSE_TREE_DEPTH {
+            return Err(MerkleError::InvalidProofStructure(
+                "sparse tree proof generation requires depth 256".to_string(),
+            ));
+        }
+
+        let mut siblings = Vec::with_capacity(self.depth);
+        for depth in (1..=self.depth).rev() {
+            let sibling_key = NodeKey::sibling(key, depth);
+            siblings.push(self.nodes.get(&sibling_key).cloned());
+        }
+
+        Ok(SparseMerkleProof {
+            key,
+            siblings,
+            leaf: self.get(key).cloned(),
+        })
+    }
+
     /// Returns the current root hash, or `None` when the tree has no
     /// non-empty leaves.
     ///
     /// Use [`Self::empty_root`] when callers need the canonical root of a
     /// fully empty sparse tree.
     #[must_use]
-    pub fn root(&self) -> Option<&H::Digest> {
+    pub const fn root(&self) -> Option<&H::Digest> {
         if self.is_empty() {
             return None;
         }
@@ -244,6 +294,43 @@ impl<H: HashFunction> SparseMerkleTree<H> {
         self.nodes.len()
     }
 
+    /// Verifies a sparse Merkle membership proof without needing the tree.
+    ///
+    /// `leaf_data` is hashed and compared with the proof's embedded leaf hash
+    /// before root reconstruction. This ensures a proof for the right key but
+    /// wrong value is rejected.
+    #[must_use]
+    pub fn verify(
+        expected_root: &H::Digest,
+        leaf_data: &[u8],
+        proof: &SparseMerkleProof<H::Digest>,
+    ) -> bool {
+        if leaf_data.is_empty() || proof.siblings.len() != SPARSE_TREE_DEPTH {
+            return false;
+        }
+
+        let leaf_hash = H::hash(leaf_data);
+        if proof.leaf.as_ref() != Some(&leaf_hash) {
+            return false;
+        }
+
+        let empty_hashes = Self::build_empty_hashes();
+        let mut current = leaf_hash;
+
+        for (level, sibling) in proof.siblings.iter().enumerate() {
+            let sibling_hash = sibling.as_ref().unwrap_or_else(|| &empty_hashes[level]);
+            let key_depth = SPARSE_TREE_DEPTH - 1 - level;
+
+            current = if bit_at(&proof.key, key_depth) {
+                H::hash_nodes(sibling_hash, &current)
+            } else {
+                H::hash_nodes(&current, sibling_hash)
+            };
+        }
+
+        &current == expected_root
+    }
+
     fn recompute_path(&mut self, key: [u8; 32]) {
         let leaf_key = NodeKey::leaf(key);
         let (mut current_hash, mut current_exists) = match self.nodes.get(&leaf_key) {
@@ -279,6 +366,18 @@ impl<H: HashFunction> SparseMerkleTree<H> {
 
         self.root = current_hash;
     }
+
+    fn build_empty_hashes() -> Vec<H::Digest> {
+        let mut empty_hashes = Vec::with_capacity(EMPTY_HASH_LEVELS);
+        empty_hashes.push(H::empty());
+
+        for level in 1..=SPARSE_TREE_DEPTH {
+            let previous = &empty_hashes[level - 1];
+            empty_hashes.push(H::hash_nodes(previous, previous));
+        }
+
+        empty_hashes
+    }
 }
 
 /// Returns the bit at `depth` in `key`, reading most-significant bit first.
@@ -311,10 +410,8 @@ impl<H: HashFunction> Default for SparseMerkleTree<H> {
 
 #[cfg(test)]
 mod tests {
-    use merkle_core::traits::HashFunction;
+    use merkle_core::{error::MerkleError, traits::HashFunction, traits::Serializable};
     use merkleforge_hash::Sha256;
-
-    use merkle_core::error::MerkleError;
 
     use super::{EMPTY_HASH_LEVELS, SPARSE_TREE_DEPTH, SparseMerkleTree, bit_at};
 
@@ -461,5 +558,83 @@ mod tests {
         assert_eq!(tree.get(first), None);
         assert_eq!(tree.get(second), Some(&Sha256::hash(b"bob")));
         assert!(tree.root().is_some());
+    }
+
+    #[test]
+    fn membership_proof_for_inserted_key_verifies() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+        let key = [10_u8; 32];
+
+        tree.insert(key, b"alice").unwrap();
+        let proof = tree.generate_membership_proof(key).unwrap();
+        let root = *tree.root().unwrap();
+
+        assert_eq!(proof.key, key);
+        assert_eq!(proof.siblings.len(), SPARSE_TREE_DEPTH);
+        assert_eq!(proof.leaf, Some(Sha256::hash(b"alice")));
+        assert!(SparseMerkleTree::<Sha256>::verify(&root, b"alice", &proof));
+    }
+
+    #[test]
+    fn membership_proof_with_wrong_value_fails() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+        let key = [11_u8; 32];
+
+        tree.insert(key, b"alice").unwrap();
+        let proof = tree.generate_membership_proof(key).unwrap();
+        let root = *tree.root().unwrap();
+
+        assert!(!SparseMerkleTree::<Sha256>::verify(
+            &root, b"mallory", &proof
+        ));
+    }
+
+    #[test]
+    fn membership_proof_with_tampered_sibling_fails() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+        let first = [12_u8; 32];
+        let mut second = [12_u8; 32];
+        second[31] ^= 1;
+
+        tree.insert(first, b"alice").unwrap();
+        tree.insert(second, b"bob").unwrap();
+
+        let mut proof = tree.generate_membership_proof(first).unwrap();
+        let sibling = proof
+            .siblings
+            .iter_mut()
+            .find_map(Option::as_mut)
+            .expect("proof should include a non-empty sibling");
+        sibling[0] ^= 1;
+
+        let root = *tree.root().unwrap();
+        assert!(!SparseMerkleTree::<Sha256>::verify(&root, b"alice", &proof));
+    }
+
+    #[test]
+    fn proof_for_missing_key_records_non_membership_leaf() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+        let inserted = [13_u8; 32];
+        let missing = [14_u8; 32];
+
+        tree.insert(inserted, b"alice").unwrap();
+        let proof = tree.generate_membership_proof(missing).unwrap();
+
+        assert_eq!(proof.key, missing);
+        assert_eq!(proof.siblings.len(), SPARSE_TREE_DEPTH);
+        assert_eq!(proof.leaf, None);
+    }
+
+    #[test]
+    fn sparse_membership_proof_round_trips_through_serializable() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+        let key = [15_u8; 32];
+
+        tree.insert(key, b"alice").unwrap();
+        let proof = tree.generate_membership_proof(key).unwrap();
+        let bytes = proof.to_bytes().unwrap();
+        let recovered = super::SparseMerkleProof::<[u8; 32]>::from_bytes(&bytes).unwrap();
+
+        assert_eq!(proof, recovered);
     }
 }

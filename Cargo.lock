@@ -511,6 +511,7 @@ dependencies = [
  "merkle-core",
  "merkleforge-hash",
  "proptest",
+ "serde",
 ]
 
 [[package]]
