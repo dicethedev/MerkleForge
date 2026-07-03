@@ -125,8 +125,7 @@ impl<H: HashFunction> SparseMerkleTree<H> {
         }
 
         let leaf_key = NodeKey::leaf(key);
-        let was_empty = !self.nodes.contains_key(&leaf_key);
-        self.nodes.insert(leaf_key, H::hash(data));
+        let was_empty = self.nodes.insert(leaf_key, H::hash(data)).is_none();
         if was_empty {
             self.leaf_count += 1;
         }
