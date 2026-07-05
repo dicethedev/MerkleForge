@@ -314,11 +314,21 @@ impl<H: HashFunction> SparseMerkleTree<H> {
             return false;
         }
 
-        let empty_hashes = Self::build_empty_hashes();
         let mut current = leaf_hash;
+        let mut empty_hash = H::empty();
+        let mut empty_level = 0usize;
 
         for (level, sibling) in proof.siblings.iter().enumerate() {
-            let sibling_hash = sibling.as_ref().unwrap_or_else(|| &empty_hashes[level]);
+            let sibling_hash = match sibling.as_ref() {
+                Some(digest) => digest,
+                None => {
+                    while empty_level < level {
+                        empty_hash = H::hash_nodes(&empty_hash, &empty_hash);
+                        empty_level += 1;
+                    }
+                    &empty_hash
+                }
+            };
             let key_depth = SPARSE_TREE_DEPTH - 1 - level;
 
             current = if bit_at(&proof.key, key_depth) {
