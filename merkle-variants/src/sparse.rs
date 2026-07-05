@@ -377,17 +377,6 @@ impl<H: HashFunction> SparseMerkleTree<H> {
         self.root = current_hash;
     }
 
-    fn build_empty_hashes() -> Vec<H::Digest> {
-        let mut empty_hashes = Vec::with_capacity(EMPTY_HASH_LEVELS);
-        empty_hashes.push(H::empty());
-
-        for level in 1..=SPARSE_TREE_DEPTH {
-            let previous = &empty_hashes[level - 1];
-            empty_hashes.push(H::hash_nodes(previous, previous));
-        }
-
-        empty_hashes
-    }
 }
 
 /// Returns the bit at `depth` in `key`, reading most-significant bit first.
