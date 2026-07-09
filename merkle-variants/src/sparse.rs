@@ -376,7 +376,6 @@ impl<H: HashFunction> SparseMerkleTree<H> {
 
         self.root = current_hash;
     }
-
 }
 
 /// Returns the bit at `depth` in `key`, reading most-significant bit first.
