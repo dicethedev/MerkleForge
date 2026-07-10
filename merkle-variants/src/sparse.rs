@@ -47,6 +47,20 @@ pub struct SparseMerkleProof<D> {
     pub leaf: Option<D>,
 }
 
+impl<D> SparseMerkleProof<D> {
+    /// Returns `true` when this proof contains a stored leaf hash.
+    #[must_use]
+    pub const fn is_membership(&self) -> bool {
+        self.leaf.is_some()
+    }
+
+    /// Returns `true` when this proof proves an empty leaf slot.
+    #[must_use]
+    pub const fn is_non_membership(&self) -> bool {
+        self.leaf.is_none()
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct NodeKey {
     depth: usize,
@@ -310,35 +324,26 @@ impl<H: HashFunction> SparseMerkleTree<H> {
         }
 
         let leaf_hash = H::hash(leaf_data);
-        if proof.leaf.as_ref() != Some(&leaf_hash) {
-            return false;
-        }
+        proof.leaf.as_ref() == Some(&leaf_hash)
+            && Self::reconstruct_root(&proof.key, leaf_hash, &proof.siblings).as_ref()
+                == expected_root.as_ref()
+    }
 
-        let mut current = leaf_hash;
-        let mut empty_hash = H::empty();
-        let mut empty_level = 0usize;
-
-        for (level, sibling) in proof.siblings.iter().enumerate() {
-            let sibling_hash = match sibling.as_ref() {
-                Some(digest) => digest,
-                None => {
-                    while empty_level < level {
-                        empty_hash = H::hash_nodes(&empty_hash, &empty_hash);
-                        empty_level += 1;
-                    }
-                    &empty_hash
-                }
-            };
-            let key_depth = SPARSE_TREE_DEPTH - 1 - level;
-
-            current = if bit_at(&proof.key, key_depth) {
-                H::hash_nodes(sibling_hash, &current)
-            } else {
-                H::hash_nodes(&current, sibling_hash)
-            };
-        }
-
-        &current == expected_root
+    /// Verifies that `proof.key` is absent from the tree with `expected_root`.
+    ///
+    /// A non-membership proof is a sparse proof with `leaf: None`. Verification
+    /// reconstructs the path with [`HashFunction::empty`] as the leaf hash.
+    #[must_use]
+    pub fn verify_non_membership(
+        expected_root: &H::Digest,
+        key: [u8; 32],
+        proof: &SparseMerkleProof<H::Digest>,
+    ) -> bool {
+        proof.key == key
+            && proof.is_non_membership()
+            && proof.siblings.len() == SPARSE_TREE_DEPTH
+            && Self::reconstruct_root(&proof.key, H::empty(), &proof.siblings).as_ref()
+                == expected_root.as_ref()
     }
 
     fn recompute_path(&mut self, key: [u8; 32]) {
@@ -375,6 +380,35 @@ impl<H: HashFunction> SparseMerkleTree<H> {
         }
 
         self.root = current_hash;
+    }
+
+    fn reconstruct_root(
+        key: &[u8; 32],
+        leaf_hash: H::Digest,
+        siblings: &[Option<H::Digest>],
+    ) -> H::Digest {
+        let mut current = leaf_hash;
+        let mut empty_hash = H::empty();
+        let mut empty_level = 0_usize;
+
+        for (level, sibling) in siblings.iter().enumerate() {
+            let sibling_hash = sibling.as_ref().unwrap_or_else(|| {
+                while empty_level < level {
+                    empty_hash = H::hash_nodes(&empty_hash, &empty_hash);
+                    empty_level += 1;
+                }
+                &empty_hash
+            });
+            let key_depth = SPARSE_TREE_DEPTH - 1 - level;
+
+            current = if bit_at(key, key_depth) {
+                H::hash_nodes(sibling_hash, &current)
+            } else {
+                H::hash_nodes(&current, sibling_hash)
+            };
+        }
+
+        current
     }
 }
 
@@ -621,6 +655,8 @@ mod tests {
         assert_eq!(proof.key, missing);
         assert_eq!(proof.siblings.len(), SPARSE_TREE_DEPTH);
         assert_eq!(proof.leaf, None);
+        assert!(!proof.is_membership());
+        assert!(proof.is_non_membership());
     }
 
     #[test]
@@ -634,5 +670,90 @@ mod tests {
         let recovered = super::SparseMerkleProof::<[u8; 32]>::from_bytes(&bytes).unwrap();
 
         assert_eq!(proof, recovered);
+    }
+
+    #[test]
+    fn non_membership_proof_for_never_inserted_key_verifies() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+        let inserted = [16_u8; 32];
+        let missing = [17_u8; 32];
+
+        tree.insert(inserted, b"alice").unwrap();
+        let proof = tree.generate_membership_proof(missing).unwrap();
+        let root = *tree.root().unwrap();
+
+        assert!(SparseMerkleTree::<Sha256>::verify_non_membership(
+            &root, missing, &proof
+        ));
+    }
+
+    #[test]
+    fn old_non_membership_proof_fails_after_key_is_inserted() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+        let key = [18_u8; 32];
+
+        let proof = tree.generate_membership_proof(key).unwrap();
+        tree.insert(key, b"alice").unwrap();
+        let root = *tree.root().unwrap();
+
+        assert!(!SparseMerkleTree::<Sha256>::verify_non_membership(
+            &root, key, &proof
+        ));
+    }
+
+    #[test]
+    fn non_membership_proof_verifies_after_key_is_removed() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+        let key = [19_u8; 32];
+        let other = [20_u8; 32];
+
+        tree.insert(key, b"alice").unwrap();
+        tree.insert(other, b"bob").unwrap();
+        tree.remove(key).unwrap();
+
+        let proof = tree.generate_membership_proof(key).unwrap();
+        let root = *tree.root().unwrap();
+
+        assert!(SparseMerkleTree::<Sha256>::verify_non_membership(
+            &root, key, &proof
+        ));
+    }
+
+    #[test]
+    fn tampered_non_membership_proof_fails() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+        let inserted = [21_u8; 32];
+        let mut missing = [21_u8; 32];
+        missing[31] ^= 1;
+
+        tree.insert(inserted, b"alice").unwrap();
+        let mut proof = tree.generate_membership_proof(missing).unwrap();
+        let sibling = proof
+            .siblings
+            .iter_mut()
+            .find_map(Option::as_mut)
+            .expect("proof should include a non-empty sibling");
+        sibling[0] ^= 1;
+        let root = *tree.root().unwrap();
+
+        assert!(!SparseMerkleTree::<Sha256>::verify_non_membership(
+            &root, missing, &proof
+        ));
+    }
+
+    #[test]
+    fn non_membership_verification_rejects_key_mismatch() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+        let inserted = [22_u8; 32];
+        let missing = [23_u8; 32];
+        let wrong_key = [24_u8; 32];
+
+        tree.insert(inserted, b"alice").unwrap();
+        let proof = tree.generate_membership_proof(missing).unwrap();
+        let root = *tree.root().unwrap();
+
+        assert!(!SparseMerkleTree::<Sha256>::verify_non_membership(
+            &root, wrong_key, &proof
+        ));
     }
 }
