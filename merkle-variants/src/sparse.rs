@@ -550,35 +550,6 @@ impl<H: HashFunction> SparseMerkleTree<H> {
 
         current
     }
-
-    fn reconstruct_root(
-        key: &[u8; 32],
-        leaf_hash: H::Digest,
-        siblings: &[Option<H::Digest>],
-    ) -> H::Digest {
-        let mut current = leaf_hash;
-        let mut empty_hash = H::empty();
-        let mut empty_level = 0_usize;
-
-        for (level, sibling) in siblings.iter().enumerate() {
-            let sibling_hash = sibling.as_ref().unwrap_or_else(|| {
-                while empty_level < level {
-                    empty_hash = H::hash_nodes(&empty_hash, &empty_hash);
-                    empty_level += 1;
-                }
-                &empty_hash
-            });
-            let key_depth = SPARSE_TREE_DEPTH - 1 - level;
-
-            current = if bit_at(key, key_depth) {
-                H::hash_nodes(sibling_hash, &current)
-            } else {
-                H::hash_nodes(&current, sibling_hash)
-            };
-        }
-
-        current
-    }
 }
 
 /// Returns the bit at `depth` in `key`, reading most-significant bit first.
