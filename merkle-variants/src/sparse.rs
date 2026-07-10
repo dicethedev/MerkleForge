@@ -204,6 +204,42 @@ impl<H: HashFunction> SparseMerkleTree<H> {
         Ok(())
     }
 
+    /// Inserts or overwrites many leaves with one bottom-up recompute pass.
+    ///
+    /// Updates are sorted by key so leaves with shared prefixes are grouped
+    /// before the compressed tree is rebuilt. Unlike repeatedly calling
+    /// [`Self::insert`], this applies every leaf change first and then rebuilds
+    /// affected storage once.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MerkleError::EmptyLeafData`] if any update value is empty.
+    pub fn batch_insert(&mut self, updates: &[([u8; 32], Vec<u8>)]) -> Result<(), MerkleError> {
+        if updates.iter().any(|(_, data)| data.is_empty()) {
+            return Err(MerkleError::EmptyLeafData);
+        }
+
+        if updates.is_empty() {
+            self.last_node_accesses = 0;
+            return Ok(());
+        }
+
+        let mut sorted_updates = updates.to_vec();
+        sorted_updates.sort_by_key(|(key, _)| *key);
+
+        let mut inserted = 0_usize;
+        for (key, data) in sorted_updates {
+            if self.leaves.insert(key, H::hash(&data)).is_none() {
+                inserted += 1;
+            }
+        }
+
+        self.leaf_count += inserted;
+        self.rebuild_shortcuts();
+
+        Ok(())
+    }
+
     /// Removes the leaf stored at `key`.
     ///
     /// After removing the leaf, the tree recomputes and prunes the path back
@@ -221,6 +257,40 @@ impl<H: HashFunction> SparseMerkleTree<H> {
         }
 
         self.leaf_count -= 1;
+        self.rebuild_shortcuts();
+
+        Ok(())
+    }
+
+    /// Removes many leaves with one bottom-up recompute pass.
+    ///
+    /// Keys are sorted by prefix before mutation so shared affected ancestors
+    /// are handled together when the compressed tree is rebuilt.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MerkleError::UnsupportedOperation`] if any key is missing.
+    pub fn batch_remove(&mut self, keys: &[[u8; 32]]) -> Result<(), MerkleError> {
+        if keys.is_empty() {
+            self.last_node_accesses = 0;
+            return Ok(());
+        }
+
+        let mut sorted_keys = keys.to_vec();
+        sorted_keys.sort_unstable();
+        sorted_keys.dedup();
+
+        if sorted_keys.iter().any(|key| !self.leaves.contains_key(key)) {
+            return Err(MerkleError::UnsupportedOperation(
+                "remove missing sparse key",
+            ));
+        }
+
+        for key in &sorted_keys {
+            self.leaves.remove(key);
+        }
+
+        self.leaf_count -= sorted_keys.len();
         self.rebuild_shortcuts();
 
         Ok(())
@@ -1177,5 +1247,160 @@ mod tests {
         assert!(SparseMerkleTree::<Sha256>::verify_non_membership(
             &root, missing, &proof
         ));
+    }
+
+    #[test]
+    fn batch_insert_root_matches_sequential_insert() {
+        let updates = (0_u8..32)
+            .map(|index| {
+                let mut key = [0_u8; 32];
+                key[31] = index;
+                (key, vec![index + 1])
+            })
+            .collect::<Vec<_>>();
+        let mut batch_tree = SparseMerkleTree::<Sha256>::new();
+        let mut sequential_tree = SparseMerkleTree::<Sha256>::new();
+
+        batch_tree.batch_insert(&updates).unwrap();
+        for (key, value) in &updates {
+            sequential_tree.insert(*key, value).unwrap();
+        }
+
+        assert_eq!(batch_tree.leaf_count(), sequential_tree.leaf_count());
+        assert_eq!(batch_tree.root(), sequential_tree.root());
+    }
+
+    #[test]
+    fn batch_insert_overwrites_without_double_counting() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+        let key = [1_u8; 32];
+
+        tree.insert(key, b"alice").unwrap();
+        tree.batch_insert(&[(key, b"alice updated".to_vec())])
+            .unwrap();
+
+        assert_eq!(tree.leaf_count(), 1);
+        assert_eq!(tree.get(key), Some(&Sha256::hash(b"alice updated")));
+    }
+
+    #[test]
+    fn batch_insert_rejects_empty_value_without_mutating() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+        let existing = [2_u8; 32];
+        let new_key = [3_u8; 32];
+
+        tree.insert(existing, b"alice").unwrap();
+        let root = *tree.root().unwrap();
+        let result = tree.batch_insert(&[(new_key, Vec::new())]);
+
+        assert_eq!(result, Err(MerkleError::EmptyLeafData));
+        assert_eq!(tree.leaf_count(), 1);
+        assert_eq!(tree.root(), Some(&root));
+        assert_eq!(tree.get(new_key), None);
+    }
+
+    #[test]
+    fn batch_remove_root_matches_sequential_remove() {
+        let updates = (0_u8..32)
+            .map(|index| {
+                let mut key = [0_u8; 32];
+                key[31] = index;
+                (key, vec![index + 1])
+            })
+            .collect::<Vec<_>>();
+        let remove_keys = updates
+            .iter()
+            .step_by(2)
+            .map(|(key, _)| *key)
+            .collect::<Vec<_>>();
+        let mut batch_tree = SparseMerkleTree::<Sha256>::new();
+        let mut sequential_tree = SparseMerkleTree::<Sha256>::new();
+
+        batch_tree.batch_insert(&updates).unwrap();
+        sequential_tree.batch_insert(&updates).unwrap();
+        batch_tree.batch_remove(&remove_keys).unwrap();
+        for key in &remove_keys {
+            sequential_tree.remove(*key).unwrap();
+        }
+
+        assert_eq!(batch_tree.leaf_count(), sequential_tree.leaf_count());
+        assert_eq!(batch_tree.root(), sequential_tree.root());
+    }
+
+    #[test]
+    fn batch_remove_rejects_missing_key_without_mutating() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+        let existing = [4_u8; 32];
+        let missing = [5_u8; 32];
+
+        tree.insert(existing, b"alice").unwrap();
+        let root = *tree.root().unwrap();
+        let result = tree.batch_remove(&[existing, missing]);
+
+        assert_eq!(
+            result,
+            Err(MerkleError::UnsupportedOperation(
+                "remove missing sparse key"
+            ))
+        );
+        assert_eq!(tree.leaf_count(), 1);
+        assert_eq!(tree.root(), Some(&root));
+        assert_eq!(tree.get(existing), Some(&Sha256::hash(b"alice")));
+    }
+
+    #[test]
+    fn batch_update_leaf_count_is_correct_after_mixed_operations() {
+        let inserts = (0_u8..64)
+            .map(|index| {
+                let mut key = [0_u8; 32];
+                key[31] = index;
+                (key, vec![index + 1])
+            })
+            .collect::<Vec<_>>();
+        let removals = inserts
+            .iter()
+            .take(20)
+            .map(|(key, _)| *key)
+            .collect::<Vec<_>>();
+        let overwrites = inserts
+            .iter()
+            .skip(20)
+            .take(10)
+            .map(|(key, _)| (*key, b"updated".to_vec()))
+            .collect::<Vec<_>>();
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+
+        tree.batch_insert(&inserts).unwrap();
+        tree.batch_remove(&removals).unwrap();
+        tree.batch_insert(&overwrites).unwrap();
+
+        assert_eq!(tree.leaf_count(), 44);
+    }
+
+    #[test]
+    fn batch_insert_rebuilds_once_for_shared_prefix_updates() {
+        let updates = (0_u8..64)
+            .map(|index| {
+                let mut key = [0_u8; 32];
+                key[31] = index;
+                (key, vec![index + 1])
+            })
+            .collect::<Vec<_>>();
+        let mut batch_tree = SparseMerkleTree::<Sha256>::new();
+        let mut sequential_touches = 0_usize;
+        let mut sequential_tree = SparseMerkleTree::<Sha256>::new();
+
+        batch_tree.batch_insert(&updates).unwrap();
+        for (key, value) in &updates {
+            sequential_tree.insert(*key, value).unwrap();
+            sequential_touches += sequential_tree.last_node_access_count();
+        }
+
+        assert_eq!(batch_tree.root(), sequential_tree.root());
+        assert!(
+            batch_tree.last_node_access_count() * 100 <= sequential_touches * 70,
+            "batch touches={}, sequential touches={sequential_touches}",
+            batch_tree.last_node_access_count()
+        );
     }
 }
