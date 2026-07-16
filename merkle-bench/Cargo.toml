@@ -24,3 +24,7 @@ harness = false
 [[bench]]
 name    = "binary_tree"
 harness = false
+
+[[bench]]
+name    = "sparse_tree"
+harness = false
