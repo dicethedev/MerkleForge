@@ -16,7 +16,7 @@ algorithm without changing the tree API.
 | Variant | Status | Intended use |
 | --- | --- | --- |
 | `BinaryMerkleTree<H>` | Available | Transaction batches, inclusion proofs, and append-oriented datasets |
-| `SparseMerkleTree<H>` | Planned | Large sparse key spaces and authenticated state |
+| `SparseMerkleTree<H>` | Available | Large sparse key spaces and authenticated state |
 | `MerklePatriciaTrie<H>` | Planned | Ethereum-compatible state tries |
 
 This is research software and has not been independently security-audited.
@@ -25,9 +25,9 @@ This is research software and has not been independently security-audited.
 
 ```toml
 [dependencies]
-merkle-core = "0.2"
-merkle-variants = "0.2"
-merkleforge-hash = "0.2"
+merkle-core = "0.3"
+merkle-variants = "0.3"
+merkleforge-hash = "0.3"
 ```
 
 `merkleforge-hash` supplies the SHA-256, Keccak-256, and BLAKE3 adapters. You
@@ -75,6 +75,16 @@ fn main() -> Result<(), merkle_core::error::MerkleError> {
 - Metadata describing the tree and selected hash algorithm
 - Property-based tests and Criterion benchmarks
 - `#[forbid(unsafe_code)]`
+
+## Sparse Tree Features
+
+- Fixed 256-bit key space for authenticated state
+- Precomputed empty-hash cache
+- Shortcut nodes for single-leaf sparse subtrees
+- Batched terminal subtrees for lower materialized node count
+- Membership and non-membership proof generation
+- Batch insert and remove APIs for rollup-style workloads
+- Generic `MerkleTree<H>` implementation
 
 ## Documentation
 
