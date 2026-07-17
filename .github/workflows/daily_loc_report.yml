@@ -1,8 +1,8 @@
-name: Daily Lines of Code Report
+name: Weekly Lines of Code Report
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 0 * * 1"
   workflow_dispatch:
     inputs:
       target:
@@ -30,7 +30,7 @@ env:
 
 jobs:
   loc:
-    name: Count MerkleForge LoC and publish report
+    name: Count MerkleForge LoC and publish weekly report
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources

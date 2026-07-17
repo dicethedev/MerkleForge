@@ -13,6 +13,34 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+Phase 3 complete: sparse Merkle tree implementation and release preparation.
+
+### Added — `merkle-variants`
+
+- `SparseMerkleTree<H>` with a fixed 256-bit key space and precomputed
+  empty-hash cache for all levels
+- Key-addressed sparse insertion, removal, lookup, membership proof, and
+  non-membership proof APIs
+- `MerkleTree<H>` implementation for generic sparse tree usage with
+  `variant = "SparseMerkleTree"` metadata
+- Shortcut-node compression for single-leaf subtrees, following the Buterin
+  sparse Merkle tree optimisation
+- Batched terminal subtrees for reduced materialized node count
+- One-phase-style `batch_insert` and `batch_remove` APIs for rollup-oriented
+  update workloads
+- Property-based tests covering root sensitivity, commutativity, proof
+  round-trips, non-membership, remove soundness, batch equivalence, and proof
+  serialization
+- Criterion benchmark coverage for sparse inserts, proof generation, proof
+  verification, non-membership, and batch updates across SHA-256, Keccak-256,
+  and BLAKE3
+
+### Changed
+
+- Workspace crate version advanced to `0.3.0`
+- Sparse tree docs now include the generic `MerkleTree<H>` contract alongside
+  the native key-addressed API
+
 ### Documentation
 
 - Added a crate-specific `merkle-variants` README for crates.io and docs.rs.
@@ -22,13 +50,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Replaced the benchmark-only landing page with the official MerkleForge site.
 - Added dedicated documentation, examples, benchmark, and Criterion report
   sections under a maintainable `website/` source directory.
-
-### Planned — Phase 3 (Weeks 5–6)
-- `SparseMerkleTree<H>` with 256-bit key space
-- Shortcut nodes and precomputed empty-hash caching (Buterin, 2018)
-- Node batching for sub-linear memory on mostly-empty trees (Ouvrard, 2018/2019)
-- One-phase batch update algorithm for rollup workloads (Ma et al., 2023)
-- Non-membership proof generation and verification
 
 ### Planned — Phase 4 (Weeks 7–8)
 - `MerklePatriciaTrie<H>` with four node types: branch, extension, leaf, empty
