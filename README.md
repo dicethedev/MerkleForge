@@ -266,7 +266,7 @@ across all three will be published after Phase 5.
 | Crate | Variant | Status | Best for |
 |-------|---------|--------|----------|
 | `merkle-variants` | `BinaryMerkleTree<H>` | ✅ Phase 2 | Transaction batching, Bitcoin-style SPV |
-| `merkle-variants` | `SparseMerkleTree<H>` | ⏳ Phase 3 | Account state, Layer-2 rollups |
+| `merkle-variants` | `SparseMerkleTree<H>` | ✅ Phase 3 | Account state, Layer-2 rollups |
 | `merkle-variants` | `MerklePatriciaTrie<H>` | ⏳ Phase 4 | Ethereum state roots, EVM compatibility |
 
 ### Binary Merkle Tree
@@ -361,7 +361,7 @@ Criterion reports.
 |-------|-------|--------|
 | 1 — Core Infrastructure | Trait hierarchy, hash adapters, CI/CD | ✅ **Complete** |
 | 2 — Binary Merkle Tree | `BinaryMerkleTree<H>`, property tests | ✅ **Complete** |
-| 3 — Sparse Merkle Tree | `SparseMerkleTree<H>`, node batching | ⏳ Planned |
+| 3 — Sparse Merkle Tree | `SparseMerkleTree<H>`, node batching | ✅ **Complete** |
 | 4 — Merkle Patricia Trie | Ethereum-compatible MPT, RLP | ⏳ Planned |
 | 5 — Benchmarking | Full Criterion suite, comparative report | ⏳ Planned |
 | 6 — Docs & Publication | `crates.io` publish, mdBook, paper | ⏳ Planned |
@@ -371,7 +371,7 @@ Criterion reports.
 ## Roadmap
  
 - [x] `BinaryMerkleTree<H>` with iterative construction and stateless proof verification
-- [ ] `SparseMerkleTree<H>` with shortcut nodes and one-phase batch updates
+- [x] `SparseMerkleTree<H>` with shortcut nodes and one-phase batch updates
 - [ ] `MerklePatriciaTrie<H>` with RLP encoding, validated against Ethereum test vectors
 - [ ] Full Criterion benchmark suite with comparative results vs `rs-merkle` and `merkle_light`
 - [ ] mdBook user guide with copy-pasteable examples for each variant

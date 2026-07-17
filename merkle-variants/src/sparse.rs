@@ -1,8 +1,9 @@
 //! Sparse Merkle tree implementation.
 //!
 //! [`SparseMerkleTree`] models a fixed-depth 256-bit key space where most
-//! leaves are empty. The initial implementation stores only non-empty nodes
-//! and precomputes the empty subtree hash at every level.
+//! leaves are empty. It stores only non-empty nodes, precomputes the empty
+//! subtree hash at every level, and implements [`MerkleTree`] through a
+//! deterministic index-to-key adapter for generic callers.
 //!
 //! # Example
 //!
@@ -23,7 +24,11 @@
 
 use std::collections::HashMap;
 
-use merkle_core::{error::MerkleError, traits::HashFunction};
+use merkle_core::{
+    error::MerkleError,
+    traits::{HashFunction, MerkleTree},
+    types::{LeafIndex, MerkleProof, ProofNode, ProofSide, TreeMetadata},
+};
 use serde::{Deserialize, Serialize};
 
 /// Fixed tree depth for `MerkleForge` sparse Merkle trees.
@@ -714,6 +719,12 @@ impl<H: HashFunction> SparseMerkleTree<H> {
 
         current
     }
+
+    fn key_for_leaf_index(index: LeafIndex) -> [u8; 32] {
+        let mut key = [0_u8; 32];
+        key[24..].copy_from_slice(&(index.value() as u64).to_be_bytes());
+        key
+    }
 }
 
 /// Returns the bit at `depth` in `key`, reading most-significant bit first.
@@ -744,9 +755,105 @@ impl<H: HashFunction> Default for SparseMerkleTree<H> {
     }
 }
 
+impl<H: HashFunction> MerkleTree<H> for SparseMerkleTree<H> {
+    fn insert(&mut self, data: &[u8]) -> Result<LeafIndex, MerkleError> {
+        let index = LeafIndex(self.leaf_count);
+        Self::insert(self, Self::key_for_leaf_index(index), data)?;
+
+        Ok(index)
+    }
+
+    fn remove(&mut self, index: LeafIndex) -> Result<(), MerkleError> {
+        if self.is_empty() {
+            return Err(MerkleError::EmptyTree);
+        }
+        if index.value() >= self.leaf_count {
+            return Err(MerkleError::IndexOutOfBounds {
+                index: index.value(),
+                len: self.leaf_count,
+            });
+        }
+
+        Self::remove(self, Self::key_for_leaf_index(index))
+    }
+
+    fn root(&self) -> Option<&H::Digest> {
+        Self::root(self)
+    }
+
+    fn leaf_count(&self) -> usize {
+        Self::leaf_count(self)
+    }
+
+    fn is_empty(&self) -> bool {
+        Self::is_empty(self)
+    }
+
+    fn height(&self) -> usize {
+        Self::height(self)
+    }
+
+    fn generate_proof(&self, index: LeafIndex) -> Result<MerkleProof<H::Digest>, MerkleError> {
+        if self.is_empty() {
+            return Err(MerkleError::EmptyTree);
+        }
+        if index.value() >= self.leaf_count {
+            return Err(MerkleError::IndexOutOfBounds {
+                index: index.value(),
+                len: self.leaf_count,
+            });
+        }
+
+        let key = Self::key_for_leaf_index(index);
+        let proof = self.generate_membership_proof(key)?;
+        if proof.leaf.is_none() {
+            return Err(MerkleError::UnsupportedOperation(
+                "sparse trait proof requires an indexed sparse leaf",
+            ));
+        }
+
+        let path = proof
+            .siblings
+            .into_iter()
+            .enumerate()
+            .map(|(level, sibling)| {
+                let key_depth = SPARSE_TREE_DEPTH - 1 - level;
+                let hash = sibling.unwrap_or_else(|| self.empty_hashes[level].clone());
+                let side = if bit_at(&key, key_depth) {
+                    ProofSide::Left
+                } else {
+                    ProofSide::Right
+                };
+
+                ProofNode { hash, side }
+            })
+            .collect();
+
+        Ok(MerkleProof {
+            leaf_index: index,
+            leaf_count: self.leaf_count,
+            path,
+        })
+    }
+
+    fn metadata(&self) -> TreeMetadata {
+        TreeMetadata {
+            leaf_count: self.leaf_count,
+            height: self.height(),
+            node_count: self.nodes.len(),
+            hash_algorithm: H::algorithm_name(),
+            variant: "SparseMerkleTree",
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use merkle_core::{error::MerkleError, traits::HashFunction, traits::Serializable};
+    use merkle_core::{
+        error::MerkleError,
+        traits::{HashFunction, MerkleTree, Serializable},
+        types::LeafIndex,
+    };
     use merkleforge_hash::Sha256;
 
     use super::{
@@ -1401,6 +1508,61 @@ mod tests {
             batch_tree.last_node_access_count() * 100 <= sequential_touches * 70,
             "batch touches={}, sequential touches={sequential_touches}",
             batch_tree.last_node_access_count()
+        );
+    }
+
+    #[test]
+    fn trait_methods_delegate_to_sparse_tree() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+        let index =
+            <SparseMerkleTree<Sha256> as MerkleTree<Sha256>>::insert(&mut tree, b"trait leaf")
+                .unwrap();
+
+        assert_eq!(index, LeafIndex(0));
+        assert!(<SparseMerkleTree<Sha256> as MerkleTree<Sha256>>::root(&tree).is_some());
+
+        let proof =
+            <SparseMerkleTree<Sha256> as MerkleTree<Sha256>>::generate_proof(&tree, index).unwrap();
+        assert_eq!(proof.leaf_index, index);
+        assert_eq!(proof.leaf_count, 1);
+        assert_eq!(proof.path.len(), SPARSE_TREE_DEPTH);
+
+        let metadata = <SparseMerkleTree<Sha256> as MerkleTree<Sha256>>::metadata(&tree);
+        assert_eq!(metadata.leaf_count, 1);
+        assert_eq!(metadata.height, SPARSE_TREE_DEPTH);
+        assert_eq!(metadata.node_count, 1);
+        assert_eq!(metadata.hash_algorithm, "SHA-256");
+        assert_eq!(metadata.variant, "SparseMerkleTree");
+    }
+
+    #[test]
+    fn trait_remove_returns_to_empty_tree() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+        let index =
+            <SparseMerkleTree<Sha256> as MerkleTree<Sha256>>::insert(&mut tree, b"trait leaf")
+                .unwrap();
+
+        <SparseMerkleTree<Sha256> as MerkleTree<Sha256>>::remove(&mut tree, index).unwrap();
+
+        assert!(tree.is_empty());
+        assert_eq!(tree.root(), None);
+        assert_eq!(tree.empty_root(), tree.empty_hash_at(SPARSE_TREE_DEPTH));
+    }
+
+    #[test]
+    fn trait_proof_rejects_empty_and_out_of_bounds_indices() {
+        let mut tree = SparseMerkleTree::<Sha256>::new();
+
+        assert_eq!(
+            <SparseMerkleTree<Sha256> as MerkleTree<Sha256>>::generate_proof(&tree, LeafIndex(0)),
+            Err(MerkleError::EmptyTree)
+        );
+
+        <SparseMerkleTree<Sha256> as MerkleTree<Sha256>>::insert(&mut tree, b"trait leaf").unwrap();
+
+        assert_eq!(
+            <SparseMerkleTree<Sha256> as MerkleTree<Sha256>>::generate_proof(&tree, LeafIndex(1)),
+            Err(MerkleError::IndexOutOfBounds { index: 1, len: 1 })
         );
     }
 }
