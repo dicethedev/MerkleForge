@@ -8,6 +8,7 @@
 use std::marker::PhantomData;
 
 use merkle_core::{error::MerkleError, traits::HashFunction};
+use tiny_keccak::{Hasher, Keccak};
 
 const EMPTY_RLP: u8 = 0x80;
 const SHORT_STRING_OFFSET: u8 = 0x80;
@@ -133,7 +134,7 @@ pub fn hp_decode(bytes: &[u8]) -> (NibblePath, bool) {
 
 /// RLP-encodes an MPT node.
 #[must_use]
-pub fn rlp_encode<D>(node: &MptNode<D>) -> Vec<u8> {
+pub fn rlp_encode<D: AsRef<[u8]>>(node: &MptNode<D>) -> Vec<u8> {
     match node {
         MptNode::Empty | MptNode::__DigestMarker(_) => vec![EMPTY_RLP],
         MptNode::Leaf { key_suffix, value } => rlp_encode_list(&[
@@ -149,7 +150,7 @@ pub fn rlp_encode<D>(node: &MptNode<D>) -> Vec<u8> {
         ]),
         MptNode::Branch { children, value } => {
             let mut items = Vec::with_capacity(17);
-            items.extend(children.iter().map(|child| rlp_encode(child)));
+            items.extend(children.iter().map(rlp_encode_node_ref));
             items.push(
                 value
                     .as_deref()
@@ -167,7 +168,10 @@ pub fn rlp_encode<D>(node: &MptNode<D>) -> Vec<u8> {
 ///
 /// Returns [`MerkleError::RlpError`] when the input is malformed or does not
 /// describe one of the supported MPT node shapes.
-pub fn rlp_decode<D>(bytes: &[u8]) -> Result<MptNode<D>, MerkleError> {
+pub fn rlp_decode<D>(bytes: &[u8]) -> Result<MptNode<D>, MerkleError>
+where
+    D: TryFrom<Vec<u8>>,
+{
     let (item, consumed) = parse_rlp_item(bytes)?;
     if consumed != bytes.len() {
         return Err(MerkleError::RlpError(
@@ -176,6 +180,49 @@ pub fn rlp_decode<D>(bytes: &[u8]) -> Result<MptNode<D>, MerkleError> {
     }
 
     decode_node_item(&item)
+}
+
+/// A lazily materialized reference to an MPT node.
+///
+/// Ethereum embeds small node RLP directly in the parent and stores only the
+/// hash for larger nodes.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum NodeRef<D> {
+    /// Hash of a large node's RLP encoding.
+    Hash(D),
+    /// Raw RLP encoding of a small node.
+    Inline(Vec<u8>),
+}
+
+/// Returns the Ethereum-style node reference for `node`.
+///
+/// Nodes whose RLP encoding is at least 32 bytes are represented by
+/// `H(RLP(node))`; smaller nodes are represented by their raw RLP bytes.
+#[must_use]
+pub fn hash_node<H>(node: &MptNode<H::Digest>) -> NodeRef<H::Digest>
+where
+    H: HashFunction,
+    H::Digest: From<[u8; 32]>,
+{
+    let rlp = rlp_encode(node);
+    if rlp.len() >= 32 {
+        NodeRef::Hash(hash_mpt_bytes::<H>(&rlp))
+    } else {
+        NodeRef::Inline(rlp)
+    }
+}
+
+/// Computes a full root hash for an MPT root node.
+///
+/// Unlike child references, the root is always returned as a digest, even when
+/// the root node's RLP encoding is short enough to be inlined by a parent.
+#[must_use]
+pub fn compute_root_hash<H>(root: &MptNode<H::Digest>) -> H::Digest
+where
+    H: HashFunction,
+    H::Digest: From<[u8; 32]>,
+{
+    hash_mpt_bytes::<H>(&rlp_encode(root))
 }
 
 /// A Merkle Patricia Trie node.
@@ -207,7 +254,7 @@ pub enum MptNode<D> {
     /// Branch node with one child slot per nibble plus an optional value.
     Branch {
         /// Children indexed by nibble `0x0..=0xF`.
-        children: [Box<MptNode<D>>; 16],
+        children: Box<[NodeRef<D>; 16]>,
         /// Value stored exactly at this branch path, if any.
         value: Option<Vec<u8>>,
     },
@@ -218,8 +265,8 @@ pub enum MptNode<D> {
 
 impl<D> MptNode<D> {
     #[cfg(test)]
-    fn empty_children() -> [Box<Self>; 16] {
-        std::array::from_fn(|_| Box::new(Self::Empty))
+    fn empty_children() -> Box<[NodeRef<D>; 16]> {
+        Box::new(std::array::from_fn(|_| NodeRef::Inline(vec![EMPTY_RLP])))
     }
 
     fn height(&self) -> usize {
@@ -227,13 +274,7 @@ impl<D> MptNode<D> {
             Self::Empty | Self::__DigestMarker(_) => 0,
             Self::Leaf { .. } => 1,
             Self::Extension { child, .. } => 1 + child.height(),
-            Self::Branch { children, .. } => {
-                1 + children
-                    .iter()
-                    .map(|child| child.height())
-                    .max()
-                    .unwrap_or(0)
-            }
+            Self::Branch { .. } => 1,
         }
     }
 }
@@ -391,6 +432,33 @@ fn rlp_encode_list(items: &[Vec<u8>]) -> Vec<u8> {
     encoded
 }
 
+fn rlp_encode_node_ref<D: AsRef<[u8]>>(node_ref: &NodeRef<D>) -> Vec<u8> {
+    match node_ref {
+        NodeRef::Hash(hash) => rlp_encode_bytes(hash.as_ref()),
+        NodeRef::Inline(rlp) => rlp.clone(),
+    }
+}
+
+fn hash_mpt_bytes<H>(bytes: &[u8]) -> H::Digest
+where
+    H: HashFunction,
+    H::Digest: From<[u8; 32]>,
+{
+    if H::algorithm_name() == "Keccak-256" && H::digest_size() == 32 {
+        return raw_keccak256(bytes).into();
+    }
+
+    H::hash(bytes)
+}
+
+fn raw_keccak256(bytes: &[u8]) -> [u8; 32] {
+    let mut out = [0_u8; 32];
+    let mut hasher = Keccak::v256();
+    hasher.update(bytes);
+    hasher.finalize(&mut out);
+    out
+}
+
 fn usize_to_be_bytes(value: usize) -> Vec<u8> {
     let bytes = value.to_be_bytes();
     bytes
@@ -479,7 +547,10 @@ fn parse_rlp_list_payload(payload: &[u8]) -> Result<Vec<Vec<u8>>, MerkleError> {
     Ok(items)
 }
 
-fn decode_node_item<D>(item: &RlpItem) -> Result<MptNode<D>, MerkleError> {
+fn decode_node_item<D>(item: &RlpItem) -> Result<MptNode<D>, MerkleError>
+where
+    D: TryFrom<Vec<u8>>,
+{
     match item {
         RlpItem::Bytes(bytes) if bytes.is_empty() => Ok(MptNode::Empty),
         RlpItem::Bytes(_) => Err(MerkleError::RlpError(
@@ -494,7 +565,10 @@ fn decode_node_item<D>(item: &RlpItem) -> Result<MptNode<D>, MerkleError> {
     }
 }
 
-fn decode_leaf_or_extension<D>(items: &[Vec<u8>]) -> Result<MptNode<D>, MerkleError> {
+fn decode_leaf_or_extension<D>(items: &[Vec<u8>]) -> Result<MptNode<D>, MerkleError>
+where
+    D: TryFrom<Vec<u8>>,
+{
     let encoded_path = decode_rlp_bytes(&items[0])?;
     let (path, is_leaf) = hp_decode_checked(&encoded_path)?;
 
@@ -511,13 +585,18 @@ fn decode_leaf_or_extension<D>(items: &[Vec<u8>]) -> Result<MptNode<D>, MerkleEr
     })
 }
 
-fn decode_branch<D>(items: &[Vec<u8>]) -> Result<MptNode<D>, MerkleError> {
+fn decode_branch<D>(items: &[Vec<u8>]) -> Result<MptNode<D>, MerkleError>
+where
+    D: TryFrom<Vec<u8>>,
+{
     let mut children = Vec::with_capacity(16);
     for item in &items[..16] {
         if is_rlp_empty(item) {
-            children.push(Box::new(MptNode::Empty));
+            children.push(NodeRef::Inline(vec![EMPTY_RLP]));
+        } else if let Ok(hash) = decode_rlp_hash(item) {
+            children.push(NodeRef::Hash(hash));
         } else {
-            children.push(Box::new(rlp_decode(item)?));
+            children.push(NodeRef::Inline(item.clone()));
         }
     }
     let children = children.try_into().map_err(|_| {
@@ -526,7 +605,26 @@ fn decode_branch<D>(items: &[Vec<u8>]) -> Result<MptNode<D>, MerkleError> {
     let value = decode_rlp_bytes(&items[16])?;
     let value = if value.is_empty() { None } else { Some(value) };
 
-    Ok(MptNode::Branch { children, value })
+    Ok(MptNode::Branch {
+        children: Box::new(children),
+        value,
+    })
+}
+
+fn decode_rlp_hash<D>(bytes: &[u8]) -> Result<D, MerkleError>
+where
+    D: TryFrom<Vec<u8>>,
+{
+    let value = decode_rlp_bytes(bytes)?;
+    if value.len() != 32 {
+        return Err(MerkleError::RlpError(
+            "branch child hash must be 32 bytes".to_string(),
+        ));
+    }
+
+    D::try_from(value).map_err(|_| {
+        MerkleError::RlpError("failed to convert branch child hash digest".to_string())
+    })
 }
 
 fn decode_rlp_bytes(bytes: &[u8]) -> Result<Vec<u8>, MerkleError> {
@@ -552,10 +650,11 @@ fn is_rlp_empty(bytes: &[u8]) -> bool {
 #[cfg(test)]
 mod tests {
     use merkle_core::error::MerkleError;
-    use merkleforge_hash::Keccak256;
+    use merkleforge_hash::{Blake3, Keccak256};
 
     use super::{
-        MerklePatriciaTrie, MptNode, NibblePath, hp_decode, hp_encode, rlp_decode, rlp_encode,
+        MerklePatriciaTrie, MptNode, NibblePath, NodeRef, compute_root_hash, hash_node, hp_decode,
+        hp_encode, rlp_decode, rlp_encode,
     };
 
     #[test]
@@ -681,10 +780,11 @@ mod tests {
     #[test]
     fn rlp_round_trips_branch_node() {
         let mut children = MptNode::<[u8; 32]>::empty_children();
-        *children[10] = MptNode::Leaf {
+        let child = MptNode::<[u8; 32]>::Leaf {
             key_suffix: NibblePath::from_key(&[0xBC]),
             value: b"child".to_vec(),
         };
+        children[10] = NodeRef::Inline(rlp_encode(&child));
         let node = MptNode::<[u8; 32]>::Branch {
             children,
             value: Some(b"branch".to_vec()),
@@ -709,5 +809,53 @@ mod tests {
         let result = rlp_decode::<[u8; 32]>(&malformed_leaf);
 
         assert!(matches!(result, Err(MerkleError::RlpError(_))));
+    }
+
+    #[test]
+    fn empty_trie_root_matches_ethereum_known_hash() {
+        let root = compute_root_hash::<Keccak256>(&MptNode::Empty);
+        let expected = [
+            0x56, 0xe8, 0x1f, 0x17, 0x1b, 0xcc, 0x55, 0xa6, 0xff, 0x83, 0x45, 0xe6, 0x92, 0xc0,
+            0xf8, 0x6e, 0x5b, 0x48, 0xe0, 0x1b, 0x99, 0x6c, 0xad, 0xc0, 0x01, 0x62, 0x2f, 0xb5,
+            0xe3, 0x63, 0xb4, 0x21,
+        ];
+
+        assert_eq!(root, expected);
+    }
+
+    #[test]
+    fn hash_node_inlines_small_rlp_nodes() {
+        let node = MptNode::<[u8; 32]>::Leaf {
+            key_suffix: NibblePath::from_key(&[0x01]),
+            value: b"x".to_vec(),
+        };
+        let rlp = rlp_encode(&node);
+
+        assert!(rlp.len() < 32);
+        assert_eq!(hash_node::<Keccak256>(&node), NodeRef::Inline(rlp));
+    }
+
+    #[test]
+    fn hash_node_hashes_large_rlp_nodes() {
+        let node = MptNode::<[u8; 32]>::Leaf {
+            key_suffix: NibblePath::from_key(b"large"),
+            value: vec![0xAB; 64],
+        };
+
+        assert!(rlp_encode(&node).len() >= 32);
+        assert!(matches!(hash_node::<Keccak256>(&node), NodeRef::Hash(_)));
+    }
+
+    #[test]
+    fn root_hash_computation_is_deterministic() {
+        let node = MptNode::<[u8; 32]>::Leaf {
+            key_suffix: NibblePath::from_key(b"deterministic"),
+            value: b"value".to_vec(),
+        };
+
+        assert_eq!(
+            compute_root_hash::<Blake3>(&node),
+            compute_root_hash::<Blake3>(&node)
+        );
     }
 }
