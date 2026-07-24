@@ -1,9 +1,9 @@
 //! Merkle Patricia trie implementation.
 //!
 //! [`MerklePatriciaTrie`] models Ethereum's nibble-addressed Merkle Patricia
-//! Trie shape. This module currently defines the core node structure,
-//! nibble-path utilities, and empty-trie metadata. Mutation, RLP encoding, and
-//! root hashing are added in later Phase 4 issues.
+//! Trie shape. The implementation includes nibble-path utilities, RLP/HP
+//! encoding, Ethereum-style node references, root hashing, and basic
+//! key-value mutation.
 
 use std::{collections::HashMap, marker::PhantomData};
 
@@ -336,6 +336,22 @@ where
         Ok(())
     }
 
+    /// Removes the value stored at `key`.
+    ///
+    /// Removal rebuilds the compressed Patricia shape from the remaining
+    /// entries. That canonical rebuild collapses branch and extension nodes
+    /// that no longer need to exist after the target leaf is deleted.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MerkleError::UnsupportedOperation`] when `key` is not present.
+    pub fn remove(&mut self, key: &[u8]) -> Result<(), MerkleError> {
+        Self::remove_at(&mut self.entries, key)?;
+        self.collapse();
+
+        Ok(())
+    }
+
     /// Returns the value stored at `key`, if present.
     #[must_use]
     pub fn get(&self, key: &[u8]) -> Option<&[u8]> {
@@ -344,9 +360,6 @@ where
     }
 
     /// Returns the current root digest, or `None` for an empty trie.
-    ///
-    /// Root hashing is introduced in a later Phase 4 issue, so the current
-    /// structural skeleton reports no digest.
     #[must_use]
     pub fn root(&self) -> Option<&H::Digest> {
         self.root_hash.as_ref()
@@ -386,6 +399,19 @@ where
         } else {
             Some(compute_root_hash::<H>(&self.root))
         };
+    }
+
+    fn remove_at(entries: &mut HashMap<Vec<u8>, Vec<u8>>, key: &[u8]) -> Result<(), MerkleError> {
+        entries
+            .remove(key)
+            .map(|_| ())
+            .ok_or(MerkleError::UnsupportedOperation(
+                "remove missing Patricia key",
+            ))
+    }
+
+    fn collapse(&mut self) {
+        self.rebuild();
     }
 
     fn build_subtree(
@@ -1158,5 +1184,67 @@ mod tests {
         let second_root = *tree.root().unwrap();
 
         assert_ne!(first_root, second_root);
+    }
+
+    #[test]
+    fn remove_deletes_existing_key() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        tree.insert(b"key", b"value").unwrap();
+        tree.remove(b"key").unwrap();
+
+        assert_eq!(tree.get(b"key"), None);
+        assert!(tree.is_empty());
+        assert_eq!(tree.root(), None);
+    }
+
+    #[test]
+    fn remove_missing_key_returns_error_without_mutating() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+        tree.insert(b"key", b"value").unwrap();
+        let root_before = *tree.root().unwrap();
+
+        let result = tree.remove(b"missing");
+
+        assert_eq!(
+            result,
+            Err(MerkleError::UnsupportedOperation(
+                "remove missing Patricia key"
+            ))
+        );
+        assert_eq!(tree.get(b"key"), Some(&b"value"[..]));
+        assert_eq!(tree.root(), Some(&root_before));
+    }
+
+    #[test]
+    fn removing_all_keys_returns_to_empty_trie() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        tree.insert(b"alpha", b"one").unwrap();
+        tree.insert(b"beta", b"two").unwrap();
+        tree.remove(b"alpha").unwrap();
+        tree.remove(b"beta").unwrap();
+
+        assert!(tree.is_empty());
+        assert_eq!(tree.root(), None);
+        assert_eq!(tree.node_count(), 0);
+        assert_eq!(tree.height(), 0);
+    }
+
+    #[test]
+    fn remove_collapses_to_canonical_remaining_subtree() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+        let mut singleton = MerklePatriciaTrie::<Keccak256>::new();
+
+        tree.insert(b"key", b"value").unwrap();
+        tree.insert(b"keyboard", b"instrument").unwrap();
+        tree.remove(b"keyboard").unwrap();
+        singleton.insert(b"key", b"value").unwrap();
+
+        assert_eq!(tree.get(b"keyboard"), None);
+        assert_eq!(tree.get(b"key"), Some(&b"value"[..]));
+        assert_eq!(tree.root(), singleton.root());
+        assert_eq!(tree.node_count(), singleton.node_count());
+        assert_eq!(tree.height(), singleton.height());
     }
 }
