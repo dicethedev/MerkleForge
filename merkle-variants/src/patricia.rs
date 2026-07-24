@@ -5,7 +5,7 @@
 //! nibble-path utilities, and empty-trie metadata. Mutation, RLP encoding, and
 //! root hashing are added in later Phase 4 issues.
 
-use std::marker::PhantomData;
+use std::{collections::HashMap, marker::PhantomData};
 
 use merkle_core::{error::MerkleError, traits::HashFunction};
 use tiny_keccak::{Hasher, Keccak};
@@ -49,6 +49,12 @@ impl NibblePath {
         }
 
         Ok(Self { nibbles })
+    }
+
+    fn prefix(&self, len: usize) -> Self {
+        Self {
+            nibbles: self.nibbles[..len].to_vec(),
+        }
     }
 
     /// Returns the number of nibbles in this path.
@@ -269,6 +275,7 @@ impl<D> MptNode<D> {
         Box::new(std::array::from_fn(|_| NodeRef::Inline(vec![EMPTY_RLP])))
     }
 
+    #[cfg(test)]
     fn height(&self) -> usize {
         match self {
             Self::Empty | Self::__DigestMarker(_) => 0,
@@ -285,19 +292,55 @@ impl<D> MptNode<D> {
 /// serialization, and root hashing.
 pub struct MerklePatriciaTrie<H: HashFunction> {
     root: MptNode<H::Digest>,
+    root_hash: Option<H::Digest>,
     node_count: usize,
+    entries: HashMap<Vec<u8>, Vec<u8>>,
+    nodes: HashMap<Vec<u8>, MptNode<H::Digest>>,
     _marker: PhantomData<H>,
 }
 
-impl<H: HashFunction> MerklePatriciaTrie<H> {
+impl<H> MerklePatriciaTrie<H>
+where
+    H: HashFunction,
+    H::Digest: From<[u8; 32]>,
+{
     /// Creates an empty Merkle Patricia Trie.
     #[must_use]
-    pub const fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             root: MptNode::Empty,
+            root_hash: None,
             node_count: 0,
+            entries: HashMap::new(),
+            nodes: HashMap::new(),
             _marker: PhantomData,
         }
+    }
+
+    /// Inserts or updates `value` at `key`.
+    ///
+    /// Keys are converted to nibble paths before the trie is rebuilt into its
+    /// compressed Patricia shape.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MerkleError::EmptyLeafData`] when `value` is empty.
+    pub fn insert(&mut self, key: &[u8], value: &[u8]) -> Result<(), MerkleError> {
+        if value.is_empty() {
+            return Err(MerkleError::EmptyLeafData);
+        }
+
+        self.entries.insert(key.to_vec(), value.to_vec());
+        self.rebuild();
+
+        Ok(())
+    }
+
+    /// Returns the value stored at `key`, if present.
+    #[must_use]
+    pub fn get(&self, key: &[u8]) -> Option<&[u8]> {
+        let path = NibblePath::from_key(key);
+        self.get_at(&self.root, &path).map(Vec::as_slice)
     }
 
     /// Returns the current root digest, or `None` for an empty trie.
@@ -305,14 +348,14 @@ impl<H: HashFunction> MerklePatriciaTrie<H> {
     /// Root hashing is introduced in a later Phase 4 issue, so the current
     /// structural skeleton reports no digest.
     #[must_use]
-    pub const fn root(&self) -> Option<&H::Digest> {
-        None
+    pub fn root(&self) -> Option<&H::Digest> {
+        self.root_hash.as_ref()
     }
 
     /// Returns `true` when the trie contains no materialized nodes.
     #[must_use]
-    pub const fn is_empty(&self) -> bool {
-        self.node_count == 0
+    pub fn is_empty(&self) -> bool {
+        self.entries.is_empty()
     }
 
     /// Returns the number of materialized trie nodes.
@@ -324,11 +367,191 @@ impl<H: HashFunction> MerklePatriciaTrie<H> {
     /// Returns the longest node path from the root to any leaf.
     #[must_use]
     pub fn height(&self) -> usize {
-        self.root.height()
+        self.height_at(&self.root)
+    }
+
+    fn rebuild(&mut self) {
+        self.nodes.clear();
+
+        let entries = self
+            .entries
+            .iter()
+            .map(|(key, value)| (NibblePath::from_key(key), value.clone()))
+            .collect::<Vec<_>>();
+
+        self.root = Self::build_subtree(&entries, &mut self.nodes);
+        self.node_count = Self::count_nodes(&self.root, &self.nodes);
+        self.root_hash = if self.entries.is_empty() {
+            None
+        } else {
+            Some(compute_root_hash::<H>(&self.root))
+        };
+    }
+
+    fn build_subtree(
+        entries: &[(NibblePath, Vec<u8>)],
+        nodes: &mut HashMap<Vec<u8>, MptNode<H::Digest>>,
+    ) -> MptNode<H::Digest> {
+        match entries {
+            [] => MptNode::Empty,
+            [(path, value)] => MptNode::Leaf {
+                key_suffix: path.clone(),
+                value: value.clone(),
+            },
+            _ => {
+                let shared_prefix_len = Self::shared_prefix_len(entries);
+                if shared_prefix_len > 0 {
+                    let shared_prefix = entries[0].0.prefix(shared_prefix_len);
+                    let stripped = entries
+                        .iter()
+                        .map(|(path, value)| (path.slice(shared_prefix_len), value.clone()))
+                        .collect::<Vec<_>>();
+                    let child = Self::build_subtree(&stripped, nodes);
+
+                    return MptNode::Extension {
+                        shared_prefix,
+                        child: Box::new(child),
+                    };
+                }
+
+                let mut children =
+                    Box::new(std::array::from_fn(|_| NodeRef::Inline(vec![EMPTY_RLP])));
+                let mut branch_value = None;
+                for nibble in 0_u8..=0x0F {
+                    let child_entries = entries
+                        .iter()
+                        .filter_map(|(path, value)| {
+                            if path.is_empty() {
+                                return None;
+                            }
+                            (path.get(0) == nibble).then(|| (path.slice(1), value.clone()))
+                        })
+                        .collect::<Vec<_>>();
+
+                    if !child_entries.is_empty() {
+                        let child = Self::build_subtree(&child_entries, nodes);
+                        children[usize::from(nibble)] = Self::store_node_ref(child, nodes);
+                    }
+                }
+
+                for (path, value) in entries {
+                    if path.is_empty() {
+                        branch_value = Some(value.clone());
+                        break;
+                    }
+                }
+
+                MptNode::Branch {
+                    children,
+                    value: branch_value,
+                }
+            }
+        }
+    }
+
+    fn shared_prefix_len(entries: &[(NibblePath, Vec<u8>)]) -> usize {
+        let Some((first, _)) = entries.first() else {
+            return 0;
+        };
+
+        entries
+            .iter()
+            .skip(1)
+            .fold(first.len(), |prefix_len, (path, _)| {
+                prefix_len.min(first.common_prefix_len(path))
+            })
+    }
+
+    fn store_node_ref(
+        node: MptNode<H::Digest>,
+        nodes: &mut HashMap<Vec<u8>, MptNode<H::Digest>>,
+    ) -> NodeRef<H::Digest> {
+        let node_ref = hash_node::<H>(&node);
+        nodes.insert(Self::node_ref_key(&node_ref), node);
+        node_ref
+    }
+
+    fn node_ref_key(node_ref: &NodeRef<H::Digest>) -> Vec<u8> {
+        match node_ref {
+            NodeRef::Hash(hash) => hash.as_ref().to_vec(),
+            NodeRef::Inline(rlp) => rlp.clone(),
+        }
+    }
+
+    fn resolve_node_ref(&self, node_ref: &NodeRef<H::Digest>) -> Option<&MptNode<H::Digest>> {
+        self.nodes.get(&Self::node_ref_key(node_ref))
+    }
+
+    fn get_at<'a>(
+        &'a self,
+        node: &'a MptNode<H::Digest>,
+        path: &NibblePath,
+    ) -> Option<&'a Vec<u8>> {
+        match node {
+            MptNode::Empty | MptNode::__DigestMarker(_) => None,
+            MptNode::Leaf { key_suffix, value } => (key_suffix == path).then_some(value),
+            MptNode::Extension {
+                shared_prefix,
+                child,
+            } => {
+                if path.common_prefix_len(shared_prefix) == shared_prefix.len() {
+                    self.get_at(child, &path.slice(shared_prefix.len()))
+                } else {
+                    None
+                }
+            }
+            MptNode::Branch { children, value } => {
+                if path.is_empty() {
+                    return value.as_ref();
+                }
+
+                let child_ref = &children[usize::from(path.get(0))];
+                let child = self.resolve_node_ref(child_ref)?;
+                self.get_at(child, &path.slice(1))
+            }
+        }
+    }
+
+    fn count_nodes(
+        node: &MptNode<H::Digest>,
+        nodes: &HashMap<Vec<u8>, MptNode<H::Digest>>,
+    ) -> usize {
+        match node {
+            MptNode::Empty | MptNode::__DigestMarker(_) => 0,
+            MptNode::Leaf { .. } => 1,
+            MptNode::Extension { child, .. } => 1 + Self::count_nodes(child, nodes),
+            MptNode::Branch { children, .. } => {
+                1 + children
+                    .iter()
+                    .filter_map(|child_ref| nodes.get(&Self::node_ref_key(child_ref)))
+                    .map(|child| Self::count_nodes(child, nodes))
+                    .sum::<usize>()
+            }
+        }
+    }
+
+    fn height_at(&self, node: &MptNode<H::Digest>) -> usize {
+        match node {
+            MptNode::Empty | MptNode::__DigestMarker(_) => 0,
+            MptNode::Leaf { .. } => 1,
+            MptNode::Extension { child, .. } => 1 + self.height_at(child),
+            MptNode::Branch { children, .. } => {
+                1 + children
+                    .iter()
+                    .filter_map(|child_ref| self.resolve_node_ref(child_ref))
+                    .map(|child| self.height_at(child))
+                    .max()
+                    .unwrap_or(0)
+            }
+        }
     }
 }
 
-impl<H: HashFunction> Default for MerklePatriciaTrie<H> {
+impl<H> Default for MerklePatriciaTrie<H>
+where
+    H: HashFunction,
+    H::Digest: From<[u8; 32]>,
+{
     fn default() -> Self {
         Self::new()
     }
@@ -857,5 +1080,83 @@ mod tests {
             compute_root_hash::<Blake3>(&node),
             compute_root_hash::<Blake3>(&node)
         );
+    }
+
+    #[test]
+    fn insert_then_get_returns_value() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        tree.insert(b"key", b"value").unwrap();
+
+        assert_eq!(tree.get(b"key"), Some(&b"value"[..]));
+        assert!(!tree.is_empty());
+        assert!(tree.root().is_some());
+    }
+
+    #[test]
+    fn get_missing_key_returns_none() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+        tree.insert(b"key", b"value").unwrap();
+
+        assert_eq!(tree.get(b"missing"), None);
+    }
+
+    #[test]
+    fn shared_prefix_keys_are_retrievable_independently() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        tree.insert(b"key", b"value").unwrap();
+        tree.insert(b"keyboard", b"instrument").unwrap();
+
+        assert_eq!(tree.get(b"key"), Some(&b"value"[..]));
+        assert_eq!(tree.get(b"keyboard"), Some(&b"instrument"[..]));
+    }
+
+    #[test]
+    fn one_hundred_inserted_pairs_are_retrievable() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        for index in 0_u8..100 {
+            let key = [b'k', index];
+            let value = [b'v', index];
+            tree.insert(&key, &value).unwrap();
+        }
+
+        for index in 0_u8..100 {
+            let key = [b'k', index];
+            let value = [b'v', index];
+            assert_eq!(tree.get(&key), Some(&value[..]));
+        }
+    }
+
+    #[test]
+    fn inserting_same_key_updates_value() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        tree.insert(b"key", b"value").unwrap();
+        tree.insert(b"key", b"updated").unwrap();
+
+        assert_eq!(tree.get(b"key"), Some(&b"updated"[..]));
+    }
+
+    #[test]
+    fn insert_rejects_empty_value_without_mutating() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        assert_eq!(tree.insert(b"key", b""), Err(MerkleError::EmptyLeafData));
+        assert!(tree.is_empty());
+        assert_eq!(tree.get(b"key"), None);
+    }
+
+    #[test]
+    fn root_hash_changes_on_distinct_inserts() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        tree.insert(b"first", b"value-1").unwrap();
+        let first_root = *tree.root().unwrap();
+        tree.insert(b"second", b"value-2").unwrap();
+        let second_root = *tree.root().unwrap();
+
+        assert_ne!(first_root, second_root);
     }
 }
