@@ -153,7 +153,7 @@ pub fn rlp_encode<D: AsRef<[u8]>>(node: &MptNode<D>) -> Vec<u8> {
             child,
         } => rlp_encode_list(&[
             rlp_encode_bytes(&hp_encode(shared_prefix, false)),
-            rlp_encode(child),
+            rlp_encode_node_ref(child),
         ]),
         MptNode::Branch { children, value } => {
             let mut items = Vec::with_capacity(17);
@@ -296,8 +296,8 @@ pub enum MptNode<D> {
     Extension {
         /// Shared prefix consumed before following `child`.
         shared_prefix: NibblePath,
-        /// Next trie node after the compressed prefix.
-        child: Box<MptNode<D>>,
+        /// Next trie node reference after the compressed prefix.
+        child: NodeRef<D>,
     },
 
     /// Branch node with one child slot per nibble plus an optional value.
@@ -316,16 +316,6 @@ impl<D> MptNode<D> {
     #[cfg(test)]
     fn empty_children() -> Box<[NodeRef<D>; 16]> {
         Box::new(std::array::from_fn(|_| NodeRef::Inline(vec![EMPTY_RLP])))
-    }
-
-    #[cfg(test)]
-    fn height(&self) -> usize {
-        match self {
-            Self::Empty | Self::__DigestMarker(_) => 0,
-            Self::Leaf { .. } => 1,
-            Self::Extension { child, .. } => 1 + child.height(),
-            Self::Branch { .. } => 1,
-        }
     }
 }
 
@@ -519,9 +509,11 @@ where
                         .collect::<Vec<_>>();
                     let child = Self::build_subtree(&stripped, nodes);
 
+                    let child = Self::store_node_ref(child, nodes);
+
                     return MptNode::Extension {
                         shared_prefix,
-                        child: Box::new(child),
+                        child,
                     };
                 }
 
@@ -609,7 +601,13 @@ where
                 child,
             } => {
                 if path.common_prefix_len(shared_prefix) == shared_prefix.len() {
-                    self.collect_proof_nodes(child, &path.slice(shared_prefix.len()), proof_nodes)
+                    self.resolve_node_ref(child).and_then(|child| {
+                        self.collect_proof_nodes(
+                            child,
+                            &path.slice(shared_prefix.len()),
+                            proof_nodes,
+                        )
+                    })
                 } else {
                     None
                 }
@@ -664,7 +662,7 @@ where
                 let Some(next_node) = proof_nodes.get(index + 1) else {
                     return false;
                 };
-                if next_node != &rlp_encode(&child) {
+                if !Self::node_ref_matches(&child, next_node) {
                     return false;
                 }
 
@@ -718,6 +716,7 @@ where
                 child,
             } => {
                 if path.common_prefix_len(shared_prefix) == shared_prefix.len() {
+                    let child = self.resolve_node_ref(child)?;
                     self.get_at(child, &path.slice(shared_prefix.len()))
                 } else {
                     None
@@ -742,7 +741,11 @@ where
         match node {
             MptNode::Empty | MptNode::__DigestMarker(_) => 0,
             MptNode::Leaf { .. } => 1,
-            MptNode::Extension { child, .. } => 1 + Self::count_nodes(child, nodes),
+            MptNode::Extension { child, .. } => {
+                1 + nodes
+                    .get(&Self::node_ref_key(child))
+                    .map_or(0, |child| Self::count_nodes(child, nodes))
+            }
             MptNode::Branch { children, .. } => {
                 1 + children
                     .iter()
@@ -757,7 +760,11 @@ where
         match node {
             MptNode::Empty | MptNode::__DigestMarker(_) => 0,
             MptNode::Leaf { .. } => 1,
-            MptNode::Extension { child, .. } => 1 + self.height_at(child),
+            MptNode::Extension { child, .. } => {
+                1 + self
+                    .resolve_node_ref(child)
+                    .map_or(0, |child| self.height_at(child))
+            }
             MptNode::Branch { children, .. } => {
                 1 + children
                     .iter()
@@ -1027,8 +1034,21 @@ where
 
     Ok(MptNode::Extension {
         shared_prefix: path,
-        child: Box::new(rlp_decode(&items[1])?),
+        child: decode_node_ref(&items[1])?,
     })
+}
+
+fn decode_node_ref<D>(item: &[u8]) -> Result<NodeRef<D>, MerkleError>
+where
+    D: TryFrom<Vec<u8>>,
+{
+    if is_rlp_empty(item) {
+        Ok(NodeRef::Inline(vec![EMPTY_RLP]))
+    } else if let Ok(hash) = decode_rlp_hash(item) {
+        Ok(NodeRef::Hash(hash))
+    } else {
+        Ok(NodeRef::Inline(item.to_vec()))
+    }
 }
 
 fn decode_branch<D>(items: &[Vec<u8>]) -> Result<MptNode<D>, MerkleError>
@@ -1037,13 +1057,7 @@ where
 {
     let mut children = Vec::with_capacity(16);
     for item in &items[..16] {
-        if is_rlp_empty(item) {
-            children.push(NodeRef::Inline(vec![EMPTY_RLP]));
-        } else if let Ok(hash) = decode_rlp_hash(item) {
-            children.push(NodeRef::Hash(hash));
-        } else {
-            children.push(NodeRef::Inline(item.clone()));
-        }
+        children.push(decode_node_ref(item)?);
     }
     let children = children.try_into().map_err(|_| {
         MerkleError::RlpError("branch node must contain exactly 16 children".to_string())
@@ -1100,7 +1114,7 @@ mod tests {
     use merkleforge_hash::{Blake3, Keccak256};
 
     use super::{
-        MerklePatriciaTrie, MptNode, MptProof, NibblePath, NodeRef, compute_root_hash,
+        EMPTY_RLP, MerklePatriciaTrie, MptNode, MptProof, NibblePath, NodeRef, compute_root_hash,
         hash_mpt_bytes, hash_node, hp_decode, hp_encode, rlp_decode, rlp_encode,
     };
 
@@ -1153,7 +1167,7 @@ mod tests {
         };
         let extension = MptNode::<[u8; 32]>::Extension {
             shared_prefix: NibblePath::from_key(b"shared"),
-            child: Box::new(MptNode::Empty),
+            child: NodeRef::Inline(vec![EMPTY_RLP]),
         };
         let branch = MptNode::<[u8; 32]>::Branch {
             children: MptNode::empty_children(),
@@ -1168,15 +1182,10 @@ mod tests {
 
     #[test]
     fn node_height_tracks_longest_path_to_leaf() {
-        let node = MptNode::<[u8; 32]>::Extension {
-            shared_prefix: NibblePath::from_key(&[0xA0]),
-            child: Box::new(MptNode::Leaf {
-                key_suffix: NibblePath::from_key(&[0xBC]),
-                value: b"value".to_vec(),
-            }),
-        };
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+        tree.insert(&[0xA0, 0xBC], b"value").unwrap();
 
-        assert_eq!(node.height(), 2);
+        assert_eq!(tree.height(), 1);
     }
 
     #[test]
@@ -1213,12 +1222,13 @@ mod tests {
 
     #[test]
     fn rlp_round_trips_extension_node() {
+        let child = MptNode::<[u8; 32]>::Leaf {
+            key_suffix: NibblePath::from_key(&[0xCD]),
+            value: b"value".to_vec(),
+        };
         let node = MptNode::<[u8; 32]>::Extension {
             shared_prefix: NibblePath::from_key(&[0xAB]),
-            child: Box::new(MptNode::Leaf {
-                key_suffix: NibblePath::from_key(&[0xCD]),
-                value: b"value".to_vec(),
-            }),
+            child: NodeRef::Inline(rlp_encode(&child)),
         };
 
         assert_eq!(rlp_decode(&rlp_encode(&node)).unwrap(), node);
