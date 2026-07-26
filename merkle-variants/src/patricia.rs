@@ -8,6 +8,7 @@
 use std::{collections::HashMap, marker::PhantomData};
 
 use merkle_core::{error::MerkleError, traits::HashFunction};
+use serde::{Deserialize, Serialize};
 use tiny_keccak::{Hasher, Keccak};
 
 const EMPTY_RLP: u8 = 0x80;
@@ -200,6 +201,48 @@ pub enum NodeRef<D> {
     Inline(Vec<u8>),
 }
 
+/// A Merkle Patricia Trie witness for one key.
+///
+/// The proof nodes are RLP-encoded MPT nodes ordered from root to the terminal
+/// node reached by the key path. `value = None` represents a non-membership
+/// proof.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct MptProof<D> {
+    /// Raw key bytes this proof is for.
+    pub key: Vec<u8>,
+    /// Stored value for membership proofs, or `None` for non-membership.
+    pub value: Option<Vec<u8>>,
+    /// RLP-encoded witness nodes, ordered root first.
+    pub proof_nodes: Vec<Vec<u8>>,
+    #[serde(skip)]
+    _marker: PhantomData<D>,
+}
+
+impl<D> MptProof<D> {
+    /// Creates a proof from its key, optional value, and RLP witness nodes.
+    #[must_use]
+    pub fn new(key: Vec<u8>, value: Option<Vec<u8>>, proof_nodes: Vec<Vec<u8>>) -> Self {
+        Self {
+            key,
+            value,
+            proof_nodes,
+            _marker: PhantomData,
+        }
+    }
+
+    /// Returns `true` when this proof contains a concrete value.
+    #[must_use]
+    pub const fn is_membership(&self) -> bool {
+        self.value.is_some()
+    }
+
+    /// Returns `true` when this proof proves absence for the key.
+    #[must_use]
+    pub const fn is_non_membership(&self) -> bool {
+        self.value.is_none()
+    }
+}
+
 /// Returns the Ethereum-style node reference for `node`.
 ///
 /// Nodes whose RLP encoding is at least 32 bytes are represented by
@@ -359,6 +402,48 @@ where
         self.get_at(&self.root, &path).map(Vec::as_slice)
     }
 
+    /// Generates an MPT witness for `key`.
+    ///
+    /// The returned proof contains RLP-encoded nodes from the root to the
+    /// terminal node reached by the key path. Missing keys produce a
+    /// non-membership proof with `value = None`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MerkleError::EmptyTree`] when the trie is empty.
+    pub fn generate_proof(&self, key: &[u8]) -> Result<MptProof<H::Digest>, MerkleError> {
+        if self.is_empty() {
+            return Err(MerkleError::EmptyTree);
+        }
+
+        let path = NibblePath::from_key(key);
+        let mut proof_nodes = Vec::new();
+        let value = self.collect_proof_nodes(&self.root, &path, &mut proof_nodes);
+
+        Ok(MptProof::new(key.to_vec(), value, proof_nodes))
+    }
+
+    /// Verifies an MPT proof against a trusted root hash.
+    ///
+    /// Membership proofs require the final node to contain `proof.value`.
+    /// Non-membership proofs require the path to terminate at an empty child,
+    /// a missing branch value, or a divergent leaf/extension.
+    #[must_use]
+    pub fn verify_proof(expected_root: &H::Digest, proof: &MptProof<H::Digest>) -> bool
+    where
+        H::Digest: TryFrom<Vec<u8>>,
+    {
+        let Some(root_node) = proof.proof_nodes.first() else {
+            return false;
+        };
+        if hash_mpt_bytes::<H>(root_node) != *expected_root {
+            return false;
+        }
+
+        let key_path = NibblePath::from_key(&proof.key);
+        Self::verify_proof_at(&key_path, &proof.value, &proof.proof_nodes, 0)
+    }
+
     /// Returns the current root digest, or `None` for an empty trie.
     #[must_use]
     pub fn root(&self) -> Option<&H::Digest> {
@@ -506,6 +591,118 @@ where
 
     fn resolve_node_ref(&self, node_ref: &NodeRef<H::Digest>) -> Option<&MptNode<H::Digest>> {
         self.nodes.get(&Self::node_ref_key(node_ref))
+    }
+
+    fn collect_proof_nodes(
+        &self,
+        node: &MptNode<H::Digest>,
+        path: &NibblePath,
+        proof_nodes: &mut Vec<Vec<u8>>,
+    ) -> Option<Vec<u8>> {
+        proof_nodes.push(rlp_encode(node));
+
+        match node {
+            MptNode::Empty | MptNode::__DigestMarker(_) => None,
+            MptNode::Leaf { key_suffix, value } => (key_suffix == path).then(|| value.clone()),
+            MptNode::Extension {
+                shared_prefix,
+                child,
+            } => {
+                if path.common_prefix_len(shared_prefix) == shared_prefix.len() {
+                    self.collect_proof_nodes(child, &path.slice(shared_prefix.len()), proof_nodes)
+                } else {
+                    None
+                }
+            }
+            MptNode::Branch { children, value } => {
+                if path.is_empty() {
+                    return value.clone();
+                }
+
+                let child_ref = &children[usize::from(path.get(0))];
+                self.resolve_node_ref(child_ref)
+                    .and_then(|child| self.collect_proof_nodes(child, &path.slice(1), proof_nodes))
+            }
+        }
+    }
+
+    fn verify_proof_at(
+        path: &NibblePath,
+        proof_value: &Option<Vec<u8>>,
+        proof_nodes: &[Vec<u8>],
+        index: usize,
+    ) -> bool
+    where
+        H::Digest: TryFrom<Vec<u8>>,
+    {
+        let Some(encoded_node) = proof_nodes.get(index) else {
+            return false;
+        };
+        let Ok(node) = rlp_decode::<H::Digest>(encoded_node) else {
+            return false;
+        };
+
+        match node {
+            MptNode::Empty | MptNode::__DigestMarker(_) => {
+                proof_value.is_none() && index + 1 == proof_nodes.len()
+            }
+            MptNode::Leaf { key_suffix, value } => {
+                if key_suffix == *path {
+                    proof_value.as_ref() == Some(&value) && index + 1 == proof_nodes.len()
+                } else {
+                    proof_value.is_none() && index + 1 == proof_nodes.len()
+                }
+            }
+            MptNode::Extension {
+                shared_prefix,
+                child,
+            } => {
+                if path.common_prefix_len(&shared_prefix) != shared_prefix.len() {
+                    return proof_value.is_none() && index + 1 == proof_nodes.len();
+                }
+
+                let Some(next_node) = proof_nodes.get(index + 1) else {
+                    return false;
+                };
+                if next_node != &rlp_encode(&child) {
+                    return false;
+                }
+
+                Self::verify_proof_at(
+                    &path.slice(shared_prefix.len()),
+                    proof_value,
+                    proof_nodes,
+                    index + 1,
+                )
+            }
+            MptNode::Branch { children, value } => {
+                if path.is_empty() {
+                    return proof_value.as_ref() == value.as_ref()
+                        && index + 1 == proof_nodes.len();
+                }
+
+                let child_ref = &children[usize::from(path.get(0))];
+                if matches!(child_ref, NodeRef::Inline(rlp) if is_rlp_empty(rlp)) {
+                    return proof_value.is_none() && index + 1 == proof_nodes.len();
+                }
+
+                let Some(next_node) = proof_nodes.get(index + 1) else {
+                    return false;
+                };
+                if !Self::node_ref_matches(child_ref, next_node) {
+                    return false;
+                }
+
+                Self::verify_proof_at(&path.slice(1), proof_value, proof_nodes, index + 1)
+            }
+        }
+    }
+
+    fn node_ref_matches(node_ref: &NodeRef<H::Digest>, encoded_node: &[u8]) -> bool {
+        match node_ref {
+            NodeRef::Hash(hash) => hash_mpt_bytes::<H>(encoded_node) == *hash,
+            NodeRef::Inline(rlp) => rlp == encoded_node,
+        }
     }
 
     fn get_at<'a>(
@@ -899,11 +1096,12 @@ fn is_rlp_empty(bytes: &[u8]) -> bool {
 #[cfg(test)]
 mod tests {
     use merkle_core::error::MerkleError;
+    use merkle_core::traits::Serializable;
     use merkleforge_hash::{Blake3, Keccak256};
 
     use super::{
-        MerklePatriciaTrie, MptNode, NibblePath, NodeRef, compute_root_hash, hash_node, hp_decode,
-        hp_encode, rlp_decode, rlp_encode,
+        MerklePatriciaTrie, MptNode, MptProof, NibblePath, NodeRef, compute_root_hash,
+        hash_mpt_bytes, hash_node, hp_decode, hp_encode, rlp_decode, rlp_encode,
     };
 
     #[test]
@@ -1246,5 +1444,95 @@ mod tests {
         assert_eq!(tree.root(), singleton.root());
         assert_eq!(tree.node_count(), singleton.node_count());
         assert_eq!(tree.height(), singleton.height());
+    }
+
+    #[test]
+    fn membership_proof_for_inserted_key_verifies() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        tree.insert(b"key", b"value").unwrap();
+        tree.insert(b"keyboard", b"instrument").unwrap();
+        let proof = tree.generate_proof(b"keyboard").unwrap();
+
+        assert!(proof.is_membership());
+        assert_eq!(proof.value, Some(b"instrument".to_vec()));
+        assert!(MerklePatriciaTrie::<Keccak256>::verify_proof(
+            tree.root().unwrap(),
+            &proof
+        ));
+    }
+
+    #[test]
+    fn proof_root_node_hashes_to_trusted_root() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        tree.insert(b"key", b"value").unwrap();
+        let proof = tree.generate_proof(b"key").unwrap();
+
+        assert_eq!(
+            hash_mpt_bytes::<Keccak256>(&proof.proof_nodes[0]),
+            *tree.root().unwrap()
+        );
+    }
+
+    #[test]
+    fn stale_proof_fails_after_key_is_removed() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        tree.insert(b"key", b"value").unwrap();
+        tree.insert(b"keyboard", b"instrument").unwrap();
+        let proof = tree.generate_proof(b"key").unwrap();
+        tree.remove(b"key").unwrap();
+
+        assert!(!MerklePatriciaTrie::<Keccak256>::verify_proof(
+            tree.root().unwrap(),
+            &proof
+        ));
+    }
+
+    #[test]
+    fn non_membership_proof_for_absent_key_verifies() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        tree.insert(b"key", b"value").unwrap();
+        let proof = tree.generate_proof(b"missing").unwrap();
+
+        assert!(proof.is_non_membership());
+        assert_eq!(proof.value, None);
+        assert!(MerklePatriciaTrie::<Keccak256>::verify_proof(
+            tree.root().unwrap(),
+            &proof
+        ));
+    }
+
+    #[test]
+    fn tampered_mpt_proof_fails_verification() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        tree.insert(b"key", b"value").unwrap();
+        let mut proof = tree.generate_proof(b"key").unwrap();
+        proof.value = Some(b"tampered".to_vec());
+
+        assert!(!MerklePatriciaTrie::<Keccak256>::verify_proof(
+            tree.root().unwrap(),
+            &proof
+        ));
+    }
+
+    #[test]
+    fn mpt_proof_round_trips_through_serializable() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        tree.insert(b"key", b"value").unwrap();
+        tree.insert(b"keyboard", b"instrument").unwrap();
+        let proof = tree.generate_proof(b"key").unwrap();
+        let encoded = proof.to_bytes().unwrap();
+        let decoded = MptProof::<[u8; 32]>::from_bytes(&encoded).unwrap();
+
+        assert_eq!(decoded, proof);
+        assert!(MerklePatriciaTrie::<Keccak256>::verify_proof(
+            tree.root().unwrap(),
+            &decoded
+        ));
     }
 }
