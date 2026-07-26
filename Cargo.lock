@@ -512,6 +512,7 @@ dependencies = [
  "merkleforge-hash",
  "proptest",
  "serde",
+ "serde_json",
  "tiny-keccak",
 ]
 
