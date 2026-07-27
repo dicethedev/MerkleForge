@@ -17,7 +17,7 @@ algorithm without changing the tree API.
 | --- | --- | --- |
 | `BinaryMerkleTree<H>` | Available | Transaction batches, inclusion proofs, and append-oriented datasets |
 | `SparseMerkleTree<H>` | Available | Large sparse key spaces and authenticated state |
-| `MerklePatriciaTrie<H>` | Planned | Ethereum-compatible state tries |
+| `MerklePatriciaTrie<H>` | Available | Ethereum-compatible state tries |
 
 This is research software and has not been independently security-audited.
 
@@ -25,9 +25,9 @@ This is research software and has not been independently security-audited.
 
 ```toml
 [dependencies]
-merkle-core = "0.3"
-merkle-variants = "0.3"
-merkleforge-hash = "0.3"
+merkle-core = "0.4"
+merkle-variants = "0.4"
+merkleforge-hash = "0.4"
 ```
 
 `merkleforge-hash` supplies the SHA-256, Keccak-256, and BLAKE3 adapters. You
@@ -85,6 +85,16 @@ fn main() -> Result<(), merkle_core::error::MerkleError> {
 - Membership and non-membership proof generation
 - Batch insert and remove APIs for rollup-style workloads
 - Generic `MerkleTree<H>` implementation
+
+## Patricia Trie Features
+
+- Ethereum-compatible Merkle Patricia Trie node structure
+- Hex-prefix path encoding and Recursive Length Prefix node encoding
+- Ethereum-style inline/hash node references
+- Key-value insertion, lookup, removal, and canonical node collapsing
+- EIP-1186-style membership and non-membership proof generation
+- Official Ethereum trie vector coverage
+- Generic `MerkleTree<H>` metadata/root integration
 
 ## Documentation
 

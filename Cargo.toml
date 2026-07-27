@@ -8,7 +8,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.3.0"
+version = "0.4.0"
 edition     = "2024"
 authors     = ["Blessing Samuel <dicethedev>"]
 license     = "MIT OR Apache-2.0"
@@ -33,5 +33,5 @@ criterion  = { version = "0.5", features = ["html_reports"] }
 proptest   = "1.4"
 
 # Shared internal crates
-merkle-core = { path = "merkle-core", version = ">=0.2.1, <0.4.0" }
-merkleforge-hash = { path = "merkle-hash", version = ">=0.2.1, <0.4.0" }
+merkle-core = { path = "merkle-core", version = ">=0.2.1, <0.5.0" }
+merkleforge-hash = { path = "merkle-hash", version = ">=0.2.1, <0.5.0" }

@@ -267,7 +267,7 @@ across all three will be published after Phase 5.
 |-------|---------|--------|----------|
 | `merkle-variants` | `BinaryMerkleTree<H>` | ✅ Phase 2 | Transaction batching, Bitcoin-style SPV |
 | `merkle-variants` | `SparseMerkleTree<H>` | ✅ Phase 3 | Account state, Layer-2 rollups |
-| `merkle-variants` | `MerklePatriciaTrie<H>` | ⏳ Phase 4 | Ethereum state roots, EVM compatibility |
+| `merkle-variants` | `MerklePatriciaTrie<H>` | ✅ Phase 4 | Ethereum state roots, EVM compatibility |
 
 ### Binary Merkle Tree
 Balanced, power-of-two tree with iterative bottom-up construction. Optimised
@@ -336,6 +336,9 @@ cargo bench --bench hash_throughput
 
 # Run binary-tree construction and proof benchmarks
 cargo bench --bench binary_tree
+
+# Run Patricia trie benchmarks
+cargo bench --bench patricia_trie
 ```
 
 The [official MerkleForge site](https://dicethedev.github.io/MerkleForge/index.html)
@@ -348,7 +351,7 @@ Criterion reports.
 | Throughput — sustained MB/s per algorithm (32 B → 1 MB) | ✅ Phase 1 |
 | Binary tree construction — 100 / 1K / 10K / 100K leaves | ✅ Phase 2 |
 | Binary proof generation & verification latency | ✅ Phase 2 |
-| Sparse and Patricia tree benchmarks | 🔜 Phase 5 |
+| Sparse and Patricia tree benchmarks | ✅ Phase 4 |
 | Proof size in bytes | 🔜 Phase 5 |
 | Peak memory consumption (RSS) | 🔜 Phase 5 |
 | Comparative results vs `rs-merkle` and `merkle_light` | 🔜 Phase 5 |
@@ -362,7 +365,7 @@ Criterion reports.
 | 1 — Core Infrastructure | Trait hierarchy, hash adapters, CI/CD | ✅ **Complete** |
 | 2 — Binary Merkle Tree | `BinaryMerkleTree<H>`, property tests | ✅ **Complete** |
 | 3 — Sparse Merkle Tree | `SparseMerkleTree<H>`, node batching | ✅ **Complete** |
-| 4 — Merkle Patricia Trie | Ethereum-compatible MPT, RLP | ⏳ Planned |
+| 4 — Merkle Patricia Trie | Ethereum-compatible MPT, RLP | ✅ **Complete** |
 | 5 — Benchmarking | Full Criterion suite, comparative report | ⏳ Planned |
 | 6 — Docs & Publication | `crates.io` publish, mdBook, paper | ⏳ Planned |
  
@@ -372,7 +375,7 @@ Criterion reports.
  
 - [x] `BinaryMerkleTree<H>` with iterative construction and stateless proof verification
 - [x] `SparseMerkleTree<H>` with shortcut nodes and one-phase batch updates
-- [ ] `MerklePatriciaTrie<H>` with RLP encoding, validated against Ethereum test vectors
+- [x] `MerklePatriciaTrie<H>` with RLP encoding, validated against Ethereum test vectors
 - [ ] Full Criterion benchmark suite with comparative results vs `rs-merkle` and `merkle_light`
 - [ ] mdBook user guide with copy-pasteable examples for each variant
 - [ ] Publish `merkle-variants` to `crates.io`

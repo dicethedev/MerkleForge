@@ -13,9 +13,33 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
-Phase 3 complete: sparse Merkle tree implementation and release preparation.
+Phase 4 complete: Ethereum-compatible Merkle Patricia Trie implementation and
+release preparation.
 
 ### Added — `merkle-variants`
+
+- `MerklePatriciaTrie<H>` with Ethereum-style empty, leaf, extension, and
+  branch node variants over nibble-addressed keys
+- `NibblePath` utilities for converting byte keys into 4-bit paths
+- Hex-prefix path encoding and decoding for leaf and extension nodes
+- Recursive Length Prefix encoding and decoding for all Patricia trie node
+  variants
+- Ethereum node reference handling with inline RLP for small nodes and
+  `H(RLP(node))` references for larger nodes
+- Key-value insertion, lookup, removal, and canonical node collapsing
+- EIP-1186-style `MptProof<D>` membership and non-membership witnesses
+- Stateless MPT proof verification against a trusted root
+- Official Ethereum trie vector validation for `trietest.json`,
+  `trieanyorder.json`, and the canonical empty trie root
+- Property-based tests covering insertion retrieval, removal correctness,
+  root sensitivity, key independence, order independence, proof completeness,
+  RLP round-trips, and proof serialization
+- Criterion benchmark coverage for Patricia insertion, lookup, proof
+  generation, proof verification, and state-root construction across
+  Keccak-256 and BLAKE3
+- `MerkleTree<H>` implementation for generic Patricia trie root, count,
+  height, insertion, removal, and metadata access with
+  `variant = "MerklePatriciaTrie"`
 
 - `SparseMerkleTree<H>` with a fixed 256-bit key space and precomputed
   empty-hash cache for all levels
@@ -37,9 +61,11 @@ Phase 3 complete: sparse Merkle tree implementation and release preparation.
 
 ### Changed
 
-- Workspace crate version advanced to `0.3.0`
+- Workspace crate version advanced to `0.4.0`
 - Sparse tree docs now include the generic `MerkleTree<H>` contract alongside
   the native key-addressed API
+- `merkle-variants` README now documents Patricia trie availability and
+  `0.4` installation snippets
 
 ### Documentation
 
@@ -50,12 +76,6 @@ Phase 3 complete: sparse Merkle tree implementation and release preparation.
 - Replaced the benchmark-only landing page with the official MerkleForge site.
 - Added dedicated documentation, examples, benchmark, and Criterion report
   sections under a maintainable `website/` source directory.
-
-### Planned — Phase 4 (Weeks 7–8)
-- `MerklePatriciaTrie<H>` with four node types: branch, extension, leaf, empty
-- RLP encoding/decoding for full Ethereum wire-format compatibility
-- Validation against official Ethereum test vectors and mainnet block data
-- `MerkleError::RlpError` wired through the full codec path
 
 ### Planned — Phase 5 (Weeks 9–10)
 - Full Criterion benchmark suite at 100 / 1 000 / 10 000 / 100 000 / 1 000 000 leaves
