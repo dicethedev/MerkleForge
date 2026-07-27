@@ -7,7 +7,11 @@
 
 use std::{collections::HashMap, marker::PhantomData};
 
-use merkle_core::{error::MerkleError, traits::HashFunction};
+use merkle_core::{
+    error::MerkleError,
+    traits::{HashFunction, MerkleTree},
+    types::{LeafIndex, MerkleProof, TreeMetadata},
+};
 use serde::{Deserialize, Serialize};
 use tiny_keccak::{Hasher, Keccak};
 
@@ -60,13 +64,13 @@ impl NibblePath {
 
     /// Returns the number of nibbles in this path.
     #[must_use]
-    pub fn len(&self) -> usize {
+    pub const fn len(&self) -> usize {
         self.nibbles.len()
     }
 
     /// Returns `true` when this path contains no nibbles.
     #[must_use]
-    pub fn is_empty(&self) -> bool {
+    pub const fn is_empty(&self) -> bool {
         self.nibbles.is_empty()
     }
 
@@ -120,11 +124,10 @@ pub fn hp_encode(path: &NibblePath, is_leaf: bool) -> Vec<u8> {
 
     prefixed.push(prefix);
     if odd {
-        prefixed.extend_from_slice(&path.nibbles);
     } else {
         prefixed.push(0);
-        prefixed.extend_from_slice(&path.nibbles);
     }
+    prefixed.extend_from_slice(&path.nibbles);
 
     nibbles_to_bytes(&prefixed)
 }
@@ -221,7 +224,7 @@ pub struct MptProof<D> {
 impl<D> MptProof<D> {
     /// Creates a proof from its key, optional value, and RLP witness nodes.
     #[must_use]
-    pub fn new(key: Vec<u8>, value: Option<Vec<u8>>, proof_nodes: Vec<Vec<u8>>) -> Self {
+    pub const fn new(key: Vec<u8>, value: Option<Vec<u8>>, proof_nodes: Vec<Vec<u8>>) -> Self {
         Self {
             key,
             value,
@@ -321,8 +324,9 @@ impl<D> MptNode<D> {
 
 /// Ethereum-style Merkle Patricia Trie over nibble-addressed keys.
 ///
-/// The trie starts empty. Later Phase 4 work will add mutation, RLP
-/// serialization, and root hashing.
+/// The trie supports key-value insertion, removal, lookup, RLP witness
+/// generation, and Ethereum-compatible root hashing when used with
+/// `Keccak-256`.
 pub struct MerklePatriciaTrie<H: HashFunction> {
     root: MptNode<H::Digest>,
     root_hash: Option<H::Digest>,
@@ -431,12 +435,12 @@ where
         }
 
         let key_path = NibblePath::from_key(&proof.key);
-        Self::verify_proof_at(&key_path, &proof.value, &proof.proof_nodes, 0)
+        Self::verify_proof_at(&key_path, proof.value.as_ref(), &proof.proof_nodes, 0)
     }
 
     /// Returns the current root digest, or `None` for an empty trie.
     #[must_use]
-    pub fn root(&self) -> Option<&H::Digest> {
+    pub const fn root(&self) -> Option<&H::Digest> {
         self.root_hash.as_ref()
     }
 
@@ -444,6 +448,12 @@ where
     #[must_use]
     pub fn is_empty(&self) -> bool {
         self.entries.is_empty()
+    }
+
+    /// Returns the number of key-value entries stored in the trie.
+    #[must_use]
+    pub fn leaf_count(&self) -> usize {
+        self.entries.len()
     }
 
     /// Returns the number of materialized trie nodes.
@@ -487,6 +497,12 @@ where
 
     fn collapse(&mut self) {
         self.rebuild();
+    }
+
+    fn key_for_leaf_index(index: LeafIndex) -> Vec<u8> {
+        let mut key = b"merkleforge:mpt:trait-leaf:".to_vec();
+        key.extend_from_slice(&(index.value() as u64).to_be_bytes());
+        key
     }
 
     fn build_subtree(
@@ -626,7 +642,7 @@ where
 
     fn verify_proof_at(
         path: &NibblePath,
-        proof_value: &Option<Vec<u8>>,
+        proof_value: Option<&Vec<u8>>,
         proof_nodes: &[Vec<u8>],
         index: usize,
     ) -> bool
@@ -646,7 +662,7 @@ where
             }
             MptNode::Leaf { key_suffix, value } => {
                 if key_suffix == *path {
-                    proof_value.as_ref() == Some(&value) && index + 1 == proof_nodes.len()
+                    proof_value == Some(&value) && index + 1 == proof_nodes.len()
                 } else {
                     proof_value.is_none() && index + 1 == proof_nodes.len()
                 }
@@ -675,8 +691,7 @@ where
             }
             MptNode::Branch { children, value } => {
                 if path.is_empty() {
-                    return proof_value.as_ref() == value.as_ref()
-                        && index + 1 == proof_nodes.len();
+                    return proof_value == value.as_ref() && index + 1 == proof_nodes.len();
                 }
 
                 let child_ref = &children[usize::from(path.get(0))];
@@ -784,6 +799,75 @@ where
 {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl<H> MerkleTree<H> for MerklePatriciaTrie<H>
+where
+    H: HashFunction,
+    H::Digest: From<[u8; 32]> + TryFrom<Vec<u8>>,
+{
+    fn insert(&mut self, data: &[u8]) -> Result<LeafIndex, MerkleError> {
+        let index = LeafIndex(self.leaf_count());
+        Self::insert(self, &Self::key_for_leaf_index(index), data)?;
+
+        Ok(index)
+    }
+
+    fn remove(&mut self, index: LeafIndex) -> Result<(), MerkleError> {
+        if self.is_empty() {
+            return Err(MerkleError::EmptyTree);
+        }
+        if index.value() >= self.leaf_count() {
+            return Err(MerkleError::IndexOutOfBounds {
+                index: index.value(),
+                len: self.leaf_count(),
+            });
+        }
+
+        Self::remove(self, &Self::key_for_leaf_index(index))
+    }
+
+    fn root(&self) -> Option<&H::Digest> {
+        Self::root(self)
+    }
+
+    fn leaf_count(&self) -> usize {
+        Self::leaf_count(self)
+    }
+
+    fn is_empty(&self) -> bool {
+        Self::is_empty(self)
+    }
+
+    fn height(&self) -> usize {
+        Self::height(self)
+    }
+
+    fn generate_proof(&self, index: LeafIndex) -> Result<MerkleProof<H::Digest>, MerkleError> {
+        if self.is_empty() {
+            return Err(MerkleError::EmptyTree);
+        }
+        if index.value() >= self.leaf_count() {
+            return Err(MerkleError::IndexOutOfBounds {
+                index: index.value(),
+                len: self.leaf_count(),
+            });
+        }
+
+        Err(MerkleError::UnsupportedOperation(
+            "Patricia trie proofs are key-addressed; use MerklePatriciaTrie::generate_proof",
+        ))
+    }
+
+    fn metadata(&self) -> TreeMetadata {
+        TreeMetadata {
+            leaf_count: self.leaf_count(),
+            height: self.height(),
+            node_count: self.node_count,
+            hash_algorithm: H::algorithm_name(),
+            variant: "MerklePatriciaTrie",
+        }
     }
 }
 
@@ -1034,20 +1118,20 @@ where
 
     Ok(MptNode::Extension {
         shared_prefix: path,
-        child: decode_node_ref(&items[1])?,
+        child: decode_node_ref(&items[1]),
     })
 }
 
-fn decode_node_ref<D>(item: &[u8]) -> Result<NodeRef<D>, MerkleError>
+fn decode_node_ref<D>(item: &[u8]) -> NodeRef<D>
 where
     D: TryFrom<Vec<u8>>,
 {
     if is_rlp_empty(item) {
-        Ok(NodeRef::Inline(vec![EMPTY_RLP]))
+        NodeRef::Inline(vec![EMPTY_RLP])
     } else if let Ok(hash) = decode_rlp_hash(item) {
-        Ok(NodeRef::Hash(hash))
+        NodeRef::Hash(hash)
     } else {
-        Ok(NodeRef::Inline(item.to_vec()))
+        NodeRef::Inline(item.to_vec())
     }
 }
 
@@ -1057,7 +1141,7 @@ where
 {
     let mut children = Vec::with_capacity(16);
     for item in &items[..16] {
-        children.push(decode_node_ref(item)?);
+        children.push(decode_node_ref(item));
     }
     let children = children.try_into().map_err(|_| {
         MerkleError::RlpError("branch node must contain exactly 16 children".to_string())
@@ -1110,7 +1194,8 @@ fn is_rlp_empty(bytes: &[u8]) -> bool {
 #[cfg(test)]
 mod tests {
     use merkle_core::error::MerkleError;
-    use merkle_core::traits::Serializable;
+    use merkle_core::traits::{MerkleTree, Serializable};
+    use merkle_core::types::LeafIndex;
     use merkleforge_hash::{Blake3, Keccak256};
 
     use super::{
@@ -1380,6 +1465,60 @@ mod tests {
         assert_eq!(tree.insert(b"key", b""), Err(MerkleError::EmptyLeafData));
         assert!(tree.is_empty());
         assert_eq!(tree.get(b"key"), None);
+    }
+
+    #[test]
+    fn trait_methods_delegate_to_patricia_trie() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        let index =
+            <MerklePatriciaTrie<Keccak256> as MerkleTree<Keccak256>>::insert(&mut tree, b"value")
+                .unwrap();
+
+        assert_eq!(index, LeafIndex(0));
+        assert_eq!(
+            <MerklePatriciaTrie<Keccak256> as MerkleTree<Keccak256>>::leaf_count(&tree),
+            1
+        );
+        assert!(<MerklePatriciaTrie<Keccak256> as MerkleTree<Keccak256>>::root(&tree).is_some());
+
+        let metadata = <MerklePatriciaTrie<Keccak256> as MerkleTree<Keccak256>>::metadata(&tree);
+        assert_eq!(metadata.leaf_count, 1);
+        assert_eq!(metadata.height, tree.height());
+        assert_eq!(metadata.node_count, tree.node_count());
+        assert_eq!(metadata.hash_algorithm, "Keccak-256");
+        assert_eq!(metadata.variant, "MerklePatriciaTrie");
+    }
+
+    #[test]
+    fn trait_remove_uses_deterministic_index_key() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        <MerklePatriciaTrie<Keccak256> as MerkleTree<Keccak256>>::insert(&mut tree, b"value")
+            .unwrap();
+        <MerklePatriciaTrie<Keccak256> as MerkleTree<Keccak256>>::remove(&mut tree, LeafIndex(0))
+            .unwrap();
+
+        assert!(tree.is_empty());
+        assert_eq!(tree.root(), None);
+    }
+
+    #[test]
+    fn trait_generate_proof_points_to_key_addressed_mpt_proofs() {
+        let mut tree = MerklePatriciaTrie::<Keccak256>::new();
+
+        <MerklePatriciaTrie<Keccak256> as MerkleTree<Keccak256>>::insert(&mut tree, b"value")
+            .unwrap();
+
+        assert_eq!(
+            <MerklePatriciaTrie<Keccak256> as MerkleTree<Keccak256>>::generate_proof(
+                &tree,
+                LeafIndex(0),
+            ),
+            Err(MerkleError::UnsupportedOperation(
+                "Patricia trie proofs are key-addressed; use MerklePatriciaTrie::generate_proof",
+            ))
+        );
     }
 
     #[test]
