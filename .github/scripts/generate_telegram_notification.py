@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import urllib.error
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +23,22 @@ def event_payload() -> dict[str, Any]:
 def actor_name(payload: dict[str, Any]) -> str:
     """Return the event actor login."""
     return payload.get("sender", {}).get("login", "unknown")
+
+
+def repository_count_summary() -> str:
+    """Return open repository counts, or a soft-failure note.
+
+    Repository counts are helpful context for Telegram messages, but they are
+    not important enough to fail the whole notification workflow when the
+    GitHub API has a transient outage.
+    """
+    try:
+        pull_requests, issues = open_repository_counts()
+    except (RuntimeError, TimeoutError, urllib.error.URLError) as error:
+        print(f"warning: unable to fetch repository counts: {error}")
+        return "Open PRs: unavailable | Open issues: unavailable"
+
+    return f"Open PRs: {pull_requests} | Open issues: {issues}"
 
 
 def main() -> None:
@@ -65,8 +82,7 @@ def main() -> None:
             f"{repo_url}"
         )
 
-    pull_requests, issues = open_repository_counts()
-    message += f"\n\nOpen PRs: {pull_requests} | Open issues: {issues}\n{repo_url}"
+    message += f"\n\n{repository_count_summary()}\n{repo_url}"
     Path("telegram_notification.txt").write_text(message + "\n")
 
 

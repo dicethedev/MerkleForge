@@ -1,6 +1,6 @@
 # MerkleForge
 
-> A high-performance, unified Merkle tree library for the Rust ecosystem.
+### Building a Faster, More Efficient Data Verification Toolkit for Modern Blockchains
 
 [![CI](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml/badge.svg)](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml)
 [![Website](https://github.com/dicethedev/MerkleForge/actions/workflows/website.yml/badge.svg)](https://dicethedev.github.io/MerkleForge/index.html)
@@ -94,34 +94,14 @@ This is the implementation artifact of a final-year Software Engineering researc
 
 The toolkit is structured in two logical layers:
 
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│                          merkle-core                                 │
-│  HashFunction trait · MerkleTree trait · ProofVerifier trait         │
-│  MerkleProof · LeafIndex · NodeIndex · MerkleError                   │
-└────────────────────────────┬─────────────────────────────────────────┘
-                             │ depends on
-          ┌──────────────────┼───────────────────┐
-          ▼                  ▼                   ▼
-  merkleforge-hash    merkle-variants        merkle-bench
-  SHA-256 adapter    BinaryMerkleTree     Criterion suite
-  Keccak-256         SparseMerkleTree     baseline_construction
-  BLAKE3             PatriciaTrie         hash_throughput
-```
+### Module Organization
+
+<img width="1698" height="1252" alt="Image" src="https://github.com/user-attachments/assets/7c3e4c98-8e61-479b-aee8-510ae2b231a1" />
  
 
 ### Trait Hierarchy
 
-```
-HashFunction  ←  pluggable crypto abstraction
-      │
-      └──▶  MerkleTree<H: HashFunction>
-                 insert() · remove() · root()
-                 generate_proof() · metadata()
-                      │
-                      └──▶  ProofVerifier<H>  (stateless)
-                                verify(root, leaf_data, proof)
-```
+<img width="1253" height="1158" alt="Image" src="https://github.com/user-attachments/assets/cd1afa6c-1aaf-4d43-bb72-18467ce73726" />
 
 Domain separation is enforced at the hash level:
 - Leaf hashes: `H(0x00 || data)`
@@ -166,7 +146,10 @@ MerkleForge/
 ├── merkle-bench/                     # isolated benchmarking crate
 │   ├── benches/
 │   │   ├── baseline_construction.rs  # leaf + node hashing latency
-│   │   └── hash_throughput.rs        # sustained MB/s per algorithm
+│   │   ├── hash_throughput.rs        # sustained MB/s per algorithm
+│   │   ├── binary_tree.rs            # binary construction + proof benchmarks
+│   │   ├── sparse_tree.rs            # sparse tree update + proof benchmarks
+│   │   └── patricia_trie.rs          # Patricia trie update + proof benchmarks
 │   └── src/lib.rs
 │
 └── .github/workflows/ci.yml          # automated test · lint · bench · docs
@@ -184,9 +167,9 @@ Add the crates you need to your `Cargo.toml`:
  
 ```toml
 [dependencies]
-merkle-core = "0.2"
-merkleforge-hash = "0.2"
-merkle-variants = "0.2"
+merkle-core = "0.4"
+merkleforge-hash = "0.4"
+merkle-variants = "0.4"
 ```
 
 ### Quick example
@@ -266,8 +249,8 @@ across all three will be published after Phase 5.
 | Crate | Variant | Status | Best for |
 |-------|---------|--------|----------|
 | `merkle-variants` | `BinaryMerkleTree<H>` | ✅ Phase 2 | Transaction batching, Bitcoin-style SPV |
-| `merkle-variants` | `SparseMerkleTree<H>` | ⏳ Phase 3 | Account state, Layer-2 rollups |
-| `merkle-variants` | `MerklePatriciaTrie<H>` | ⏳ Phase 4 | Ethereum state roots, EVM compatibility |
+| `merkle-variants` | `SparseMerkleTree<H>` | ✅ Phase 3 | Account state, Layer-2 rollups |
+| `merkle-variants` | `MerklePatriciaTrie<H>` | ✅ Phase 4 | Ethereum state roots, EVM compatibility |
 
 ### Binary Merkle Tree
 Balanced, power-of-two tree with iterative bottom-up construction. Optimised
@@ -336,6 +319,12 @@ cargo bench --bench hash_throughput
 
 # Run binary-tree construction and proof benchmarks
 cargo bench --bench binary_tree
+
+# Run sparse tree benchmarks
+cargo bench --bench sparse_tree
+
+# Run Patricia trie benchmarks
+cargo bench --bench patricia_trie
 ```
 
 The [official MerkleForge site](https://dicethedev.github.io/MerkleForge/index.html)
@@ -348,7 +337,7 @@ Criterion reports.
 | Throughput — sustained MB/s per algorithm (32 B → 1 MB) | ✅ Phase 1 |
 | Binary tree construction — 100 / 1K / 10K / 100K leaves | ✅ Phase 2 |
 | Binary proof generation & verification latency | ✅ Phase 2 |
-| Sparse and Patricia tree benchmarks | 🔜 Phase 5 |
+| Sparse and Patricia tree benchmarks | ✅ Phase 4 |
 | Proof size in bytes | 🔜 Phase 5 |
 | Peak memory consumption (RSS) | 🔜 Phase 5 |
 | Comparative results vs `rs-merkle` and `merkle_light` | 🔜 Phase 5 |
@@ -361,21 +350,21 @@ Criterion reports.
 |-------|-------|--------|
 | 1 — Core Infrastructure | Trait hierarchy, hash adapters, CI/CD | ✅ **Complete** |
 | 2 — Binary Merkle Tree | `BinaryMerkleTree<H>`, property tests | ✅ **Complete** |
-| 3 — Sparse Merkle Tree | `SparseMerkleTree<H>`, node batching | ⏳ Planned |
-| 4 — Merkle Patricia Trie | Ethereum-compatible MPT, RLP | ⏳ Planned |
+| 3 — Sparse Merkle Tree | `SparseMerkleTree<H>`, node batching | ✅ **Complete** |
+| 4 — Merkle Patricia Trie | Ethereum-compatible MPT, RLP | ✅ **Complete** |
 | 5 — Benchmarking | Full Criterion suite, comparative report | ⏳ Planned |
-| 6 — Docs & Publication | `crates.io` publish, mdBook, paper | ⏳ Planned |
+| 6 — Docs & Publication | `crates.io` publish, mdBook, paper | 🚧 In progress |
  
 ---
 
 ## Roadmap
  
 - [x] `BinaryMerkleTree<H>` with iterative construction and stateless proof verification
-- [ ] `SparseMerkleTree<H>` with shortcut nodes and one-phase batch updates
-- [ ] `MerklePatriciaTrie<H>` with RLP encoding, validated against Ethereum test vectors
+- [x] `SparseMerkleTree<H>` with shortcut nodes and one-phase batch updates
+- [x] `MerklePatriciaTrie<H>` with RLP encoding, validated against Ethereum test vectors
+- [x] Publish `merkle-core`, `merkleforge-hash`, and `merkle-variants` `v0.4.0` to `crates.io`
 - [ ] Full Criterion benchmark suite with comparative results vs `rs-merkle` and `merkle_light`
 - [ ] mdBook user guide with copy-pasteable examples for each variant
-- [ ] Publish `merkle-variants` to `crates.io`
 - [ ] Research paper on benchmark findings and tree-type trade-off analysis
 
 ---
@@ -409,7 +398,7 @@ Full bibliography in the accompanying research proposal.
 
 Licensed under either of:
 
-- [MIT License](LICENSE-MIT)
+- [MIT License](LICENSE)
 - [Apache License, Version 2.0](LICENSE-APACHE)
 
 at your option.

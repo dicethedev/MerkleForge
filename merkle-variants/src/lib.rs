@@ -12,3 +12,5 @@ pub mod patricia;
 pub mod sparse;
 
 pub use binary::BinaryMerkleTree;
+pub use patricia::{MerklePatriciaTrie, MptProof};
+pub use sparse::SparseMerkleTree;

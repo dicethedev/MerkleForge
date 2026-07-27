@@ -32,7 +32,7 @@
         <a href="#installation">Installation</a>
         <a href="#architecture">Architecture</a>
         <a href="#hashing">Hash functions</a>
-        <a href="#binary-tree">Binary tree</a>
+        <a href="#tree-variants">Tree variants</a>
         <a href="#proofs">Proofs</a>
         <a href="#metadata">Metadata</a>
         <a href="#safety">Safety status</a>
@@ -47,7 +47,7 @@
 
         <section id="installation">
           <h2>Installation</h2>
-          <p>Add the complete binary-tree stack to your application:</p>
+          <p>Add the complete MerkleForge stack to your application:</p>
           <div class="code-window"><div class="code-head"><span>Cargo.toml</span><span>crates.io</span></div><pre><code>[dependencies]
 merkle-core = "__CRATE_VERSION__"
 merkleforge-hash = "__CRATE_VERSION__"
@@ -62,7 +62,7 @@ merkle-variants = "__CRATE_VERSION__"</code></pre></div>
             <tbody>
               <tr><td><code>merkle-core</code></td><td>Contracts and shared types</td><td><code>HashFunction</code>, <code>MerkleTree</code>, <code>MerkleProof</code></td></tr>
               <tr><td><code>merkleforge-hash</code></td><td>Cryptographic adapters</td><td><code>Sha256</code>, <code>Keccak256</code>, <code>Blake3</code></td></tr>
-              <tr><td><code>merkle-variants</code></td><td>Concrete tree implementations</td><td><code>BinaryMerkleTree&lt;H&gt;</code></td></tr>
+              <tr><td><code>merkle-variants</code></td><td>Concrete tree implementations</td><td><code>BinaryMerkleTree&lt;H&gt;</code>, <code>SparseMerkleTree&lt;H&gt;</code>, <code>MerklePatriciaTrie&lt;H&gt;</code></td></tr>
             </tbody>
           </table>
           <h3>Core traits</h3>
@@ -83,27 +83,26 @@ merkle-variants = "__CRATE_VERSION__"</code></pre></div>
           <p>Leaf and internal-node inputs are hashed in separate domains. SHA-256 and Keccak-256 use distinct prefix bytes; BLAKE3 uses separate derive-key contexts. This prevents an encoded internal node from being interpreted as a leaf pre-image.</p>
         </section>
 
-        <section id="binary-tree">
-          <h2>BinaryMerkleTree</h2>
-          <p>The binary implementation stores leaves and internal nodes in a contiguous vector. The leaf layer is padded to a power of two with the selected hash adapter's empty digest.</p>
-          <ul>
-            <li>Insertion returns a stable <code>LeafIndex</code>.</li>
-            <li>Interior removal replaces the leaf with the empty digest.</li>
-            <li>Trailing removals can shrink the padded tree.</li>
-            <li>Proof depth is logarithmic in padded leaf capacity.</li>
-            <li>The root is recomputed only along the changed path after insertion.</li>
-          </ul>
+        <section id="tree-variants">
+          <h2>Tree variants</h2>
+          <table>
+            <thead><tr><th>Variant</th><th>Status</th><th>Use case</th></tr></thead>
+            <tbody>
+              <tr><td><code>BinaryMerkleTree&lt;H&gt;</code></td><td>Available in v__CRATE_VERSION__</td><td>Transaction batches, append-oriented datasets, SPV-style inclusion proofs</td></tr>
+              <tr><td><code>SparseMerkleTree&lt;H&gt;</code></td><td>Available in v__CRATE_VERSION__</td><td>256-bit authenticated state, membership proofs, non-membership proofs, rollup-style batch updates</td></tr>
+              <tr><td><code>MerklePatriciaTrie&lt;H&gt;</code></td><td>Available in v__CRATE_VERSION__</td><td>Ethereum-compatible state roots, RLP witnesses, nibble-addressed key-value state</td></tr>
+            </tbody>
+          </table>
+          <p>All three variants expose root, count, height, and metadata through the shared <code>MerkleTree&lt;H&gt;</code> trait. Binary proofs use the generic index-shaped <code>MerkleProof</code>; sparse and Patricia trees also expose native key-addressed proof APIs for their state-oriented designs.</p>
         </section>
 
         <section id="proofs">
           <h2>Proof generation and verification</h2>
-          <p>A <code>MerkleProof&lt;D&gt;</code> records the leaf index, logical leaf count, and one sibling digest per non-leaf level. Each proof node also records whether its sibling belongs on the left or right.</p>
-          <p>Verification starts by hashing the raw leaf data, folds the sibling path toward the root, validates path structure, and compares the reconstructed digest with the trusted root.</p>
-          <div class="code-window"><div class="code-head"><span>Complexity</span><span>Binary tree</span></div><pre><code>construction:       O(n)
-single insertion:  O(log n)
-proof generation:  O(log n)
-proof verification: O(log n)
-proof size:        O(log n)</code></pre></div>
+          <p>A binary <code>MerkleProof&lt;D&gt;</code> records the leaf index, logical leaf count, and one sibling digest per non-leaf level. Sparse proofs carry optional sibling hashes over a 256-bit key path, using cached empty hashes for omitted empty siblings. Patricia proofs carry RLP-encoded witness nodes compatible with Ethereum-style verification.</p>
+          <p>Verification starts from the claimed leaf or key-value pair, folds the proof path toward the root, validates structure, and compares the reconstructed digest with the trusted root.</p>
+          <div class="code-window"><div class="code-head"><span>Complexity</span><span>Current variants</span></div><pre><code>BinaryMerkleTree:       O(log n) proofs
+SparseMerkleTree:       256-bit key path with shortcut and batch optimisations
+MerklePatriciaTrie:     nibble-path traversal with RLP witness nodes</code></pre></div>
         </section>
 
         <section id="metadata">

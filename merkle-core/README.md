@@ -29,15 +29,15 @@
 
 ```toml
 [dependencies]
-merkle-core = "0.1"
+merkle-core = "0.4"
 ```
 
 For the ready-made hash adapters (SHA-256, Keccak-256, BLAKE3):
 
 ```toml
 [dependencies]
-merkle-core = "0.1"
-merkle-hash = "0.1"
+merkle-core = "0.4"
+merkleforge-hash = "0.4"
 ```
 
 ---
@@ -94,7 +94,7 @@ AsRef<[u8]> + Clone + Debug + PartialEq + Eq + Send + Sync + 'static
 
 `[u8; 32]` satisfies all of these, making it the natural choice for 256-bit hash functions.
 
-**Domain separation.** The adapters in `merkle-hash` use prefix bytes to distinguish leaf hashes (`0x00 || data`) from internal-node hashes (`0x01 || left || right`). This prevents second-preimage attacks where an attacker submits an internal node in place of a leaf. If you implement `HashFunction` yourself, follow the same convention.
+**Domain separation.** The adapters in `merkleforge-hash` use prefix bytes to distinguish leaf hashes (`0x00 || data`) from internal-node hashes (`0x01 || left || right`). This prevents second-preimage attacks where an attacker submits an internal node in place of a leaf. If you implement `HashFunction` yourself, follow the same convention.
 
 ---
 
@@ -327,7 +327,7 @@ use merkle_core::prelude::*;
 
 ## Implementing a custom `HashFunction`
 
-If the three adapters in `merkle-hash` don't cover your use case, implement the trait directly. The only hard requirements are:
+If the three adapters in `merkleforge-hash` don't cover your use case, implement the trait directly. The only hard requirements are:
 
 1. `Digest` satisfies the required bounds.
 2. `hash` and `hash_nodes` are deterministic and collision-resistant.
@@ -363,4 +363,4 @@ impl HashFunction for Xor8 {
 
 ## License
 
-Licensed under either of [MIT](../LICENSE-MIT) or [Apache-2.0](../LICENSE-APACHE) at your option.
+Licensed under either of [MIT](../LICENSE) or [Apache-2.0](../LICENSE-APACHE) at your option.
