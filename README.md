@@ -94,34 +94,14 @@ This is the implementation artifact of a final-year Software Engineering researc
 
 The toolkit is structured in two logical layers:
 
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│                          merkle-core                                 │
-│  HashFunction trait · MerkleTree trait · ProofVerifier trait         │
-│  MerkleProof · LeafIndex · NodeIndex · MerkleError                   │
-└────────────────────────────┬─────────────────────────────────────────┘
-                             │ depends on
-          ┌──────────────────┼───────────────────┐
-          ▼                  ▼                   ▼
-  merkleforge-hash    merkle-variants        merkle-bench
-  SHA-256 adapter    BinaryMerkleTree     Criterion suite
-  Keccak-256         SparseMerkleTree     baseline_construction
-  BLAKE3             PatriciaTrie         hash_throughput
-```
+### Module Organization
+
+<img width="1698" height="1252" alt="Image" src="https://github.com/user-attachments/assets/7c3e4c98-8e61-479b-aee8-510ae2b231a1" />
  
 
 ### Trait Hierarchy
 
-```
-HashFunction  ←  pluggable crypto abstraction
-      │
-      └──▶  MerkleTree<H: HashFunction>
-                 insert() · remove() · root()
-                 generate_proof() · metadata()
-                      │
-                      └──▶  ProofVerifier<H>  (stateless)
-                                verify(root, leaf_data, proof)
-```
+<img width="1253" height="1158" alt="Image" src="https://github.com/user-attachments/assets/cd1afa6c-1aaf-4d43-bb72-18467ce73726" />
 
 Domain separation is enforced at the hash level:
 - Leaf hashes: `H(0x00 || data)`
