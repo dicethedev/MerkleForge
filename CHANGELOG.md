@@ -67,11 +67,9 @@ release.
 
 ### Changed
 
-- Workspace crate version advanced to `0.4.0`
+- Workspace crate version advanced to `0.3.0`
 - Sparse tree docs now include the generic `MerkleTree<H>` contract alongside
   the native key-addressed API
-- `merkle-variants` README now documents Patricia trie availability and
-  `0.4` installation snippets
 
 ### Documentation
 

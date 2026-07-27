@@ -13,7 +13,7 @@ edition     = "2024"
 authors     = ["Blessing Samuel <dicethedev>"]
 license     = "MIT OR Apache-2.0"
 repository  = "https://github.com/dicethedev/MerkleForge"
-keywords    = ["merkle", "blockchain", "cryptography", "hashing"]
+keywords    = ["merkletree", "blockchain", "cryptography", "hashing", "hash functions"]
 categories  = ["cryptography", "data-structures"]
 
 # Shared dependency versions — bump once, applies everywhere
