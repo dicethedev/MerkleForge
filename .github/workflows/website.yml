@@ -33,14 +33,22 @@ jobs:
       - name: Setup cache
         uses: Swatinem/rust-cache@v2
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install website dependencies
+        run: npm ci
+        working-directory: website
+
       - name: Run binary-tree benchmarks
         run: cargo bench --bench binary_tree
 
       - name: Prepare Pages site
-        run: |
-          mkdir -p _site/reports/criterion
-          cp -R target/criterion/. _site/reports/criterion/
-          python3 website/build.py --minimum-samples 36
+        run: python3 website/build.py --minimum-samples 36
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
