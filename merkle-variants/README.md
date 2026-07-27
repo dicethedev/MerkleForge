@@ -106,7 +106,7 @@ fn main() -> Result<(), merkle_core::error::MerkleError> {
 
 Licensed under either of:
 
-- Apache License, Version 2.0
-- MIT License
+- [MIT License](../LICENSE)
+- [Apache License, Version 2.0](../LICENSE-APACHE)
 
 at your option.

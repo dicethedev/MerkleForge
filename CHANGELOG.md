@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-> **Workspace note:** `merkle-core`, `merkle-hash`, and `merkle-variants` are
+> **Workspace note:** `merkle-core`, `merkleforge-hash`, and `merkle-variants` are
 > versioned together. A single entry here covers all published crates unless
 > stated otherwise. `merkle-bench` is never published (`publish = false`).
 
@@ -13,8 +13,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+No unreleased changes yet.
+
+---
+
+## [0.4.0] — 2026-07-27
+
 Phase 4 complete: Ethereum-compatible Merkle Patricia Trie implementation and
-release preparation.
+release.
 
 ### Added — `merkle-variants`
 
@@ -86,7 +92,6 @@ release preparation.
 ### Planned — Phase 6 (Weeks 11–12)
 - Complete rustdoc coverage with copy-pasteable examples for all public items
 - mdBook user guide at `docs/`
-- Publish `merkle-core`, `merkle-hash`, `merkle-variants` to crates.io
 - Research paper draft on benchmark findings and tree-type trade-offs
 
 ---
@@ -184,7 +189,7 @@ handling, benchmarking scaffold, and CI/CD pipeline.
 
 ---
 
-### Added — `merkle-hash`
+### Added — `merkleforge-hash`
 
 - `Sha256` — SHA-256 adapter; leaf hashing `SHA-256(0x00 || data)`;
   node hashing `SHA-256(0x01 || left || right)`; `empty()` returns the
@@ -200,7 +205,7 @@ handling, benchmarking scaffold, and CI/CD pipeline.
   `"MerkleForge 2024 internal-node v1"`; eliminates the need for prefix bytes
   and removes any length-extension risk at domain boundaries
 - All three adapters are `Copy + Clone + Debug + PartialEq + Eq`
-- `merkle_hash::HashFunction` re-export for single-crate imports
+- `merkleforge_hash::HashFunction` re-export for single-crate imports
 - `#[forbid(unsafe_code)]` enforced at crate root
 
 ---
@@ -243,7 +248,7 @@ handling, benchmarking scaffold, and CI/CD pipeline.
   inputs are prefixed with `0x01` (or a node-context string); prevents
   the RFC 6962 second-preimage attack where an attacker substitutes an
   internal node for a leaf in a proof
-- `#[forbid(unsafe_code)]` on `merkle-core` and `merkle-hash`; no unsafe
+- `#[forbid(unsafe_code)]` on `merkle-core` and `merkleforge-hash`; no unsafe
   blocks anywhere in the workspace
 - `MerkleError` is `#[non_exhaustive]`; downstream `match` expressions
   require a catch-all arm, making them forward-compatible with new variants
@@ -251,7 +256,8 @@ handling, benchmarking scaffold, and CI/CD pipeline.
 
 ---
 
-[Unreleased]: https://github.com/dicethedev/MerkleForge/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/dicethedev/MerkleForge/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/dicethedev/MerkleForge/compare/v0.2.0...v0.4.0
 [0.2.0]: https://github.com/dicethedev/MerkleForge/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/dicethedev/MerkleForge/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/dicethedev/MerkleForge/releases/tag/v0.1.0

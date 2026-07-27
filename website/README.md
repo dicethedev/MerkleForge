@@ -24,11 +24,13 @@ calls `build.py` to generate the official site.
 
 ## Local Preview
 
-Run the binary-tree benchmark first when `target/criterion` is missing or
-outdated:
+Run the benchmarks first when `target/criterion` is missing or outdated:
 
 ```bash
+cargo bench --bench hash_throughput
 cargo bench --bench binary_tree
+cargo bench --bench sparse_tree
+cargo bench --bench patricia_trie
 ```
 
 Build and serve the site:

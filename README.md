@@ -166,7 +166,10 @@ MerkleForge/
 ├── merkle-bench/                     # isolated benchmarking crate
 │   ├── benches/
 │   │   ├── baseline_construction.rs  # leaf + node hashing latency
-│   │   └── hash_throughput.rs        # sustained MB/s per algorithm
+│   │   ├── hash_throughput.rs        # sustained MB/s per algorithm
+│   │   ├── binary_tree.rs            # binary construction + proof benchmarks
+│   │   ├── sparse_tree.rs            # sparse tree update + proof benchmarks
+│   │   └── patricia_trie.rs          # Patricia trie update + proof benchmarks
 │   └── src/lib.rs
 │
 └── .github/workflows/ci.yml          # automated test · lint · bench · docs
@@ -184,9 +187,9 @@ Add the crates you need to your `Cargo.toml`:
  
 ```toml
 [dependencies]
-merkle-core = "0.2"
-merkleforge-hash = "0.2"
-merkle-variants = "0.2"
+merkle-core = "0.4"
+merkleforge-hash = "0.4"
+merkle-variants = "0.4"
 ```
 
 ### Quick example
@@ -337,6 +340,9 @@ cargo bench --bench hash_throughput
 # Run binary-tree construction and proof benchmarks
 cargo bench --bench binary_tree
 
+# Run sparse tree benchmarks
+cargo bench --bench sparse_tree
+
 # Run Patricia trie benchmarks
 cargo bench --bench patricia_trie
 ```
@@ -367,7 +373,7 @@ Criterion reports.
 | 3 — Sparse Merkle Tree | `SparseMerkleTree<H>`, node batching | ✅ **Complete** |
 | 4 — Merkle Patricia Trie | Ethereum-compatible MPT, RLP | ✅ **Complete** |
 | 5 — Benchmarking | Full Criterion suite, comparative report | ⏳ Planned |
-| 6 — Docs & Publication | `crates.io` publish, mdBook, paper | ⏳ Planned |
+| 6 — Docs & Publication | `crates.io` publish, mdBook, paper | 🚧 In progress |
  
 ---
 
@@ -376,9 +382,9 @@ Criterion reports.
 - [x] `BinaryMerkleTree<H>` with iterative construction and stateless proof verification
 - [x] `SparseMerkleTree<H>` with shortcut nodes and one-phase batch updates
 - [x] `MerklePatriciaTrie<H>` with RLP encoding, validated against Ethereum test vectors
+- [x] Publish `merkle-core`, `merkleforge-hash`, and `merkle-variants` `v0.4.0` to `crates.io`
 - [ ] Full Criterion benchmark suite with comparative results vs `rs-merkle` and `merkle_light`
 - [ ] mdBook user guide with copy-pasteable examples for each variant
-- [ ] Publish `merkle-variants` to `crates.io`
 - [ ] Research paper on benchmark findings and tree-type trade-off analysis
 
 ---
@@ -412,7 +418,7 @@ Full bibliography in the accompanying research proposal.
 
 Licensed under either of:
 
-- [MIT License](LICENSE-MIT)
+- [MIT License](LICENSE)
 - [Apache License, Version 2.0](LICENSE-APACHE)
 
 at your option.
