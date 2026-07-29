@@ -7,12 +7,11 @@
 //!
 //! Reports are written below `target/criterion/binary_tree/`.
 
-use criterion::{
-    BatchSize, BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main,
-};
+use criterion::{BatchSize, BenchmarkId, Criterion, Throughput, criterion_group, criterion_main};
 use merkle_core::traits::HashFunction;
 use merkle_variants::BinaryMerkleTree;
 use merkleforge_hash::{Blake3, Keccak256, Sha256};
+use std::hint::black_box;
 use std::path::Path;
 use std::time::Duration;
 

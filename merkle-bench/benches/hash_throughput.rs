@@ -10,8 +10,9 @@
 //! cargo bench --bench hash_throughput
 //! ```
 
-use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main};
+use criterion::{BenchmarkId, Criterion, Throughput, criterion_group, criterion_main};
 use merkleforge_hash::{Blake3, HashFunction, Keccak256, Sha256};
+use std::hint::black_box;
 
 const BUFFER_SIZES: &[usize] = &[
     1_024,     //  1 KB

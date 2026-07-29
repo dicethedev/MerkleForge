@@ -1,26 +1,21 @@
 #!/usr/bin/env python3
-"""Build the official MerkleForge static website."""
+"""Build the official MerkleForge Vite website."""
 
 from __future__ import annotations
 
 import argparse
-import html
 import json
 import os
 import shutil
+import subprocess
 import tomllib
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 
-SOURCE_DIR = Path(__file__).parent / "src"
-HTML_PAGES = (
-    Path("index.html"),
-    Path("docs/index.html"),
-    Path("examples/index.html"),
-    Path("benchmarks/index.html"),
-)
+WEBSITE_DIR = Path(__file__).parent
+PUBLIC_DIR = WEBSITE_DIR / "public"
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -42,6 +37,46 @@ def parse_size(value: Any) -> float:
         return 0
 
 
+def benchmark_identity(benchmark: dict[str, Any]) -> tuple[str, str, str]:
+    """Normalize Criterion benchmark labels across grouped benchmark styles."""
+    group_id = str(benchmark.get("group_id", "benchmark"))
+    function_id = str(benchmark.get("function_id", "default"))
+    group_parts = group_id.split("/")
+    function_parts = function_id.split("/")
+
+    if len(group_parts) > 1:
+        tree_variant = group_parts[0]
+        operation = group_parts[-1]
+        algorithm = function_parts[0]
+        if len(function_parts) > 1:
+            operation = f"{operation}_{function_parts[-1]}"
+    elif len(function_parts) > 1:
+        tree_variant = group_id
+        operation = function_parts[0]
+        algorithm = function_parts[1]
+    else:
+        tree_variant = group_id
+        operation = function_id
+        algorithm = "Default"
+
+    return tree_variant, operation, algorithm
+
+
+def display_operation(operation: str) -> str:
+    """Return a readable operation label for the benchmark dashboard."""
+    labels = {
+        "batch_update_batch_insert": "Batch insert",
+        "batch_update_sequential_insert": "Sequential insert",
+        "construction": "Construction",
+        "insert": "Insert",
+        "non_membership_generation": "Non-membership proof",
+        "non_membership_verification": "Non-membership verify",
+        "proof_generation": "Proof generation",
+        "proof_verification": "Proof verification",
+    }
+    return labels.get(operation, operation.replace("_", " ").title())
+
+
 def collect_benchmarks(criterion_dir: Path) -> list[dict[str, Any]]:
     """Collect completed Criterion estimates for the website dashboard."""
     benchmarks: list[dict[str, Any]] = []
@@ -53,8 +88,7 @@ def collect_benchmarks(criterion_dir: Path) -> list[dict[str, Any]]:
 
         benchmark = load_json(benchmark_path)
         estimates = load_json(estimates_path)
-        function_id = str(benchmark.get("function_id", "benchmark"))
-        operation, separator, algorithm = function_id.partition("/")
+        tree_variant, operation, algorithm = benchmark_identity(benchmark)
         mean = estimates["mean"]
         confidence = mean["confidence_interval"]
         throughput = benchmark.get("throughput") or {}
@@ -64,9 +98,10 @@ def collect_benchmarks(criterion_dir: Path) -> list[dict[str, Any]]:
         benchmarks.append(
             {
                 "id": str(benchmark["full_id"]),
-                "operation": operation.replace("_", " ").title(),
+                "tree_variant": tree_variant.replace("_", " ").title(),
+                "operation": display_operation(operation),
                 "operation_key": operation,
-                "algorithm": algorithm if separator else "Default",
+                "algorithm": algorithm,
                 "size": str(benchmark.get("value_str", "n/a")),
                 "size_value": parse_size(benchmark.get("value_str")),
                 "mean_ns": mean_ns,
@@ -74,15 +109,11 @@ def collect_benchmarks(criterion_dir: Path) -> list[dict[str, Any]]:
                 "upper_ns": float(confidence["upper_bound"]),
                 "elements_per_second": (
                     float(elements) * 1_000_000_000 / mean_ns
-                    if (
-                        operation == "construction"
-                        and elements is not None
-                        and mean_ns > 0
-                    )
+                    if elements is not None and mean_ns > 0
                     else None
                 ),
                 "report": (
-                    "../reports/criterion/"
+                    "reports/criterion/"
                     + str(benchmark["directory_name"])
                     + "/report/index.html"
                 ),
@@ -92,31 +123,42 @@ def collect_benchmarks(criterion_dir: Path) -> list[dict[str, Any]]:
     return benchmarks
 
 
-def page_root(page: Path) -> str:
-    """Return the relative path from a generated page to the site root."""
-    return "" if page.parent == Path(".") else "../"
+def write_json_asset(path: Path, payload: dict[str, Any]) -> None:
+    """Write a JSON file consumed by the Vite app at runtime."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, separators=(",", ":")))
 
 
-def render_page(
-    page: Path,
-    output_dir: Path,
-    repository_url: str,
-    crate_version: str,
-    benchmark_payload: str,
-) -> None:
-    """Render one HTML template into the output directory."""
-    root = page_root(page)
-    source = (SOURCE_DIR / page).read_text()
-    rendered = (
-        source.replace("__ROOT__", root)
-        .replace("__REPOSITORY_URL__", html.escape(repository_url, quote=True))
-        .replace("__CRATE_VERSION__", html.escape(crate_version))
-        .replace("__BENCHMARK_DATA__", benchmark_payload)
+def run_vite_build(output_dir: Path, base_path: str) -> None:
+    """Compile the React app with Vite into the requested output directory."""
+    env = os.environ.copy()
+    env["VITE_BASE_PATH"] = base_path
+    subprocess.run(
+        [
+            "npm",
+            "run",
+            "build",
+            "--",
+            "--outDir",
+            str(output_dir.resolve()),
+            "--emptyOutDir",
+        ],
+        cwd=WEBSITE_DIR,
+        check=True,
+        env=env,
     )
 
-    destination = output_dir / page
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_text(rendered)
+
+def copy_criterion_reports(criterion_dir: Path, output_dir: Path) -> None:
+    """Copy generated Criterion HTML reports into the built website."""
+    if not criterion_dir.exists():
+        return
+
+    reports_dir = output_dir / "reports" / "criterion"
+    reports_dir.parent.mkdir(parents=True, exist_ok=True)
+    if reports_dir.exists():
+        shutil.rmtree(reports_dir)
+    shutil.copytree(criterion_dir, reports_dir)
 
 
 def build_site(
@@ -126,6 +168,7 @@ def build_site(
     commit_sha: str,
     crate_version: str,
     minimum_samples: int,
+    base_path: str,
 ) -> int:
     """Build all pages and return the number of benchmark samples."""
     benchmarks = collect_benchmarks(criterion_dir)
@@ -136,28 +179,25 @@ def build_site(
         )
 
     generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
-    payload = json.dumps(
-        {
-            "benchmarks": benchmarks,
-            "generatedAt": generated_at,
-            "commit": commit_sha[:7] if commit_sha else "local",
-        },
-        separators=(",", ":"),
-    ).replace("</", "<\\/")
+    benchmark_payload = {
+        "benchmarks": benchmarks,
+        "generatedAt": generated_at,
+        "commit": commit_sha[:7] if commit_sha else "local",
+    }
+    site_payload = {
+        "crateVersion": crate_version,
+        "repositoryUrl": repository_url,
+        "commit": commit_sha[:7] if commit_sha else "local",
+    }
+    write_json_asset(PUBLIC_DIR / "benchmark-data.json", benchmark_payload)
+    write_json_asset(PUBLIC_DIR / "site-data.json", site_payload)
 
-    assets_output = output_dir / "assets"
-    if assets_output.exists():
-        shutil.rmtree(assets_output)
-    shutil.copytree(SOURCE_DIR / "assets", assets_output)
+    run_vite_build(output_dir, base_path)
+    copy_criterion_reports(criterion_dir, output_dir)
 
-    for page in HTML_PAGES:
-        render_page(
-            page,
-            output_dir,
-            repository_url,
-            crate_version,
-            payload,
-        )
+    index = output_dir / "index.html"
+    if index.exists():
+        shutil.copyfile(index, output_dir / "404.html")
 
     (output_dir / ".nojekyll").touch()
     return len(benchmarks)
@@ -179,6 +219,10 @@ def main() -> None:
     )
     parser.add_argument("--commit", default=os.environ.get("GITHUB_SHA", ""))
     parser.add_argument(
+        "--base-path",
+        default=os.environ.get("MERKLEFORGE_SITE_BASE", "/MerkleForge/"),
+    )
+    parser.add_argument(
         "--crate-version",
         default=workspace_version(Path("Cargo.toml")),
     )
@@ -191,6 +235,7 @@ def main() -> None:
         args.commit,
         args.crate_version,
         args.minimum_samples,
+        args.base_path,
     )
     print(f"Generated {args.output} with {sample_count} benchmark samples")
 
