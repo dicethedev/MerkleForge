@@ -7,11 +7,9 @@
 //!
 //! Reports are written below `target/criterion/sparse_tree/`.
 
-use std::{path::Path, time::Duration};
+use std::{hint::black_box, path::Path, time::Duration};
 
-use criterion::{
-    BatchSize, BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main,
-};
+use criterion::{BatchSize, BenchmarkId, Criterion, Throughput, criterion_group, criterion_main};
 use merkle_core::traits::HashFunction;
 use merkle_variants::{SparseMerkleTree, sparse::SparseMerkleProof};
 use merkleforge_hash::{Blake3, Keccak256, Sha256};

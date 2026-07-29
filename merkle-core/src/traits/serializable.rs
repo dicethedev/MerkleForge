@@ -52,11 +52,13 @@ pub trait Serializable: Sized {
 /// derive `Serialize + DeserializeOwned`.
 impl<T: Serialize + DeserializeOwned> Serializable for T {
     fn to_bytes(&self) -> Result<Vec<u8>, MerkleError> {
-        bincode::serialize(self).map_err(MerkleError::from)
+        bincode::serde::encode_to_vec(self, bincode::config::standard()).map_err(MerkleError::from)
     }
 
     fn from_bytes(bytes: &[u8]) -> Result<Self, MerkleError> {
-        bincode::deserialize(bytes).map_err(|e| MerkleError::DeserializationError(e.to_string()))
+        bincode::serde::decode_from_slice(bytes, bincode::config::standard())
+            .map(|(value, _)| value)
+            .map_err(MerkleError::from)
     }
 }
 

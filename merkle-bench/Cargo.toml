@@ -4,6 +4,7 @@ description = "Isolated Criterion benchmarking suite for the MerkleForge workspa
 publish     = false   # never publish this internal crate to crates.io
 version.workspace    = true
 edition.workspace    = true
+rust-version.workspace = true
 authors.workspace    = true
 license.workspace    = true
 

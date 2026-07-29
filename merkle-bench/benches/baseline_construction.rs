@@ -16,8 +16,9 @@
 //! ```
 //! Reports are written to `target/criterion/baseline_construction/`.
 
-use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main};
+use criterion::{BenchmarkId, Criterion, Throughput, criterion_group, criterion_main};
 use merkleforge_hash::{Blake3, HashFunction, Keccak256, Sha256};
+use std::hint::black_box;
 
 // ── Leaf sizes to test (bytes) ─────────────────────────────────────────────
 

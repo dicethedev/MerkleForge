@@ -86,9 +86,15 @@ impl std::error::Error for MerkleError {}
 
 // ── Conversions from common I/O / codec errors ─────────────────────────────
 
-impl From<bincode::Error> for MerkleError {
-    fn from(e: bincode::Error) -> Self {
+impl From<bincode::error::EncodeError> for MerkleError {
+    fn from(e: bincode::error::EncodeError) -> Self {
         Self::SerializationError(e.to_string())
+    }
+}
+
+impl From<bincode::error::DecodeError> for MerkleError {
+    fn from(e: bincode::error::DecodeError) -> Self {
+        Self::DeserializationError(e.to_string())
     }
 }
 
