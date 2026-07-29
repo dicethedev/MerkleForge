@@ -369,6 +369,22 @@ Criterion reports.
 
 ---
 
+## Release Automation
+
+Release versions are prepared through the manual GitHub Actions workflow at
+`.github/workflows/release.yml`. Trigger it with a semantic version such as
+`0.4.1`; the workflow tests the workspace, updates the workspace version and
+changelog, tags the release, publishes crates, creates the GitHub release, and
+sends the Telegram notification.
+
+For local release tooling, install `cargo-release` with:
+
+```bash
+make install-release-tools
+```
+
+---
+
 ## Contributing
  
 This project is currently closed to external contributions while active
