@@ -1,4 +1,4 @@
-.PHONY: fmt lint test install-release-tools
+.PHONY: fmt lint test install-release-tools install-profiling-tools
 
 fmt:
 	cargo fmt --all
@@ -15,3 +15,6 @@ test:
 
 install-release-tools:
 	cargo install cargo-release --locked
+
+install-profiling-tools:
+	cargo install flamegraph --locked

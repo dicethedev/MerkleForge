@@ -53,6 +53,7 @@ This is the implementation artifact of a final-year Software Engineering researc
 - [Tree Variants](#tree-variants)
 - [Proof Generation & Verification](#proof-generation--verification)
 - [Benchmarking](#benchmarking)
+- [Profiling](#profiling)
 - [Development Status](#development-status)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
@@ -343,6 +344,30 @@ Criterion reports.
 | Peak memory consumption (RSS) | 🔜 Phase 5 |
 | Comparative results vs `rs-merkle` and `merkle_light` | 🔜 Phase 5 |
  
+---
+
+## Profiling
+
+Use `cargo-flamegraph` when you need to inspect CPU hotspots inside a benchmark:
+
+```bash
+# Install the local profiling toolchain
+make install-profiling-tools
+
+# Generate a flamegraph for the baseline construction benchmark
+./scripts/flamegraph.sh baseline_construction
+
+# Output: flamegraph.svg — open it in a browser
+```
+
+Use `perf stat` when you need cache-miss evidence:
+
+```bash
+perf stat -e cache-misses,cache-references cargo bench --bench hash_throughput
+```
+
+Reproduction notes and a reference artifact live in [`profiling/`](profiling/).
+
 ---
 
 ## Development Status
