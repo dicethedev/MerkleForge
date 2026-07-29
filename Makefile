@@ -1,4 +1,4 @@
-.PHONY: fmt lint test
+.PHONY: fmt lint test install-release-tools
 
 fmt:
 	cargo fmt --all
@@ -12,3 +12,6 @@ lint:
 
 test:
 	cargo test --workspace --release
+
+install-release-tools:
+	cargo install cargo-release --locked
