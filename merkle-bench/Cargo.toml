@@ -33,3 +33,7 @@ harness = false
 [[bench]]
 name    = "patricia_trie"
 harness = false
+
+[[bench]]
+name    = "bench_energy"
+harness = false
