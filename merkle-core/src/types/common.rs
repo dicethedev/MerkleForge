@@ -5,8 +5,9 @@
 //! crates and lets `merkle-bench` import them without pulling in any
 //! tree-specific logic.
 
+use alloc::vec::Vec;
+use core::fmt;
 use serde::{Deserialize, Serialize};
-use std::fmt;
 
 // ── NodeIndex ──────────────────────────────────────────────────────────────
 

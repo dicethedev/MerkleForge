@@ -9,6 +9,11 @@ license.workspace    = true
 repository.workspace = true
 keywords.workspace   = true
 
+[features]
+default = ["std"]
+std     = ["alloc", "serde/std", "bincode/std"]
+alloc   = ["serde/alloc", "bincode/alloc"]
+
 [dependencies]
 serde  = { workspace = true }
 bincode = { workspace = true }

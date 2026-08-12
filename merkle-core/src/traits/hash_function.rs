@@ -28,7 +28,8 @@
 //! }
 //! ```
 
-use std::fmt::Debug;
+use alloc::vec::Vec;
+use core::fmt::Debug;
 
 /// Abstraction over a cryptographic hash function used by Merkle trees.
 ///
