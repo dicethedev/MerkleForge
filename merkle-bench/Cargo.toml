@@ -13,6 +13,9 @@ merkle-core = { workspace = true }
 merkleforge-hash = { workspace = true }
 merkle-variants = { path = "../merkle-variants" }
 criterion   = { workspace = true }
+rs_merkle   = "1.5.0"
+merkle_light = "0.4.0"
+sha2        = { workspace = true }
 
 [[bench]]
 name    = "baseline_construction"
@@ -36,4 +39,8 @@ harness = false
 
 [[bench]]
 name    = "bench_energy"
+harness = false
+
+[[bench]]
+name    = "comparison"
 harness = false

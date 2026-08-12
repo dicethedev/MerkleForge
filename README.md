@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="assets/merkleforge-wordmark.svg" alt="MerkleForge" width="760">
+<img src="assets/merkleforge-wordmark-outline.svg" alt="MerkleForge" width="760">
 
 </div>
 
