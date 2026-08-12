@@ -241,6 +241,36 @@ export function BenchmarksPage({ site, benchmarks }: BenchmarksPageProps) {
               governor, and dependency versions can move the absolute values, so use the trend and
               rerun locally when exact timing matters.
             </p>
+            <div className="comparison-explainer" aria-label="What the comparison metrics mean">
+              <article>
+                <strong>Construction time</strong>
+                <p>
+                  How long it takes to build a binary Merkle tree from 10,000 leaves. Lower means the
+                  tree is built faster.
+                </p>
+              </article>
+              <article>
+                <strong>Proof size</strong>
+                <p>
+                  How many bytes one inclusion proof takes when serialized or sent over a network.
+                  Lower means cheaper storage and bandwidth.
+                </p>
+              </article>
+              <article>
+                <strong>Proof verification</strong>
+                <p>
+                  How long it takes to check one proof against a trusted root. Lower means faster
+                  light-client or verifier checks.
+                </p>
+              </article>
+              <article className="comparison-takeaway">
+                <strong>Current takeaway</strong>
+                <p>
+                  MerkleForge is strongest at proof verification and competitive on proof size, but
+                  slower at 10K tree construction in this snapshot.
+                </p>
+              </article>
+            </div>
           </div>
         </Section>
 
