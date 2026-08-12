@@ -327,6 +327,9 @@ cargo bench --bench sparse_tree
 
 # Run Patricia trie benchmarks
 cargo bench --bench patricia_trie
+
+# Run the energy-focused 100K-leaf construction benchmark
+cargo bench --bench bench_energy
 ```
 
 The [official MerkleForge site](https://dicethedev.github.io/MerkleForge/index.html)
@@ -340,6 +343,7 @@ Criterion reports.
 | Binary tree construction — 100 / 1K / 10K / 100K leaves | ✅ Phase 2 |
 | Binary proof generation & verification latency | ✅ Phase 2 |
 | Sparse and Patricia tree benchmarks | ✅ Phase 4 |
+| Energy-aware construction benchmark | ✅ Phase 5 |
 | Proof size in bytes | 🔜 Phase 5 |
 | Peak memory consumption (RSS) | 🔜 Phase 5 |
 | Comparative results vs `rs-merkle` and `merkle_light` | 🔜 Phase 5 |
@@ -365,6 +369,15 @@ Use `perf stat` when you need cache-miss evidence:
 ```bash
 perf stat -e cache-misses,cache-references cargo bench --bench hash_throughput
 ```
+
+For energy-aware benchmarking, run the 100,000-leaf construction workload
+through Linux `perf`:
+
+```bash
+./scripts/energy-perf.sh bench_energy
+```
+
+The full reproducibility guide lives in [`benchmarks/ENERGY.md`](benchmarks/ENERGY.md).
 
 Reproduction notes and a reference artifact live in [`profiling/`](profiling/).
 
