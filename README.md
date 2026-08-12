@@ -2,16 +2,7 @@
 
 <div align="center">
 
-<pre>
- __  __           _    _      _____
-|  \/  | ___ _ __| | _| | ___|  ___|__  _ __ __ _  ___
-| |\/| |/ _ \ '__| |/ / |/ _ \ |_ / _ \| '__/ _` |/ _ \
-| |  | |  __/ |  |   <| |  __/  _| (_) | | | (_| |  __/
-|_|  |_|\___|_|  |_|\_\_|\___|_|  \___/|_|  \__, |\___|
-                                            |___/
-
-        [ root hashes ] -> [ proofs ] -> [ verified state ]
-</pre>
+<img src="assets/merkleforge-wordmark.svg" alt="MerkleForge" width="760">
 
 </div>
 
