@@ -26,6 +26,13 @@
 
 #![deny(missing_docs)]
 #![forbid(unsafe_code)]
+#![cfg_attr(not(feature = "std"), no_std)]
+
+#[cfg(not(any(feature = "std", feature = "alloc")))]
+compile_error!("merkle-core requires either the `std` feature or the `alloc` feature.");
+
+#[cfg(feature = "alloc")]
+extern crate alloc;
 
 pub mod error;
 pub mod traits;

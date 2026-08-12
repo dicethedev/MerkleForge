@@ -40,6 +40,32 @@ merkle-core = "0.4"
 merkleforge-hash = "0.4"
 ```
 
+### `no_std` / Bare-Metal Builds
+
+`merkle-core` supports `no_std` when the `alloc` crate is available. This is
+intended for embedded targets, lightweight SPV clients, and other constrained
+environments that still need heap-backed proof paths.
+
+```toml
+[dependencies]
+merkle-core = { version = "0.4", default-features = false, features = ["alloc"] }
+```
+
+To check the core crate against a Cortex-M style bare-metal target:
+
+```bash
+rustup target add thumbv7em-none-eabihf
+cargo check -p merkle-core \
+  --no-default-features \
+  --features alloc \
+  --target thumbv7em-none-eabihf
+```
+
+The default `std` feature remains enabled for normal desktop/server builds.
+With `std`, `MerkleError` also implements `std::error::Error`. With `alloc`
+only, the public proof and error types still support `Vec`, `String`, `Display`,
+`serde`, and `bincode` serialization.
+
 ---
 
 ## Traits
@@ -291,7 +317,10 @@ match result {
 }
 ```
 
-All variants implement `std::error::Error + Display`. `bincode::Error` converts into `MerkleError::SerializationError` via `From`.
+All variants implement `Display`. With the default `std` feature,
+`MerkleError` also implements `std::error::Error`. `bincode` encode/decode
+errors convert into `MerkleError::SerializationError` or
+`MerkleError::DeserializationError` via `From`.
 
 **All variants:**
 

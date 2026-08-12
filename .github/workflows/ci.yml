@@ -8,9 +8,10 @@
 # Jobs:
 #   1. test     — unit tests, property-based tests, doc tests
 #   2. lint     — clippy (pedantic) + rustfmt check
-#   3. bench-dry — ensures benchmarks compile (no regression)
-#   4. docs     — rustdoc build check
-#   5. bench-publish — publishes Criterion HTML reports from main
+#   3. no-std  — verifies merkle-core on a bare-metal target
+#   4. bench-dry — ensures benchmarks compile (no regression)
+#   5. docs     — rustdoc build check
+#   6. bench-publish — publishes Criterion HTML reports from main
 
 name: CI
 
@@ -83,7 +84,27 @@ jobs:
       - name: Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
 
-  # ── 3. Bench dry-run ─────────────────────────────────────────────────────
+  # ── 3. no_std compile check ──────────────────────────────────────────────
+  no-std:
+    name: Check no_std
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.97.1"
+          targets: thumbv7em-none-eabihf
+
+      - name: Check merkle-core without std
+        run: >
+          cargo check -p merkle-core
+          --no-default-features
+          --features alloc
+          --target thumbv7em-none-eabihf
+
+  # ── 4. Bench dry-run ─────────────────────────────────────────────────────
   bench-dry:
     name: Benchmarks compile check
     runs-on: ubuntu-latest
@@ -96,7 +117,7 @@ jobs:
       - name: Compile benchmarks (no run)
         run: cargo bench --workspace --no-run
 
-  # ── 4. Docs ───────────────────────────────────────────────────────────────
+  # ── 5. Docs ───────────────────────────────────────────────────────────────
   docs:
     name: Rustdoc
     runs-on: ubuntu-latest
@@ -111,7 +132,7 @@ jobs:
           RUSTDOCFLAGS="-D warnings"
           cargo doc --workspace --all-features --no-deps
 
-  # ── 5. Benchmark report publishing ──────────────────────────────────────
+  # ── 6. Benchmark report publishing ──────────────────────────────────────
   bench-publish:
     name: Publish benchmark reports
     runs-on: ubuntu-latest

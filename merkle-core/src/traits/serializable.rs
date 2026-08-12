@@ -9,6 +9,7 @@
 //! (e.g. JSON, CBOR, RLP) by overriding the methods.
 
 use crate::error::MerkleError;
+use alloc::vec::Vec;
 use serde::{Serialize, de::DeserializeOwned};
 
 /// Trait for types that can be serialised to / deserialised from bytes.
