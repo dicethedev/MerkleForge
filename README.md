@@ -1,5 +1,20 @@
 # MerkleForge
 
+<div align="center">
+
+<pre>
+ __  __           _    _      _____
+|  \/  | ___ _ __| | _| | ___|  ___|__  _ __ __ _  ___
+| |\/| |/ _ \ '__| |/ / |/ _ \ |_ / _ \| '__/ _` |/ _ \
+| |  | |  __/ |  |   <| |  __/  _| (_) | | | (_| |  __/
+|_|  |_|\___|_|  |_|\_\_|\___|_|  \___/|_|  \__, |\___|
+                                            |___/
+
+        [ root hashes ] -> [ proofs ] -> [ verified state ]
+</pre>
+
+</div>
+
 ### Building a Faster, More Efficient Data Verification Toolkit for Modern Blockchains
 
 [![CI](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml/badge.svg)](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml)
