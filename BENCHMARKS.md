@@ -13,3 +13,27 @@ benchmark suite:
 cargo bench --workspace
 ```
 
+## Comparative Binary Tree Benchmarks
+
+These numbers come from:
+
+```bash
+cargo bench --bench comparison
+MERKLEFORGE_PRINT_COMPARISON_SIZES=1 cargo bench --bench comparison -- --list
+```
+
+Machine-specific timing will vary, but the table gives the current local
+baseline for Chapter 5 comparisons against `rs-merkle` and `merkle_light`.
+
+| Metric | MerkleForge | rs-merkle | merkle_light |
+|--------|-------------|-----------|--------------|
+| 10K leaf construction (ms) | 16.93 | 2.70 | 2.19 |
+| Proof size (bytes, 10K tree) | 469 | 448 | 512 |
+| Proof verification (µs) | 1.87 | 7.16 | 1.88 |
+
+Notes:
+
+- Construction uses deterministic 32-byte leaves across all libraries.
+- `rs-merkle` receives pre-hashed SHA-256 leaves, matching its public API.
+- Proof size is the serialized proof byte count reported by each library.
+- Lower is better for all three rows.
