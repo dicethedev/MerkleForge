@@ -58,6 +58,7 @@ This is the implementation artifact of a final-year Software Engineering researc
 - [Hash Functions](#hash-functions)
 - [Tree Variants](#tree-variants)
 - [Proof Generation & Verification](#proof-generation--verification)
+- [Stateless Light-Client Demo](#stateless-light-client-demo)
 - [Benchmarking](#benchmarking)
 - [Profiling](#profiling)
 - [Development Status](#development-status)
@@ -309,6 +310,27 @@ resource-constrained nodes:
 Proofs are `serde`-serialisable out of the box via the blanket `Serializable`
 impl — store them in a database or send them over a network with no extra
 setup.
+
+### Stateless Light-Client Demo
+
+Run the standalone demo binary to see the server/client split end to end:
+
+```bash
+cargo run -p merkle-variants --example light_client
+```
+
+Expected output:
+
+```text
+server: built tree and exported root + proof
+client: tree dropped before verification
+Stateless verification: true
+```
+
+The tree is built inside a block scope and dropped before verification, so the
+client side authenticates the target transaction using only the trusted root,
+the proof, and the leaf bytes. The same flow is shown visually on the
+[live demo page](https://dicethedev.github.io/MerkleForge/demo/).
  
 ---
  

@@ -12,6 +12,7 @@ type AppLayoutProps = {
 const nav = [
   ["docs", "Docs"],
   ["examples", "Examples"],
+  ["demo", "Demo"],
   ["benchmarks", "Benchmarks"],
 ] as const;
 

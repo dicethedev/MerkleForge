@@ -1,4 +1,4 @@
-export type Page = "home" | "docs" | "examples" | "benchmarks";
+export type Page = "home" | "docs" | "examples" | "demo" | "benchmarks";
 
 export type SiteData = {
   crateVersion: string;
