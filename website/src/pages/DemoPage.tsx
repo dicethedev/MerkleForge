@@ -20,34 +20,8 @@ type DemoResult = {
   recomputedRoot: string;
   targetLeaf: string;
   leafIndex: number;
+  leafCount: number;
 };
-
-const proofSteps = [
-  {
-    label: "Server",
-    title: "Build the full tree",
-    copy: "A full node inserts transaction bytes and computes the trusted Merkle root.",
-    detail: "3 leaves · SHA-256 · binary tree",
-  },
-  {
-    label: "Witness",
-    title: "Export only the proof",
-    copy: "The server sends the root, the target transaction, and the sibling hashes on the proof path.",
-    detail: "root + proof + tx bytes",
-  },
-  {
-    label: "Drop",
-    title: "Throw the tree away",
-    copy: "The demo uses a Rust block scope so the tree is gone before verification starts.",
-    detail: "zero tree database",
-  },
-  {
-    label: "Client",
-    title: "Verify statelessly",
-    copy: "The client recomputes the path from the leaf and accepts only if it lands on the trusted root.",
-    detail: "prints true",
-  },
-] as const;
 
 const terminalLines = [
   "$ cargo run -p merkle-variants --example light_client",
@@ -176,11 +150,11 @@ async function runBrowserDemo(input: string, requestedLeafIndex: number): Promis
     recomputedRoot: bytesToHex(recomputedRoot),
     targetLeaf: leaves[leafIndex],
     leafIndex,
+    leafCount: leaves.length,
   };
 }
 
 export function DemoPage({ site }: { site: SiteData }) {
-  const [activeStep, setActiveStep] = useState(0);
   const [leafInput, setLeafInput] = useState(defaultLeaves.join("\n"));
   const [leafIndex, setLeafIndex] = useState(0);
   const [result, setResult] = useState<DemoResult | null>(null);
@@ -188,11 +162,7 @@ export function DemoPage({ site }: { site: SiteData }) {
   const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
-    const id = window.setInterval(() => {
-      setActiveStep((step) => (step + 1) % proofSteps.length);
-    }, 1800);
-
-    return () => window.clearInterval(id);
+    void runBrowserDemo(defaultLeaves.join("\n"), 0).then(setResult);
   }, []);
 
   async function runDemo() {
@@ -214,15 +184,15 @@ export function DemoPage({ site }: { site: SiteData }) {
       <header className="page-hero demo-hero">
         <div>
           <span className="label">Light-client demo</span>
-          <h1>Verify the proof after the tree is gone.</h1>
+          <h1>Verify a transaction without downloading the tree.</h1>
           <p>
-            Run a real proof check in your browser. The page builds a small Merkle tree with
-            SHA-256, extracts the proof for one transaction, throws away the tree data, and verifies
-            using only the root, proof, and selected leaf.
+            Edit the transactions, pick one row, and run the proof check. The browser builds a
+            Merkle root, creates a tiny proof, then verifies that one row using only the proof and
+            root.
           </p>
           <div className="demo-actions">
             <a className="button primary" href="#live-demo">
-              Open live runner
+              Try the live demo
             </a>
             <a className="button secondary" href={`${site.repositoryUrl}/issues/82`} target="_blank" rel="noreferrer">
               Issue #82
@@ -241,53 +211,28 @@ export function DemoPage({ site }: { site: SiteData }) {
       </header>
 
       <main className="demo-page section">
-        <section className="demo-flow" aria-label="Stateless verification flow">
-          <div className="section-head">
-            <div>
-              <span className="label">How it works</span>
-              <h2>Full tree on the server. Tiny check on the client.</h2>
-            </div>
-            <p>
-              Follow the highlighted card. The important part is the boundary between step 3 and
-              step 4: verification happens after the original tree value has gone out of scope.
-            </p>
-          </div>
-
-          <div className="demo-step-grid">
-            {proofSteps.map((step, index) => (
-              <button
-                className={activeStep === index ? "demo-step active" : "demo-step"}
-                key={step.title}
-                type="button"
-                onClick={() => setActiveStep(index)}
-              >
-                <span>{step.label}</span>
-                <strong>{step.title}</strong>
-                <p>{step.copy}</p>
-                <small>{step.detail}</small>
-              </button>
-            ))}
-          </div>
-        </section>
-
         <section className="live-demo-panel" id="live-demo">
           <div className="section-head">
             <div>
-              <span className="label">Run in browser</span>
-              <h2>Build a proof, drop the tree, verify like a light client.</h2>
+              <span className="label">Live playground</span>
+              <h2>Change the data. Run it. Watch the proof update.</h2>
             </div>
             <p>
-              Edit the transaction list, choose the leaf to prove, then run the verifier. This uses
-              the same domain-separated Merkle rule as the SHA-256 adapter: `0x00 || leaf` and
-              `0x01 || left || right`.
+              No setup. No local clone. This runs in your browser with Web Crypto SHA-256.
             </p>
           </div>
 
           <div className="live-demo-grid">
             <div className="live-demo-controls">
+              <div className="playground-tabs" aria-label="Demo flow">
+                <span>1 Edit</span>
+                <span>2 Run</span>
+                <span>3 Verify</span>
+              </div>
+
               <label htmlFor="demo-leaves">
-                Transactions
-                <span>One leaf per line. These are the only values used to build the tree.</span>
+                Transactions to prove
+                <span>Try changing names, amounts, or adding another line.</span>
               </label>
               <textarea
                 id="demo-leaves"
@@ -297,8 +242,8 @@ export function DemoPage({ site }: { site: SiteData }) {
               />
 
               <label htmlFor="demo-leaf-index">
-                Leaf index to prove
-                <span>Pick the transaction the light client should verify.</span>
+                Which row should the client check?
+                <span>Rows start at 0, so the first transaction is row 0.</span>
               </label>
               <input
                 id="demo-leaf-index"
@@ -308,8 +253,13 @@ export function DemoPage({ site }: { site: SiteData }) {
                 onChange={(event) => setLeafIndex(Number(event.target.value))}
               />
 
-              <button className="button primary live-run-button" type="button" onClick={runDemo} disabled={isRunning}>
-                {isRunning ? "Running..." : "Run stateless verification"}
+              <button
+                className="button primary live-run-button"
+                type="button"
+                onClick={runDemo}
+                disabled={isRunning}
+              >
+                {isRunning ? "Running..." : "Run proof"}
               </button>
 
               {error && <p className="live-demo-error">{error}</p>}
@@ -317,22 +267,39 @@ export function DemoPage({ site }: { site: SiteData }) {
 
             <div className="live-demo-output" aria-live="polite">
               <div className={result?.verified ? "verification-badge valid" : "verification-badge"}>
-                <span>{result ? (result.verified ? "Verified" : "Failed") : "Ready"}</span>
-                <strong>{result ? String(result.verified) : "click run"}</strong>
+                <span>{result ? "Result" : "Ready"}</span>
+                <strong>{result?.verified ? "Verified" : "Click run"}</strong>
+              </div>
+
+              <div className="proof-story">
+                <div>
+                  <span>Server</span>
+                  <strong>{result ? `${result.leafCount} rows` : "waiting"}</strong>
+                </div>
+                <i />
+                <div>
+                  <span>Proof</span>
+                  <strong>{result ? `${result.proof.length} hashes` : "waiting"}</strong>
+                </div>
+                <i />
+                <div>
+                  <span>Client</span>
+                  <strong>{result?.verified ? "accepts" : "waiting"}</strong>
+                </div>
               </div>
 
               <div className="live-proof-summary">
                 <article>
-                  <span>Target leaf</span>
+                  <span>Checked row</span>
                   <strong>{result ? `#${result.leafIndex}` : "#0"}</strong>
                   <code>{result?.targetLeaf ?? "tx:alice->bob:100"}</code>
                 </article>
                 <article>
-                  <span>Trusted root</span>
+                  <span>Merkle root</span>
                   <code>{result?.root.slice(0, 32) ?? "waiting for root"}...</code>
                 </article>
                 <article>
-                  <span>Recomputed root</span>
+                  <span>Client recomputed</span>
                   <code>{result?.recomputedRoot.slice(0, 32) ?? "waiting for verifier"}...</code>
                 </article>
                 <article>
@@ -342,7 +309,7 @@ export function DemoPage({ site }: { site: SiteData }) {
               </div>
 
               <div className="proof-path-list">
-                <span className="label">Proof path</span>
+                <span className="label">Tiny proof sent to the client</span>
                 {(result?.proof ?? []).map((node, index) => (
                   <div className="proof-path-row" key={`${node.side}-${node.hash}`}>
                     <span>{index + 1}</span>
@@ -354,7 +321,7 @@ export function DemoPage({ site }: { site: SiteData }) {
                   <div className="proof-path-row empty">
                     <span>0</span>
                     <strong>No proof yet</strong>
-                    <code>Click run to generate sibling hashes.</code>
+                    <code>Click run to see the proof hashes.</code>
                   </div>
                 )}
               </div>
