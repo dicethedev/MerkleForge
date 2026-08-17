@@ -1,0 +1,1 @@
+{"group_id":"bench_energy","function_id":"construct_100k_leaves","value_str":"BLAKE3","throughput":{"Elements":100000},"full_id":"bench_energy/construct_100k_leaves/BLAKE3","directory_name":"bench_energy/construct_100k_leaves/BLAKE3","title":"bench_energy/construct_100k_leaves/BLAKE3"}

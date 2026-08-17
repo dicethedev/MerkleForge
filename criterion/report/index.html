@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Index - Criterion.rs</title>
+    <style type="text/css">
+        body {
+            font: 14px Helvetica Neue;
+            text-rendering: optimizelegibility;
+        }
+
+        .body {
+            width: 960px;
+            margin: auto;
+        }
+
+        a:link {
+            color: #1F78B4;
+            text-decoration: none;
+        }
+
+        h2 {
+            font-size: 36px;
+            font-weight: 300;
+        }
+
+        h3 {
+            font-size: 24px;
+            font-weight: 300;
+        }
+
+        #footer {
+            height: 40px;
+            background: #888;
+            color: white;
+            font-size: larger;
+            font-weight: 300;
+        }
+
+        #footer a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        #footer p {
+            text-align: center
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #888;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="body">
+        <h2>Criterion.rs Benchmark Index</h2>
+        See individual benchmark pages below for more details.
+        <ul>
+            <li><a href="../bench_energy/report/index.html">bench_energy</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../bench_energy/construct_100k_leaves/report/index.html">construct_100k_leaves</a></th>
+                        </tr>
+                        <tr>
+                            <th>BLAKE3</th>
+                            <td><a href="../bench_energy/construct_100k_leaves/BLAKE3/report/index.html">bench_energy/construct_100k_leaves/BLAKE3</a></td>
+                        </tr>
+                        <tr>
+                            <th>Keccak-256</th>
+                            <td><a href="../bench_energy/construct_100k_leaves/Keccak-256/report/index.html">bench_energy/construct_100k_leaves/Keccak-256</a></td>
+                        </tr>
+                        <tr>
+                            <th>SHA-256</th>
+                            <td><a href="../bench_energy/construct_100k_leaves/SHA-256/report/index.html">bench_energy/construct_100k_leaves/SHA-256</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../binary_tree/report/index.html">binary_tree</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../binary_tree/construction_BLAKE3/report/index.html">construction/BLAKE3</a></th>
+                            <th><a href="../binary_tree/construction_Keccak-256/report/index.html">construction/Keccak-256</a></th>
+                            <th><a href="../binary_tree/construction_SHA-256/report/index.html">construction/SHA-256</a></th>
+                            <th><a href="../binary_tree/proof_generation_BLAKE3/report/index.html">proof_generation/BLAKE3</a></th>
+                            <th><a href="../binary_tree/proof_generation_Keccak-256/report/index.html">proof_generation/Keccak-256</a></th>
+                            <th><a href="../binary_tree/proof_generation_SHA-256/report/index.html">proof_generation/SHA-256</a></th>
+                            <th><a href="../binary_tree/proof_verification_BLAKE3/report/index.html">proof_verification/BLAKE3</a></th>
+                            <th><a href="../binary_tree/proof_verification_Keccak-256/report/index.html">proof_verification/Keccak-256</a></th>
+                            <th><a href="../binary_tree/proof_verification_SHA-256/report/index.html">proof_verification/SHA-256</a></th>
+                        </tr>
+                        <tr>
+                            <th><a href="../binary_tree/100/report/index.html">100</a></th>
+                            <td><a href="../binary_tree/construction_BLAKE3/100/report/index.html">binary_tree/construction/BLAKE3/100</a></td>
+                            <td><a href="../binary_tree/construction_Keccak-256/100/report/index.html">binary_tree/construction/Keccak-256/100</a></td>
+                            <td><a href="../binary_tree/construction_SHA-256/100/report/index.html">binary_tree/construction/SHA-256/100</a></td>
+                            <td><a href="../binary_tree/proof_generation_BLAKE3/100/report/index.html">binary_tree/proof_generation/BLAKE3/100</a></td>
+                            <td><a href="../binary_tree/proof_generation_Keccak-256/100/report/index.html">binary_tree/proof_generation/Keccak-256/100</a></td>
+                            <td><a href="../binary_tree/proof_generation_SHA-256/100/report/index.html">binary_tree/proof_generation/SHA-256/100</a></td>
+                            <td><a href="../binary_tree/proof_verification_BLAKE3/100/report/index.html">binary_tree/proof_verification/BLAKE3/100</a></td>
+                            <td><a href="../binary_tree/proof_verification_Keccak-256/100/report/index.html">binary_tree/proof_verification/Keccak-256/100</a></td>
+                            <td><a href="../binary_tree/proof_verification_SHA-256/100/report/index.html">binary_tree/proof_verification/SHA-256/100</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../binary_tree/1000/report/index.html">1000</a></th>
+                            <td><a href="../binary_tree/construction_BLAKE3/1000/report/index.html">binary_tree/construction/BLAKE3/1000</a></td>
+                            <td><a href="../binary_tree/construction_Keccak-256/1000/report/index.html">binary_tree/construction/Keccak-256/1000</a></td>
+                            <td><a href="../binary_tree/construction_SHA-256/1000/report/index.html">binary_tree/construction/SHA-256/1000</a></td>
+                            <td><a href="../binary_tree/proof_generation_BLAKE3/1000/report/index.html">binary_tree/proof_generation/BLAKE3/1000</a></td>
+                            <td><a href="../binary_tree/proof_generation_Keccak-256/1000/report/index.html">binary_tree/proof_generation/Keccak-256/1000</a></td>
+                            <td><a href="../binary_tree/proof_generation_SHA-256/1000/report/index.html">binary_tree/proof_generation/SHA-256/1000</a></td>
+                            <td><a href="../binary_tree/proof_verification_BLAKE3/1000/report/index.html">binary_tree/proof_verification/BLAKE3/1000</a></td>
+                            <td><a href="../binary_tree/proof_verification_Keccak-256/1000/report/index.html">binary_tree/proof_verification/Keccak-256/1000</a></td>
+                            <td><a href="../binary_tree/proof_verification_SHA-256/1000/report/index.html">binary_tree/proof_verification/SHA-256/1000</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../binary_tree/10000/report/index.html">10000</a></th>
+                            <td><a href="../binary_tree/construction_BLAKE3/10000/report/index.html">binary_tree/construction/BLAKE3/10000</a></td>
+                            <td><a href="../binary_tree/construction_Keccak-256/10000/report/index.html">binary_tree/construction/Keccak-256/10000</a></td>
+                            <td><a href="../binary_tree/construction_SHA-256/10000/report/index.html">binary_tree/construction/SHA-256/10000</a></td>
+                            <td><a href="../binary_tree/proof_generation_BLAKE3/10000/report/index.html">binary_tree/proof_generation/BLAKE3/10000</a></td>
+                            <td><a href="../binary_tree/proof_generation_Keccak-256/10000/report/index.html">binary_tree/proof_generation/Keccak-256/10000</a></td>
+                            <td><a href="../binary_tree/proof_generation_SHA-256/10000/report/index.html">binary_tree/proof_generation/SHA-256/10000</a></td>
+                            <td><a href="../binary_tree/proof_verification_BLAKE3/10000/report/index.html">binary_tree/proof_verification/BLAKE3/10000</a></td>
+                            <td><a href="../binary_tree/proof_verification_Keccak-256/10000/report/index.html">binary_tree/proof_verification/Keccak-256/10000</a></td>
+                            <td><a href="../binary_tree/proof_verification_SHA-256/10000/report/index.html">binary_tree/proof_verification/SHA-256/10000</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../binary_tree/100000/report/index.html">100000</a></th>
+                            <td><a href="../binary_tree/construction_BLAKE3/100000/report/index.html">binary_tree/construction/BLAKE3/100000</a></td>
+                            <td><a href="../binary_tree/construction_Keccak-256/100000/report/index.html">binary_tree/construction/Keccak-256/100000</a></td>
+                            <td><a href="../binary_tree/construction_SHA-256/100000/report/index.html">binary_tree/construction/SHA-256/100000</a></td>
+                            <td><a href="../binary_tree/proof_generation_BLAKE3/100000/report/index.html">binary_tree/proof_generation/BLAKE3/100000</a></td>
+                            <td><a href="../binary_tree/proof_generation_Keccak-256/100000/report/index.html">binary_tree/proof_generation/Keccak-256/100000</a></td>
+                            <td><a href="../binary_tree/proof_generation_SHA-256/100000/report/index.html">binary_tree/proof_generation/SHA-256/100000</a></td>
+                            <td><a href="../binary_tree/proof_verification_BLAKE3/100000/report/index.html">binary_tree/proof_verification/BLAKE3/100000</a></td>
+                            <td><a href="../binary_tree/proof_verification_Keccak-256/100000/report/index.html">binary_tree/proof_verification/Keccak-256/100000</a></td>
+                            <td><a href="../binary_tree/proof_verification_SHA-256/100000/report/index.html">binary_tree/proof_verification/SHA-256/100000</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../comparison_construction_10k/report/index.html">comparison/construction_10k</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../comparison_construction_10k/library/report/index.html">library</a></th>
+                        </tr>
+                        <tr>
+                            <th>MerkleForge</th>
+                            <td><a href="../comparison_construction_10k/library/MerkleForge/report/index.html">comparison/construction_10k/library/MerkleForge</a></td>
+                        </tr>
+                        <tr>
+                            <th>merkle_light</th>
+                            <td><a href="../comparison_construction_10k/library/merkle_light/report/index.html">comparison/construction_10k/library/merkle_light</a></td>
+                        </tr>
+                        <tr>
+                            <th>rs-merkle</th>
+                            <td><a href="../comparison_construction_10k/library/rs-merkle/report/index.html">comparison/construction_10k/library/rs-merkle</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../comparison_proof_size_bytes/report/index.html">comparison/proof_size_bytes</a></li>
+            
+            <ul>
+                <li><a href="../comparison_proof_size_bytes/MerkleForge/report/index.html">MerkleForge</a></li>
+                <li><a href="../comparison_proof_size_bytes/merkle_light/report/index.html">merkle_light</a></li>
+                <li><a href="../comparison_proof_size_bytes/rs-merkle/report/index.html">rs-merkle</a></li>
+            </ul>
+            <li><a href="../comparison_proof_verification/report/index.html">comparison/proof_verification</a></li>
+            
+            <ul>
+                <li><a href="../comparison_proof_verification/MerkleForge/report/index.html">MerkleForge</a></li>
+                <li><a href="../comparison_proof_verification/merkle_light/report/index.html">merkle_light</a></li>
+                <li><a href="../comparison_proof_verification/rs-merkle/report/index.html">rs-merkle</a></li>
+            </ul>
+            <li><a href="../hash_throughput/report/index.html">hash_throughput</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../hash_throughput/BLAKE3/report/index.html">BLAKE3</a></th>
+                            <th><a href="../hash_throughput/Keccak-256/report/index.html">Keccak-256</a></th>
+                            <th><a href="../hash_throughput/SHA-256/report/index.html">SHA-256</a></th>
+                        </tr>
+                        <tr>
+                            <th><a href="../hash_throughput/1024/report/index.html">1024</a></th>
+                            <td><a href="../hash_throughput/BLAKE3/1024/report/index.html">hash_throughput/BLAKE3/1024</a></td>
+                            <td><a href="../hash_throughput/Keccak-256/1024/report/index.html">hash_throughput/Keccak-256/1024</a></td>
+                            <td><a href="../hash_throughput/SHA-256/1024/report/index.html">hash_throughput/SHA-256/1024</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../hash_throughput/16384/report/index.html">16384</a></th>
+                            <td><a href="../hash_throughput/BLAKE3/16384/report/index.html">hash_throughput/BLAKE3/16384</a></td>
+                            <td><a href="../hash_throughput/Keccak-256/16384/report/index.html">hash_throughput/Keccak-256/16384</a></td>
+                            <td><a href="../hash_throughput/SHA-256/16384/report/index.html">hash_throughput/SHA-256/16384</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../hash_throughput/65536/report/index.html">65536</a></th>
+                            <td><a href="../hash_throughput/BLAKE3/65536/report/index.html">hash_throughput/BLAKE3/65536</a></td>
+                            <td><a href="../hash_throughput/Keccak-256/65536/report/index.html">hash_throughput/Keccak-256/65536</a></td>
+                            <td><a href="../hash_throughput/SHA-256/65536/report/index.html">hash_throughput/SHA-256/65536</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../hash_throughput/1048576/report/index.html">1048576</a></th>
+                            <td><a href="../hash_throughput/BLAKE3/1048576/report/index.html">hash_throughput/BLAKE3/1048576</a></td>
+                            <td><a href="../hash_throughput/Keccak-256/1048576/report/index.html">hash_throughput/Keccak-256/1048576</a></td>
+                            <td><a href="../hash_throughput/SHA-256/1048576/report/index.html">hash_throughput/SHA-256/1048576</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../leaf_hash_BLAKE3/report/index.html">leaf_hash/BLAKE3</a></li>
+            
+            <ul>
+                <li><a href="../leaf_hash_BLAKE3/32/report/index.html">32</a></li>
+                <li><a href="../leaf_hash_BLAKE3/64/report/index.html">64</a></li>
+                <li><a href="../leaf_hash_BLAKE3/128/report/index.html">128</a></li>
+                <li><a href="../leaf_hash_BLAKE3/256/report/index.html">256</a></li>
+                <li><a href="../leaf_hash_BLAKE3/512/report/index.html">512</a></li>
+            </ul>
+            <li><a href="../leaf_hash_Keccak-256/report/index.html">leaf_hash/Keccak-256</a></li>
+            
+            <ul>
+                <li><a href="../leaf_hash_Keccak-256/32/report/index.html">32</a></li>
+                <li><a href="../leaf_hash_Keccak-256/64/report/index.html">64</a></li>
+                <li><a href="../leaf_hash_Keccak-256/128/report/index.html">128</a></li>
+                <li><a href="../leaf_hash_Keccak-256/256/report/index.html">256</a></li>
+                <li><a href="../leaf_hash_Keccak-256/512/report/index.html">512</a></li>
+            </ul>
+            <li><a href="../leaf_hash_SHA-256/report/index.html">leaf_hash/SHA-256</a></li>
+            
+            <ul>
+                <li><a href="../leaf_hash_SHA-256/32/report/index.html">32</a></li>
+                <li><a href="../leaf_hash_SHA-256/64/report/index.html">64</a></li>
+                <li><a href="../leaf_hash_SHA-256/128/report/index.html">128</a></li>
+                <li><a href="../leaf_hash_SHA-256/256/report/index.html">256</a></li>
+                <li><a href="../leaf_hash_SHA-256/512/report/index.html">512</a></li>
+            </ul>
+            <li><a href="../node_hash/report/index.html">node_hash</a></li>
+            
+            <ul>
+                <li><a href="../node_hash/BLAKE3/report/index.html">BLAKE3</a></li>
+                <li><a href="../node_hash/Keccak-256/report/index.html">Keccak-256</a></li>
+                <li><a href="../node_hash/SHA-256/report/index.html">SHA-256</a></li>
+            </ul>
+            <li><a href="../patricia_trie_get/report/index.html">patricia_trie/get</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../patricia_trie_get/BLAKE3/report/index.html">BLAKE3</a></th>
+                            <th><a href="../patricia_trie_get/Keccak-256/report/index.html">Keccak-256</a></th>
+                        </tr>
+                        <tr>
+                            <th>10</th>
+                            <td><a href="../patricia_trie_get/BLAKE3/10/report/index.html">patricia_trie/get/BLAKE3/10</a></td>
+                            <td><a href="../patricia_trie_get/Keccak-256/10/report/index.html">patricia_trie/get/Keccak-256/10</a></td>
+                        </tr>
+                        <tr>
+                            <th>100</th>
+                            <td><a href="../patricia_trie_get/BLAKE3/100/report/index.html">patricia_trie/get/BLAKE3/100</a></td>
+                            <td><a href="../patricia_trie_get/Keccak-256/100/report/index.html">patricia_trie/get/Keccak-256/100</a></td>
+                        </tr>
+                        <tr>
+                            <th>1000</th>
+                            <td><a href="../patricia_trie_get/BLAKE3/1000/report/index.html">patricia_trie/get/BLAKE3/1000</a></td>
+                            <td><a href="../patricia_trie_get/Keccak-256/1000/report/index.html">patricia_trie/get/Keccak-256/1000</a></td>
+                        </tr>
+                        <tr>
+                            <th>10000</th>
+                            <td><a href="../patricia_trie_get/BLAKE3/10000/report/index.html">patricia_trie/get/BLAKE3/10000</a></td>
+                            <td><a href="../patricia_trie_get/Keccak-256/10000/report/index.html">patricia_trie/get/Keccak-256/10000</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../patricia_trie_insert/report/index.html">patricia_trie/insert</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../patricia_trie_insert/BLAKE3/report/index.html">BLAKE3</a></th>
+                            <th><a href="../patricia_trie_insert/Keccak-256/report/index.html">Keccak-256</a></th>
+                        </tr>
+                        <tr>
+                            <th>10</th>
+                            <td><a href="../patricia_trie_insert/BLAKE3/10/report/index.html">patricia_trie/insert/BLAKE3/10</a></td>
+                            <td><a href="../patricia_trie_insert/Keccak-256/10/report/index.html">patricia_trie/insert/Keccak-256/10</a></td>
+                        </tr>
+                        <tr>
+                            <th>100</th>
+                            <td><a href="../patricia_trie_insert/BLAKE3/100/report/index.html">patricia_trie/insert/BLAKE3/100</a></td>
+                            <td><a href="../patricia_trie_insert/Keccak-256/100/report/index.html">patricia_trie/insert/Keccak-256/100</a></td>
+                        </tr>
+                        <tr>
+                            <th>1000</th>
+                            <td><a href="../patricia_trie_insert/BLAKE3/1000/report/index.html">patricia_trie/insert/BLAKE3/1000</a></td>
+                            <td><a href="../patricia_trie_insert/Keccak-256/1000/report/index.html">patricia_trie/insert/Keccak-256/1000</a></td>
+                        </tr>
+                        <tr>
+                            <th>10000</th>
+                            <td><a href="../patricia_trie_insert/BLAKE3/10000/report/index.html">patricia_trie/insert/BLAKE3/10000</a></td>
+                            <td><a href="../patricia_trie_insert/Keccak-256/10000/report/index.html">patricia_trie/insert/Keccak-256/10000</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../patricia_trie_proof_generation/report/index.html">patricia_trie/proof_generation</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../patricia_trie_proof_generation/BLAKE3/report/index.html">BLAKE3</a></th>
+                            <th><a href="../patricia_trie_proof_generation/Keccak-256/report/index.html">Keccak-256</a></th>
+                        </tr>
+                        <tr>
+                            <th>10</th>
+                            <td><a href="../patricia_trie_proof_generation/BLAKE3/10/report/index.html">patricia_trie/proof_generation/BLAKE3/10</a></td>
+                            <td><a href="../patricia_trie_proof_generation/Keccak-256/10/report/index.html">patricia_trie/proof_generation/Keccak-256/10</a></td>
+                        </tr>
+                        <tr>
+                            <th>100</th>
+                            <td><a href="../patricia_trie_proof_generation/BLAKE3/100/report/index.html">patricia_trie/proof_generation/BLAKE3/100</a></td>
+                            <td><a href="../patricia_trie_proof_generation/Keccak-256/100/report/index.html">patricia_trie/proof_generation/Keccak-256/100</a></td>
+                        </tr>
+                        <tr>
+                            <th>1000</th>
+                            <td><a href="../patricia_trie_proof_generation/BLAKE3/1000/report/index.html">patricia_trie/proof_generation/BLAKE3/1000</a></td>
+                            <td><a href="../patricia_trie_proof_generation/Keccak-256/1000/report/index.html">patricia_trie/proof_generation/Keccak-256/1000</a></td>
+                        </tr>
+                        <tr>
+                            <th>10000</th>
+                            <td><a href="../patricia_trie_proof_generation/BLAKE3/10000/report/index.html">patricia_trie/proof_generation/BLAKE3/10000</a></td>
+                            <td><a href="../patricia_trie_proof_generation/Keccak-256/10000/report/index.html">patricia_trie/proof_generation/Keccak-256/10000</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../patricia_trie_proof_verification/report/index.html">patricia_trie/proof_verification</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../patricia_trie_proof_verification/BLAKE3/report/index.html">BLAKE3</a></th>
+                            <th><a href="../patricia_trie_proof_verification/Keccak-256/report/index.html">Keccak-256</a></th>
+                        </tr>
+                        <tr>
+                            <th>10</th>
+                            <td><a href="../patricia_trie_proof_verification/BLAKE3/10/report/index.html">patricia_trie/proof_verification/BLAKE3/10</a></td>
+                            <td><a href="../patricia_trie_proof_verification/Keccak-256/10/report/index.html">patricia_trie/proof_verification/Keccak-256/10</a></td>
+                        </tr>
+                        <tr>
+                            <th>100</th>
+                            <td><a href="../patricia_trie_proof_verification/BLAKE3/100/report/index.html">patricia_trie/proof_verification/BLAKE3/100</a></td>
+                            <td><a href="../patricia_trie_proof_verification/Keccak-256/100/report/index.html">patricia_trie/proof_verification/Keccak-256/100</a></td>
+                        </tr>
+                        <tr>
+                            <th>1000</th>
+                            <td><a href="../patricia_trie_proof_verification/BLAKE3/1000/report/index.html">patricia_trie/proof_verification/BLAKE3/1000</a></td>
+                            <td><a href="../patricia_trie_proof_verification/Keccak-256/1000/report/index.html">patricia_trie/proof_verification/Keccak-256/1000</a></td>
+                        </tr>
+                        <tr>
+                            <th>10000</th>
+                            <td><a href="../patricia_trie_proof_verification/BLAKE3/10000/report/index.html">patricia_trie/proof_verification/BLAKE3/10000</a></td>
+                            <td><a href="../patricia_trie_proof_verification/Keccak-256/10000/report/index.html">patricia_trie/proof_verification/Keccak-256/10000</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../patricia_trie_state_root/report/index.html">patricia_trie/state_root</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../patricia_trie_state_root/BLAKE3/report/index.html">BLAKE3</a></th>
+                            <th><a href="../patricia_trie_state_root/Keccak-256/report/index.html">Keccak-256</a></th>
+                        </tr>
+                        <tr>
+                            <th>100</th>
+                            <td><a href="../patricia_trie_state_root/BLAKE3/100/report/index.html">patricia_trie/state_root/BLAKE3/100</a></td>
+                            <td><a href="../patricia_trie_state_root/Keccak-256/100/report/index.html">patricia_trie/state_root/Keccak-256/100</a></td>
+                        </tr>
+                        <tr>
+                            <th>1000</th>
+                            <td><a href="../patricia_trie_state_root/BLAKE3/1000/report/index.html">patricia_trie/state_root/BLAKE3/1000</a></td>
+                            <td><a href="../patricia_trie_state_root/Keccak-256/1000/report/index.html">patricia_trie/state_root/Keccak-256/1000</a></td>
+                        </tr>
+                        <tr>
+                            <th>10000</th>
+                            <td><a href="../patricia_trie_state_root/BLAKE3/10000/report/index.html">patricia_trie/state_root/BLAKE3/10000</a></td>
+                            <td><a href="../patricia_trie_state_root/Keccak-256/10000/report/index.html">patricia_trie/state_root/Keccak-256/10000</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../sparse_tree_batch_update/report/index.html">sparse_tree/batch_update</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../sparse_tree_batch_update/BLAKE3_batch_insert/report/index.html">BLAKE3/batch_insert</a></th>
+                            <th><a href="../sparse_tree_batch_update/BLAKE3_sequential_insert/report/index.html">BLAKE3/sequential_insert</a></th>
+                            <th><a href="../sparse_tree_batch_update/Keccak-256_batch_insert/report/index.html">Keccak-256/batch_insert</a></th>
+                            <th><a href="../sparse_tree_batch_update/Keccak-256_sequential_insert/report/index.html">Keccak-256/sequential_insert</a></th>
+                            <th><a href="../sparse_tree_batch_update/SHA-256_batch_insert/report/index.html">SHA-256/batch_insert</a></th>
+                            <th><a href="../sparse_tree_batch_update/SHA-256_sequential_insert/report/index.html">SHA-256/sequential_insert</a></th>
+                        </tr>
+                        <tr>
+                            <th><a href="../sparse_tree_batch_update/10/report/index.html">10</a></th>
+                            <td><a href="../sparse_tree_batch_update/BLAKE3_batch_insert/10/report/index.html">sparse_tree/batch_update/BLAKE3/batch_insert/10</a></td>
+                            <td><a href="../sparse_tree_batch_update/BLAKE3_sequential_insert/10/report/index.html">sparse_tree/batch_update/BLAKE3/sequential_insert/10</a></td>
+                            <td><a href="../sparse_tree_batch_update/Keccak-256_batch_insert/10/report/index.html">sparse_tree/batch_update/Keccak-256/batch_insert/10</a></td>
+                            <td><a href="../sparse_tree_batch_update/Keccak-256_sequential_insert/10/report/index.html">sparse_tree/batch_update/Keccak-256/sequential_insert/10</a></td>
+                            <td><a href="../sparse_tree_batch_update/SHA-256_batch_insert/10/report/index.html">sparse_tree/batch_update/SHA-256/batch_insert/10</a></td>
+                            <td><a href="../sparse_tree_batch_update/SHA-256_sequential_insert/10/report/index.html">sparse_tree/batch_update/SHA-256/sequential_insert/10</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../sparse_tree_batch_update/100/report/index.html">100</a></th>
+                            <td><a href="../sparse_tree_batch_update/BLAKE3_batch_insert/100/report/index.html">sparse_tree/batch_update/BLAKE3/batch_insert/100</a></td>
+                            <td><a href="../sparse_tree_batch_update/BLAKE3_sequential_insert/100/report/index.html">sparse_tree/batch_update/BLAKE3/sequential_insert/100</a></td>
+                            <td><a href="../sparse_tree_batch_update/Keccak-256_batch_insert/100/report/index.html">sparse_tree/batch_update/Keccak-256/batch_insert/100</a></td>
+                            <td><a href="../sparse_tree_batch_update/Keccak-256_sequential_insert/100/report/index.html">sparse_tree/batch_update/Keccak-256/sequential_insert/100</a></td>
+                            <td><a href="../sparse_tree_batch_update/SHA-256_batch_insert/100/report/index.html">sparse_tree/batch_update/SHA-256/batch_insert/100</a></td>
+                            <td><a href="../sparse_tree_batch_update/SHA-256_sequential_insert/100/report/index.html">sparse_tree/batch_update/SHA-256/sequential_insert/100</a></td>
+                        </tr>
+                        <tr>
+                            <th><a href="../sparse_tree_batch_update/1000/report/index.html">1000</a></th>
+                            <td><a href="../sparse_tree_batch_update/BLAKE3_batch_insert/1000/report/index.html">sparse_tree/batch_update/BLAKE3/batch_insert/1000</a></td>
+                            <td><a href="../sparse_tree_batch_update/BLAKE3_sequential_insert/1000/report/index.html">sparse_tree/batch_update/BLAKE3/sequential_insert/1000</a></td>
+                            <td><a href="../sparse_tree_batch_update/Keccak-256_batch_insert/1000/report/index.html">sparse_tree/batch_update/Keccak-256/batch_insert/1000</a></td>
+                            <td><a href="../sparse_tree_batch_update/Keccak-256_sequential_insert/1000/report/index.html">sparse_tree/batch_update/Keccak-256/sequential_insert/1000</a></td>
+                            <td><a href="../sparse_tree_batch_update/SHA-256_batch_insert/1000/report/index.html">sparse_tree/batch_update/SHA-256/batch_insert/1000</a></td>
+                            <td><a href="../sparse_tree_batch_update/SHA-256_sequential_insert/1000/report/index.html">sparse_tree/batch_update/SHA-256/sequential_insert/1000</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../sparse_tree_insert/report/index.html">sparse_tree/insert</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../sparse_tree_insert/BLAKE3/report/index.html">BLAKE3</a></th>
+                            <th><a href="../sparse_tree_insert/Keccak-256/report/index.html">Keccak-256</a></th>
+                            <th><a href="../sparse_tree_insert/SHA-256/report/index.html">SHA-256</a></th>
+                        </tr>
+                        <tr>
+                            <th>10</th>
+                            <td><a href="../sparse_tree_insert/BLAKE3/10/report/index.html">sparse_tree/insert/BLAKE3/10</a></td>
+                            <td><a href="../sparse_tree_insert/Keccak-256/10/report/index.html">sparse_tree/insert/Keccak-256/10</a></td>
+                            <td><a href="../sparse_tree_insert/SHA-256/10/report/index.html">sparse_tree/insert/SHA-256/10</a></td>
+                        </tr>
+                        <tr>
+                            <th>100</th>
+                            <td><a href="../sparse_tree_insert/BLAKE3/100/report/index.html">sparse_tree/insert/BLAKE3/100</a></td>
+                            <td><a href="../sparse_tree_insert/Keccak-256/100/report/index.html">sparse_tree/insert/Keccak-256/100</a></td>
+                            <td><a href="../sparse_tree_insert/SHA-256/100/report/index.html">sparse_tree/insert/SHA-256/100</a></td>
+                        </tr>
+                        <tr>
+                            <th>1000</th>
+                            <td><a href="../sparse_tree_insert/BLAKE3/1000/report/index.html">sparse_tree/insert/BLAKE3/1000</a></td>
+                            <td><a href="../sparse_tree_insert/Keccak-256/1000/report/index.html">sparse_tree/insert/Keccak-256/1000</a></td>
+                            <td><a href="../sparse_tree_insert/SHA-256/1000/report/index.html">sparse_tree/insert/SHA-256/1000</a></td>
+                        </tr>
+                        <tr>
+                            <th>10000</th>
+                            <td><a href="../sparse_tree_insert/BLAKE3/10000/report/index.html">sparse_tree/insert/BLAKE3/10000</a></td>
+                            <td><a href="../sparse_tree_insert/Keccak-256/10000/report/index.html">sparse_tree/insert/Keccak-256/10000</a></td>
+                            <td><a href="../sparse_tree_insert/SHA-256/10000/report/index.html">sparse_tree/insert/SHA-256/10000</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../sparse_tree_non_membership_generation/report/index.html">sparse_tree/non_membership_generation</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../sparse_tree_non_membership_generation/BLAKE3/report/index.html">BLAKE3</a></th>
+                            <th><a href="../sparse_tree_non_membership_generation/Keccak-256/report/index.html">Keccak-256</a></th>
+                            <th><a href="../sparse_tree_non_membership_generation/SHA-256/report/index.html">SHA-256</a></th>
+                        </tr>
+                        <tr>
+                            <th>10</th>
+                            <td><a href="../sparse_tree_non_membership_generation/BLAKE3/10/report/index.html">sparse_tree/non_membership_generation/BLAKE3/10</a></td>
+                            <td><a href="../sparse_tree_non_membership_generation/Keccak-256/10/report/index.html">sparse_tree/non_membership_generation/Keccak-256/10</a></td>
+                            <td><a href="../sparse_tree_non_membership_generation/SHA-256/10/report/index.html">sparse_tree/non_membership_generation/SHA-256/10</a></td>
+                        </tr>
+                        <tr>
+                            <th>100</th>
+                            <td><a href="../sparse_tree_non_membership_generation/BLAKE3/100/report/index.html">sparse_tree/non_membership_generation/BLAKE3/100</a></td>
+                            <td><a href="../sparse_tree_non_membership_generation/Keccak-256/100/report/index.html">sparse_tree/non_membership_generation/Keccak-256/100</a></td>
+                            <td><a href="../sparse_tree_non_membership_generation/SHA-256/100/report/index.html">sparse_tree/non_membership_generation/SHA-256/100</a></td>
+                        </tr>
+                        <tr>
+                            <th>1000</th>
+                            <td><a href="../sparse_tree_non_membership_generation/BLAKE3/1000/report/index.html">sparse_tree/non_membership_generation/BLAKE3/1000</a></td>
+                            <td><a href="../sparse_tree_non_membership_generation/Keccak-256/1000/report/index.html">sparse_tree/non_membership_generation/Keccak-256/1000</a></td>
+                            <td><a href="../sparse_tree_non_membership_generation/SHA-256/1000/report/index.html">sparse_tree/non_membership_generation/SHA-256/1000</a></td>
+                        </tr>
+                        <tr>
+                            <th>10000</th>
+                            <td><a href="../sparse_tree_non_membership_generation/BLAKE3/10000/report/index.html">sparse_tree/non_membership_generation/BLAKE3/10000</a></td>
+                            <td><a href="../sparse_tree_non_membership_generation/Keccak-256/10000/report/index.html">sparse_tree/non_membership_generation/Keccak-256/10000</a></td>
+                            <td><a href="../sparse_tree_non_membership_generation/SHA-256/10000/report/index.html">sparse_tree/non_membership_generation/SHA-256/10000</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../sparse_tree_non_membership_verification/report/index.html">sparse_tree/non_membership_verification</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../sparse_tree_non_membership_verification/BLAKE3/report/index.html">BLAKE3</a></th>
+                            <th><a href="../sparse_tree_non_membership_verification/Keccak-256/report/index.html">Keccak-256</a></th>
+                            <th><a href="../sparse_tree_non_membership_verification/SHA-256/report/index.html">SHA-256</a></th>
+                        </tr>
+                        <tr>
+                            <th>10</th>
+                            <td><a href="../sparse_tree_non_membership_verification/BLAKE3/10/report/index.html">sparse_tree/non_membership_verification/BLAKE3/10</a></td>
+                            <td><a href="../sparse_tree_non_membership_verification/Keccak-256/10/report/index.html">sparse_tree/non_membership_verification/Keccak-256/10</a></td>
+                            <td><a href="../sparse_tree_non_membership_verification/SHA-256/10/report/index.html">sparse_tree/non_membership_verification/SHA-256/10</a></td>
+                        </tr>
+                        <tr>
+                            <th>100</th>
+                            <td><a href="../sparse_tree_non_membership_verification/BLAKE3/100/report/index.html">sparse_tree/non_membership_verification/BLAKE3/100</a></td>
+                            <td><a href="../sparse_tree_non_membership_verification/Keccak-256/100/report/index.html">sparse_tree/non_membership_verification/Keccak-256/100</a></td>
+                            <td><a href="../sparse_tree_non_membership_verification/SHA-256/100/report/index.html">sparse_tree/non_membership_verification/SHA-256/100</a></td>
+                        </tr>
+                        <tr>
+                            <th>1000</th>
+                            <td><a href="../sparse_tree_non_membership_verification/BLAKE3/1000/report/index.html">sparse_tree/non_membership_verification/BLAKE3/1000</a></td>
+                            <td><a href="../sparse_tree_non_membership_verification/Keccak-256/1000/report/index.html">sparse_tree/non_membership_verification/Keccak-256/1000</a></td>
+                            <td><a href="../sparse_tree_non_membership_verification/SHA-256/1000/report/index.html">sparse_tree/non_membership_verification/SHA-256/1000</a></td>
+                        </tr>
+                        <tr>
+                            <th>10000</th>
+                            <td><a href="../sparse_tree_non_membership_verification/BLAKE3/10000/report/index.html">sparse_tree/non_membership_verification/BLAKE3/10000</a></td>
+                            <td><a href="../sparse_tree_non_membership_verification/Keccak-256/10000/report/index.html">sparse_tree/non_membership_verification/Keccak-256/10000</a></td>
+                            <td><a href="../sparse_tree_non_membership_verification/SHA-256/10000/report/index.html">sparse_tree/non_membership_verification/SHA-256/10000</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../sparse_tree_proof_generation/report/index.html">sparse_tree/proof_generation</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../sparse_tree_proof_generation/BLAKE3/report/index.html">BLAKE3</a></th>
+                            <th><a href="../sparse_tree_proof_generation/Keccak-256/report/index.html">Keccak-256</a></th>
+                            <th><a href="../sparse_tree_proof_generation/SHA-256/report/index.html">SHA-256</a></th>
+                        </tr>
+                        <tr>
+                            <th>10</th>
+                            <td><a href="../sparse_tree_proof_generation/BLAKE3/10/report/index.html">sparse_tree/proof_generation/BLAKE3/10</a></td>
+                            <td><a href="../sparse_tree_proof_generation/Keccak-256/10/report/index.html">sparse_tree/proof_generation/Keccak-256/10</a></td>
+                            <td><a href="../sparse_tree_proof_generation/SHA-256/10/report/index.html">sparse_tree/proof_generation/SHA-256/10</a></td>
+                        </tr>
+                        <tr>
+                            <th>100</th>
+                            <td><a href="../sparse_tree_proof_generation/BLAKE3/100/report/index.html">sparse_tree/proof_generation/BLAKE3/100</a></td>
+                            <td><a href="../sparse_tree_proof_generation/Keccak-256/100/report/index.html">sparse_tree/proof_generation/Keccak-256/100</a></td>
+                            <td><a href="../sparse_tree_proof_generation/SHA-256/100/report/index.html">sparse_tree/proof_generation/SHA-256/100</a></td>
+                        </tr>
+                        <tr>
+                            <th>1000</th>
+                            <td><a href="../sparse_tree_proof_generation/BLAKE3/1000/report/index.html">sparse_tree/proof_generation/BLAKE3/1000</a></td>
+                            <td><a href="../sparse_tree_proof_generation/Keccak-256/1000/report/index.html">sparse_tree/proof_generation/Keccak-256/1000</a></td>
+                            <td><a href="../sparse_tree_proof_generation/SHA-256/1000/report/index.html">sparse_tree/proof_generation/SHA-256/1000</a></td>
+                        </tr>
+                        <tr>
+                            <th>10000</th>
+                            <td><a href="../sparse_tree_proof_generation/BLAKE3/10000/report/index.html">sparse_tree/proof_generation/BLAKE3/10000</a></td>
+                            <td><a href="../sparse_tree_proof_generation/Keccak-256/10000/report/index.html">sparse_tree/proof_generation/Keccak-256/10000</a></td>
+                            <td><a href="../sparse_tree_proof_generation/SHA-256/10000/report/index.html">sparse_tree/proof_generation/SHA-256/10000</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <li><a href="../sparse_tree_proof_verification/report/index.html">sparse_tree/proof_verification</a></li>
+            
+            <ul>
+                <li>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th><a href="../sparse_tree_proof_verification/BLAKE3/report/index.html">BLAKE3</a></th>
+                            <th><a href="../sparse_tree_proof_verification/Keccak-256/report/index.html">Keccak-256</a></th>
+                            <th><a href="../sparse_tree_proof_verification/SHA-256/report/index.html">SHA-256</a></th>
+                        </tr>
+                        <tr>
+                            <th>10</th>
+                            <td><a href="../sparse_tree_proof_verification/BLAKE3/10/report/index.html">sparse_tree/proof_verification/BLAKE3/10</a></td>
+                            <td><a href="../sparse_tree_proof_verification/Keccak-256/10/report/index.html">sparse_tree/proof_verification/Keccak-256/10</a></td>
+                            <td><a href="../sparse_tree_proof_verification/SHA-256/10/report/index.html">sparse_tree/proof_verification/SHA-256/10</a></td>
+                        </tr>
+                        <tr>
+                            <th>100</th>
+                            <td><a href="../sparse_tree_proof_verification/BLAKE3/100/report/index.html">sparse_tree/proof_verification/BLAKE3/100</a></td>
+                            <td><a href="../sparse_tree_proof_verification/Keccak-256/100/report/index.html">sparse_tree/proof_verification/Keccak-256/100</a></td>
+                            <td><a href="../sparse_tree_proof_verification/SHA-256/100/report/index.html">sparse_tree/proof_verification/SHA-256/100</a></td>
+                        </tr>
+                        <tr>
+                            <th>1000</th>
+                            <td><a href="../sparse_tree_proof_verification/BLAKE3/1000/report/index.html">sparse_tree/proof_verification/BLAKE3/1000</a></td>
+                            <td><a href="../sparse_tree_proof_verification/Keccak-256/1000/report/index.html">sparse_tree/proof_verification/Keccak-256/1000</a></td>
+                            <td><a href="../sparse_tree_proof_verification/SHA-256/1000/report/index.html">sparse_tree/proof_verification/SHA-256/1000</a></td>
+                        </tr>
+                        <tr>
+                            <th>10000</th>
+                            <td><a href="../sparse_tree_proof_verification/BLAKE3/10000/report/index.html">sparse_tree/proof_verification/BLAKE3/10000</a></td>
+                            <td><a href="../sparse_tree_proof_verification/Keccak-256/10000/report/index.html">sparse_tree/proof_verification/Keccak-256/10000</a></td>
+                            <td><a href="../sparse_tree_proof_verification/SHA-256/10000/report/index.html">sparse_tree/proof_verification/SHA-256/10000</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+        </ul>
+    </div>
+    <div id="footer">
+        <p>This report was generated by
+            <a href="https://github.com/criterion-rs/criterion.rs">Criterion.rs</a>, a statistics-driven benchmarking
+            library in Rust.</p>
+    </div>
+</body>
+</html>
