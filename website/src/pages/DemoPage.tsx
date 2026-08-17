@@ -194,9 +194,6 @@ export function DemoPage({ site }: { site: SiteData }) {
             <a className="button primary" href="#live-demo">
               Try the live demo
             </a>
-            <a className="button secondary" href={`${site.repositoryUrl}/issues/82`} target="_blank" rel="noreferrer">
-              Issue #82
-            </a>
           </div>
         </div>
         <div className="demo-orbital" aria-hidden="true">
