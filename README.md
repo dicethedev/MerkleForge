@@ -159,7 +159,9 @@ MerkleForge/
 │   │   ├── hash_throughput.rs        # sustained MB/s per algorithm
 │   │   ├── binary_tree.rs            # binary construction + proof benchmarks
 │   │   ├── sparse_tree.rs            # sparse tree update + proof benchmarks
-│   │   └── patricia_trie.rs          # Patricia trie update + proof benchmarks
+│   │   ├── patricia_trie.rs          # Patricia trie update + proof benchmarks
+│   │   ├── comparison.rs             # MerkleForge vs rs-merkle vs merkle_light
+│   │   └── bench_energy.rs           # 100K-leaf energy-aware construction run
 │   └── src/lib.rs
 │
 └── .github/workflows/ci.yml          # automated test · lint · bench · docs
@@ -249,8 +251,8 @@ internal-node hashing. SHA-256 and Keccak-256 use `0x00`/`0x01` byte
 prefixes; BLAKE3 uses its native `derive_key` mode with context strings for
 zero-overhead domain separation.
  
-Full benchmark data comparing throughput, latency, and energy efficiency
-across all three will be published after Phase 5.
+Current benchmark data comparing throughput, latency, proof size, energy-aware
+construction time, and external libraries lives in [`BENCHMARKS.md`](BENCHMARKS.md).
  
 ---
 
@@ -371,11 +373,11 @@ Criterion reports.
 | Throughput — sustained MB/s per algorithm (32 B → 1 MB) | ✅ Phase 1 |
 | Binary tree construction — 100 / 1K / 10K / 100K leaves | ✅ Phase 2 |
 | Binary proof generation & verification latency | ✅ Phase 2 |
-| Sparse and Patricia tree benchmarks | ✅ Phase 4 |
-| Energy-aware construction benchmark | ✅ Phase 5 |
-| Proof size in bytes | 🔜 Phase 5 |
-| Peak memory consumption (RSS) | 🔜 Phase 5 |
-| Comparative results vs `rs-merkle` and `merkle_light` | 🔜 Phase 5 |
+| Sparse and Patricia tree benchmarks | ✅ Phase 5 — measured locally |
+| Energy-aware construction benchmark | ✅ Phase 5 — wall-clock captured |
+| Proof size in bytes | ✅ Phase 5 — comparison table captured |
+| Peak memory consumption (RSS) | 🚧 Phase 5 — RSS profiler still pending |
+| Comparative results vs `rs-merkle` and `merkle_light` | ✅ Phase 5 — measured locally |
  
 ---
 
@@ -420,7 +422,7 @@ Reproduction notes and a reference artifact live in [`profiling/`](profiling/).
 | 2 — Binary Merkle Tree | `BinaryMerkleTree<H>`, property tests | ✅ **Complete** |
 | 3 — Sparse Merkle Tree | `SparseMerkleTree<H>`, node batching | ✅ **Complete** |
 | 4 — Merkle Patricia Trie | Ethereum-compatible MPT, RLP | ✅ **Complete** |
-| 5 — Benchmarking | Full Criterion suite, comparative report | ⏳ Planned |
+| 5 — Benchmarking | Criterion suite, energy notes, comparative report | 🚧 In progress — RSS pending |
 | 6 — Docs & Publication | `crates.io` publish, mdBook, paper | 🚧 In progress |
  
 ---
@@ -431,7 +433,9 @@ Reproduction notes and a reference artifact live in [`profiling/`](profiling/).
 - [x] `SparseMerkleTree<H>` with shortcut nodes and one-phase batch updates
 - [x] `MerklePatriciaTrie<H>` with RLP encoding, validated against Ethereum test vectors
 - [x] Publish `merkle-core`, `merkleforge-hash`, and `merkle-variants` `v0.4.0` to `crates.io`
-- [ ] Full Criterion benchmark suite with comparative results vs `rs-merkle` and `merkle_light`
+- [x] Criterion benchmark suite with comparative results vs `rs-merkle` and `merkle_light`
+- [x] Proof-size comparison table for MerkleForge, `rs-merkle`, and `merkle_light`
+- [ ] Peak RSS memory benchmark capture for final Phase 5 evidence
 - [ ] mdBook user guide with copy-pasteable examples for each variant
 - [ ] Research paper on benchmark findings and tree-type trade-off analysis
 
