@@ -69,6 +69,36 @@ let recovered =
 
 assert_eq!(proof, recovered);`;
 
+export const lightClientExample = `use merkle_core::{error::MerkleError, prelude::MerkleTree, types::LeafIndex};
+use merkle_variants::BinaryMerkleTree;
+use merkleforge_hash::Sha256;
+
+fn main() -> Result<(), MerkleError> {
+    let proof;
+    let root;
+
+    {
+        // Server builds the full tree.
+        let mut tree = BinaryMerkleTree::<Sha256>::new();
+        tree.insert(b"tx:alice->bob:100")?;
+        tree.insert(b"tx:bob->carol:50")?;
+        tree.insert(b"tx:carol->dave:25")?;
+
+        root = *tree.root().expect("tree has inserted leaves");
+        proof = tree.generate_proof(LeafIndex(0))?;
+    } // tree is dropped here.
+
+    // Client verifies with only root + proof + leaf bytes.
+    let valid = BinaryMerkleTree::<Sha256>::verify(
+        &root,
+        b"tx:alice->bob:100",
+        &proof,
+    );
+
+    println!("Stateless verification: {valid}");
+    Ok(())
+}`;
+
 export const sparseExample = `use merkle_variants::SparseMerkleTree;
 use merkleforge_hash::Sha256;
 

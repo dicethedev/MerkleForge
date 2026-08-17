@@ -1,9 +1,17 @@
 # MerkleForge
 
+<div align="center">
+
+<img src="assets/merkleforge-wordmark-outline.svg" alt="MerkleForge" width="760">
+
+</div>
+
 ### Building a Faster, More Efficient Data Verification Toolkit for Modern Blockchains
 
 [![CI](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml/badge.svg)](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml)
 [![Website](https://github.com/dicethedev/MerkleForge/actions/workflows/website.yml/badge.svg)](https://dicethedev.github.io/MerkleForge/index.html)
+[![Benchmarks](https://img.shields.io/badge/benchmarks-live-brightgreen)](https://dicethedev.github.io/MerkleForge/)
+[![Benchmark Docs](https://img.shields.io/badge/benchmark%20docs-reproducible-blue)](BENCHMARKS.md)
 [![Crates.io](https://img.shields.io/crates/v/merkle-core.svg)](https://crates.io/crates/merkle-core)
 [![docs.rs](https://docs.rs/merkle-core/badge.svg)](https://docs.rs/merkle-core)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
@@ -51,7 +59,9 @@ This is the implementation artifact of a final-year Software Engineering researc
 - [Hash Functions](#hash-functions)
 - [Tree Variants](#tree-variants)
 - [Proof Generation & Verification](#proof-generation--verification)
+- [Stateless Light-Client Demo](#stateless-light-client-demo)
 - [Benchmarking](#benchmarking)
+- [Profiling](#profiling)
 - [Development Status](#development-status)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
@@ -149,7 +159,9 @@ MerkleForge/
 │   │   ├── hash_throughput.rs        # sustained MB/s per algorithm
 │   │   ├── binary_tree.rs            # binary construction + proof benchmarks
 │   │   ├── sparse_tree.rs            # sparse tree update + proof benchmarks
-│   │   └── patricia_trie.rs          # Patricia trie update + proof benchmarks
+│   │   ├── patricia_trie.rs          # Patricia trie update + proof benchmarks
+│   │   ├── comparison.rs             # MerkleForge vs rs-merkle vs merkle_light
+│   │   └── bench_energy.rs           # 100K-leaf energy-aware construction run
 │   └── src/lib.rs
 │
 └── .github/workflows/ci.yml          # automated test · lint · bench · docs
@@ -239,8 +251,8 @@ internal-node hashing. SHA-256 and Keccak-256 use `0x00`/`0x01` byte
 prefixes; BLAKE3 uses its native `derive_key` mode with context strings for
 zero-overhead domain separation.
  
-Full benchmark data comparing throughput, latency, and energy efficiency
-across all three will be published after Phase 5.
+Current benchmark data comparing throughput, latency, proof size, energy-aware
+construction time, and external libraries lives in [`BENCHMARKS.md`](BENCHMARKS.md).
  
 ---
 
@@ -301,6 +313,27 @@ resource-constrained nodes:
 Proofs are `serde`-serialisable out of the box via the blanket `Serializable`
 impl — store them in a database or send them over a network with no extra
 setup.
+
+### Stateless Light-Client Demo
+
+Run the standalone demo binary to see the server/client split end to end:
+
+```bash
+cargo run -p merkle-variants --example light_client
+```
+
+Expected output:
+
+```text
+server: built tree and exported root + proof
+client: tree dropped before verification
+Stateless verification: true
+```
+
+The tree is built inside a block scope and dropped before verification, so the
+client side authenticates the target transaction using only the trusted root,
+the proof, and the leaf bytes. The same flow is shown visually on the
+[live demo page](https://dicethedev.github.io/MerkleForge/demo/).
  
 ---
  
@@ -325,6 +358,9 @@ cargo bench --bench sparse_tree
 
 # Run Patricia trie benchmarks
 cargo bench --bench patricia_trie
+
+# Run the energy-focused 100K-leaf construction benchmark
+cargo bench --bench bench_energy
 ```
 
 The [official MerkleForge site](https://dicethedev.github.io/MerkleForge/index.html)
@@ -337,11 +373,45 @@ Criterion reports.
 | Throughput — sustained MB/s per algorithm (32 B → 1 MB) | ✅ Phase 1 |
 | Binary tree construction — 100 / 1K / 10K / 100K leaves | ✅ Phase 2 |
 | Binary proof generation & verification latency | ✅ Phase 2 |
-| Sparse and Patricia tree benchmarks | ✅ Phase 4 |
-| Proof size in bytes | 🔜 Phase 5 |
-| Peak memory consumption (RSS) | 🔜 Phase 5 |
-| Comparative results vs `rs-merkle` and `merkle_light` | 🔜 Phase 5 |
+| Sparse and Patricia tree benchmarks | ✅ Phase 5 — measured locally |
+| Energy-aware construction benchmark | ✅ Phase 5 — wall-clock captured |
+| Proof size in bytes | ✅ Phase 5 — comparison table captured |
+| Peak memory consumption (RSS) | 🚧 Phase 5 — RSS profiler still pending |
+| Comparative results vs `rs-merkle` and `merkle_light` | ✅ Phase 5 — measured locally |
  
+---
+
+## Profiling
+
+Use `cargo-flamegraph` when you need to inspect CPU hotspots inside a benchmark:
+
+```bash
+# Install the local profiling toolchain
+make install-profiling-tools
+
+# Generate a flamegraph for the baseline construction benchmark
+./scripts/flamegraph.sh baseline_construction
+
+# Output: flamegraph.svg — open it in a browser
+```
+
+Use `perf stat` when you need cache-miss evidence:
+
+```bash
+perf stat -e cache-misses,cache-references cargo bench --bench hash_throughput
+```
+
+For energy-aware benchmarking, run the 100,000-leaf construction workload
+through Linux `perf`:
+
+```bash
+./scripts/energy-perf.sh bench_energy
+```
+
+The full reproducibility guide lives in [`benchmarks/ENERGY.md`](benchmarks/ENERGY.md).
+
+Reproduction notes and a reference artifact live in [`profiling/`](profiling/).
+
 ---
 
 ## Development Status
@@ -352,7 +422,7 @@ Criterion reports.
 | 2 — Binary Merkle Tree | `BinaryMerkleTree<H>`, property tests | ✅ **Complete** |
 | 3 — Sparse Merkle Tree | `SparseMerkleTree<H>`, node batching | ✅ **Complete** |
 | 4 — Merkle Patricia Trie | Ethereum-compatible MPT, RLP | ✅ **Complete** |
-| 5 — Benchmarking | Full Criterion suite, comparative report | ⏳ Planned |
+| 5 — Benchmarking | Criterion suite, energy notes, comparative report | 🚧 In progress — RSS pending |
 | 6 — Docs & Publication | `crates.io` publish, mdBook, paper | 🚧 In progress |
  
 ---
@@ -363,9 +433,27 @@ Criterion reports.
 - [x] `SparseMerkleTree<H>` with shortcut nodes and one-phase batch updates
 - [x] `MerklePatriciaTrie<H>` with RLP encoding, validated against Ethereum test vectors
 - [x] Publish `merkle-core`, `merkleforge-hash`, and `merkle-variants` `v0.4.0` to `crates.io`
-- [ ] Full Criterion benchmark suite with comparative results vs `rs-merkle` and `merkle_light`
+- [x] Criterion benchmark suite with comparative results vs `rs-merkle` and `merkle_light`
+- [x] Proof-size comparison table for MerkleForge, `rs-merkle`, and `merkle_light`
+- [ ] Peak RSS memory benchmark capture for final Phase 5 evidence
 - [ ] mdBook user guide with copy-pasteable examples for each variant
 - [ ] Research paper on benchmark findings and tree-type trade-off analysis
+
+---
+
+## Release Automation
+
+Release versions are prepared through the manual GitHub Actions workflow at
+`.github/workflows/release.yml`. Trigger it with a semantic version such as
+`0.4.1`; the workflow tests the workspace, updates the workspace version and
+changelog, tags the release, publishes crates, creates the GitHub release, and
+sends the Telegram notification.
+
+For local release tooling, install `cargo-release` with:
+
+```bash
+make install-release-tools
+```
 
 ---
 

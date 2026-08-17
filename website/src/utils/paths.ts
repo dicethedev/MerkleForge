@@ -14,6 +14,7 @@ export function currentPage(): Page {
 
   if (relative === "docs") return "docs";
   if (relative === "examples") return "examples";
+  if (relative === "demo") return "demo";
   if (relative === "benchmarks") return "benchmarks";
   return "home";
 }

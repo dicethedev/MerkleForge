@@ -1,0 +1,39 @@
+<svg width="1160" height="250" viewBox="0 0 1160 250" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">MerkleForge outlined wordmark</title>
+  <desc id="desc">A bold MerkleForge wordmark with white lettering, heavy black stroke, and geometric proof-line accents.</desc>
+  <defs>
+    <linearGradient id="edge" x1="80" y1="42" x2="1088" y2="202" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#18E7FF"/>
+      <stop offset="0.45" stop-color="#A47CFF"/>
+      <stop offset="1" stop-color="#B5FF4D"/>
+    </linearGradient>
+    <filter id="shadow" x="-8%" y="-28%" width="116%" height="156%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="14" stdDeviation="8" flood-color="#000000" flood-opacity="0.72"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#18E7FF" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+  <rect width="1160" height="250" rx="32" fill="#F6F8FB"/>
+  <path d="M88 182C180 66 304 66 396 182C488 66 612 66 704 182C796 66 920 66 1072 182" stroke="url(#edge)" stroke-width="5" stroke-linecap="round" opacity="0.82"/>
+  <path d="M120 70H1038" stroke="#05070A" stroke-width="4" stroke-linecap="round" opacity="0.12"/>
+  <path d="M120 190H1038" stroke="#05070A" stroke-width="4" stroke-linecap="round" opacity="0.12"/>
+
+  <text
+    x="80"
+    y="151"
+    font-family="Arial Black, Impact, Inter, ui-sans-serif, system-ui, sans-serif"
+    font-size="104"
+    font-weight="900"
+    letter-spacing="-3.5"
+    fill="#FFFFFF"
+    stroke="#05070A"
+    stroke-width="9"
+    paint-order="stroke fill"
+    filter="url(#shadow)"
+  >MerkleForge</text>
+
+  <circle cx="142" cy="68" r="8" fill="#18E7FF" stroke="#05070A" stroke-width="4"/>
+  <circle cx="396" cy="182" r="8" fill="#A47CFF" stroke="#05070A" stroke-width="4"/>
+  <circle cx="704" cy="182" r="8" fill="#B5FF4D" stroke="#05070A" stroke-width="4"/>
+  <circle cx="1018" cy="68" r="8" fill="#FF9F43" stroke="#05070A" stroke-width="4"/>
+</svg>

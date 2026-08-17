@@ -9,7 +9,8 @@
 //! - Each variant carries enough context for the caller to act on the
 //!   error without needing to inspect a string message.
 
-use std::fmt;
+use alloc::string::{String, ToString};
+use core::fmt;
 
 /// All errors that can arise from the `MerkleForge` crates.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -82,6 +83,7 @@ impl fmt::Display for MerkleError {
     }
 }
 
+#[cfg(feature = "std")]
 impl std::error::Error for MerkleError {}
 
 // ── Conversions from common I/O / codec errors ─────────────────────────────

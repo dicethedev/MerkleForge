@@ -4,6 +4,7 @@ import "./assets/styles.css";
 import { benchmarkFallback, defaultSiteData } from "./data/defaults";
 import { useJson } from "./hooks/useJson";
 import { BenchmarksPage } from "./pages/BenchmarksPage";
+import { DemoPage } from "./pages/DemoPage";
 import { DocsPage } from "./pages/DocsPage";
 import { ExamplesPage } from "./pages/ExamplesPage";
 import { HomePage } from "./pages/HomePage";
@@ -20,6 +21,8 @@ function App() {
       return <DocsPage site={site} />;
     case "examples":
       return <ExamplesPage site={site} />;
+    case "demo":
+      return <DemoPage site={site} />;
     case "benchmarks":
       return <BenchmarksPage site={site} benchmarks={benchmarks} />;
     default:

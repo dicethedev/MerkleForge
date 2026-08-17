@@ -1,0 +1,46 @@
+<svg width="1120" height="240" viewBox="0 0 1120 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">MerkleForge wordmark</title>
+  <desc id="desc">MerkleForge text logo with a black stroke and subtle Merkle proof node accents.</desc>
+  <defs>
+    <linearGradient id="accent" x1="152" y1="58" x2="972" y2="198" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#23D8FF"/>
+      <stop offset="0.52" stop-color="#8C6CFF"/>
+      <stop offset="1" stop-color="#9DFF57"/>
+    </linearGradient>
+    <filter id="softGlow" x="-20%" y="-30%" width="140%" height="160%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.18 0 0 0 0 0.85 0 0 0 0 1 0 0 0 0.45 0"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1120" height="240" rx="34" fill="#05070A"/>
+  <path d="M96 119L138 72L180 119L138 166L96 119Z" stroke="url(#accent)" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M96 119H180M138 72V166" stroke="url(#accent)" stroke-width="4" stroke-linecap="round" opacity="0.78"/>
+  <circle cx="96" cy="119" r="9" fill="#23D8FF"/>
+  <circle cx="138" cy="72" r="9" fill="#9DFF57"/>
+  <circle cx="180" cy="119" r="9" fill="#FF9F43"/>
+  <circle cx="138" cy="166" r="9" fill="#8C6CFF"/>
+
+  <text
+    x="222"
+    y="150"
+    font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-size="92"
+    font-weight="900"
+    letter-spacing="-4"
+    fill="#F8FBFF"
+    stroke="#000000"
+    stroke-width="7"
+    paint-order="stroke fill"
+    filter="url(#softGlow)"
+  >MerkleForge</text>
+
+  <path d="M236 184H884" stroke="url(#accent)" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+  <circle cx="236" cy="184" r="6" fill="#23D8FF"/>
+  <circle cx="560" cy="184" r="6" fill="#8C6CFF"/>
+  <circle cx="884" cy="184" r="6" fill="#9DFF57"/>
+</svg>

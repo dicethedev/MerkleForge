@@ -16,6 +16,44 @@ type BenchmarksPageProps = {
   benchmarks: BenchmarkData;
 };
 
+const comparisonRows = [
+  {
+    metric: "10K leaf construction",
+    plain: "Build a binary Merkle tree from 10,000 leaves.",
+    unit: "ms",
+    values: {
+      merkleforge: 16.93,
+      rsMerkle: 2.7,
+      merkleLight: 2.19,
+    },
+  },
+  {
+    metric: "Proof size",
+    plain: "Bytes needed to send one inclusion proof from a 10K-leaf tree.",
+    unit: "bytes",
+    values: {
+      merkleforge: 469,
+      rsMerkle: 448,
+      merkleLight: 512,
+    },
+  },
+  {
+    metric: "Proof verification",
+    plain: "Time to check one inclusion proof against a trusted root.",
+    unit: "µs",
+    values: {
+      merkleforge: 1.87,
+      rsMerkle: 7.16,
+      merkleLight: 1.88,
+    },
+  },
+];
+
+function comparisonWidth(value: number, values: Record<string, number>) {
+  const slowest = Math.max(...Object.values(values));
+  return `${Math.max(8, (value / slowest) * 100).toFixed(1)}%`;
+}
+
 export function BenchmarksPage({ site, benchmarks }: BenchmarksPageProps) {
   const data = useJson<BenchmarkData>("benchmark-data.json", benchmarks);
   const [filter, setFilter] = useState("all");
@@ -136,6 +174,103 @@ export function BenchmarksPage({ site, benchmarks }: BenchmarksPageProps) {
                 <CodeWindow file="Patricia trie" meta="Ethereum-style" code="cargo bench --bench patricia_trie" />
               </div>
             </article>
+          </div>
+        </Section>
+
+        <Section
+          label="Comparison"
+          title="MerkleForge beside the Rust crates it is measured against."
+          copy="Objective 3 compares MerkleForge with rs-merkle and merkle_light using the same 10,000-leaf binary-tree workload. Lower numbers are better in every row."
+        >
+          <div className="comparison-panel">
+            <div className="comparison-summary">
+              <article>
+                <span>Best MerkleForge result</span>
+                <strong>3.1x faster proof verification than rs-merkle</strong>
+                <p>
+                  MerkleForge verifies a 10K-tree inclusion proof in 1.87 µs, while rs-merkle
+                  measures 7.16 µs on the same local run.
+                </p>
+              </article>
+              <article>
+                <span>Smallest proof</span>
+                <strong>rs-merkle by 21 bytes</strong>
+                <p>
+                  MerkleForge proofs are close to rs-merkle and smaller than merkle_light in this
+                  benchmark snapshot.
+                </p>
+              </article>
+            </div>
+            <div className="comparison-table" role="table" aria-label="Comparative benchmark results">
+              <div className="comparison-row comparison-head" role="row">
+                <span role="columnheader">Metric</span>
+                <span role="columnheader">MerkleForge</span>
+                <span role="columnheader">rs-merkle</span>
+                <span role="columnheader">merkle_light</span>
+              </div>
+              {comparisonRows.map(row => (
+                <div className="comparison-row" role="row" key={row.metric}>
+                  <div className="comparison-metric" role="cell">
+                    <strong>{row.metric}</strong>
+                    <p>{row.plain}</p>
+                  </div>
+                  {[
+                    ["merkleforge", "MerkleForge"],
+                    ["rsMerkle", "rs-merkle"],
+                    ["merkleLight", "merkle_light"],
+                  ].map(([key, label]) => {
+                    const value = row.values[key as keyof typeof row.values];
+                    const best = value === Math.min(...Object.values(row.values));
+                    return (
+                      <div className={`comparison-value ${best ? "best" : ""}`} role="cell" key={key}>
+                        <span className="mobile-label">{label}</span>
+                        <strong>
+                          {value.toLocaleString(undefined, { maximumFractionDigits: 2 })} {row.unit}
+                        </strong>
+                        <div className="comparison-track">
+                          <span style={{ width: comparisonWidth(value, row.values) }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+            <p className="comparison-note">
+              Measured locally with <code>cargo bench --bench comparison</code>. Hardware, CPU
+              governor, and dependency versions can move the absolute values, so use the trend and
+              rerun locally when exact timing matters.
+            </p>
+            <div className="comparison-explainer" aria-label="What the comparison metrics mean">
+              <article>
+                <strong>Construction time</strong>
+                <p>
+                  How long it takes to build a binary Merkle tree from 10,000 leaves. Lower means the
+                  tree is built faster.
+                </p>
+              </article>
+              <article>
+                <strong>Proof size</strong>
+                <p>
+                  How many bytes one inclusion proof takes when serialized or sent over a network.
+                  Lower means cheaper storage and bandwidth.
+                </p>
+              </article>
+              <article>
+                <strong>Proof verification</strong>
+                <p>
+                  How long it takes to check one proof against a trusted root. Lower means faster
+                  light-client or verifier checks.
+                </p>
+              </article>
+              <article className="comparison-takeaway">
+                <strong>Current takeaway</strong>
+                <p>
+                  MerkleForge is strongest at proof verification and competitive on proof size, but
+                  slower at 10K tree construction in this snapshot.
+                </p>
+              </article>
+            </div>
           </div>
         </Section>
 

@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">MerkleForge sample flamegraph</title>
+  <desc id="desc">Reference flamegraph-style SVG showing typical MerkleForge benchmark hotspots.</desc>
+  <style>
+    text { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; fill: #e8edf2; }
+    .small { font-size: 10px; fill: #94a3b8; }
+    .bg { fill: #050708; }
+    .panel { fill: #0b1016; stroke: #1f3442; }
+    .frame { stroke: rgba(255,255,255,.16); stroke-width: 1; }
+    .a { fill: #37d6e6; }
+    .b { fill: #8b5cf6; }
+    .c { fill: #adff5c; }
+    .d { fill: #ff9b42; }
+    .e { fill: #1f2937; }
+  </style>
+  <rect class="bg" width="1200" height="560" />
+  <rect class="panel" x="24" y="24" width="1152" height="512" rx="18" />
+  <text x="48" y="58">MerkleForge profiling sample — baseline_construction</text>
+  <text class="small" x="48" y="80">Regenerate on target hardware with: ./scripts/flamegraph.sh baseline_construction</text>
+
+  <g transform="translate(48 476)">
+    <rect class="frame e" x="0" y="0" width="1104" height="28" rx="3" />
+    <text x="12" y="19">criterion::routine / merkle-bench baseline_construction</text>
+  </g>
+
+  <g transform="translate(48 434)">
+    <rect class="frame a" x="0" y="0" width="432" height="28" rx="3" />
+    <text x="12" y="19">Sha256::hash</text>
+    <rect class="frame b" x="436" y="0" width="304" height="28" rx="3" />
+    <text x="448" y="19">Keccak256::hash</text>
+    <rect class="frame c" x="744" y="0" width="234" height="28" rx="3" />
+    <text x="756" y="19">Blake3::hash</text>
+    <rect class="frame d" x="982" y="0" width="122" height="28" rx="3" />
+    <text x="994" y="19">hash_nodes</text>
+  </g>
+
+  <g transform="translate(48 392)">
+    <rect class="frame a" x="0" y="0" width="260" height="28" rx="3" />
+    <text x="12" y="19">sha2::compress256</text>
+    <rect class="frame a" x="312" y="0" width="168" height="28" rx="3" opacity=".78" />
+    <text x="324" y="19">domain separator</text>
+    <rect class="frame b" x="436" y="0" width="186" height="28" rx="3" />
+    <text x="448" y="19">tiny_keccak::keccakf</text>
+    <rect class="frame b" x="626" y="0" width="114" height="28" rx="3" opacity=".78" />
+    <text x="638" y="19">absorb</text>
+    <rect class="frame c" x="744" y="0" width="166" height="28" rx="3" />
+    <text x="756" y="19">blake3::compress</text>
+    <rect class="frame c" x="914" y="0" width="64" height="28" rx="3" opacity=".78" />
+    <text x="924" y="19">derive</text>
+    <rect class="frame d" x="982" y="0" width="122" height="28" rx="3" />
+    <text x="994" y="19">combine left/right</text>
+  </g>
+
+  <g transform="translate(48 350)">
+    <rect class="frame a" x="0" y="0" width="146" height="28" rx="3" />
+    <text x="12" y="19">message schedule</text>
+    <rect class="frame a" x="150" y="0" width="158" height="28" rx="3" opacity=".86" />
+    <text x="162" y="19">round functions</text>
+    <rect class="frame b" x="436" y="0" width="124" height="28" rx="3" />
+    <text x="448" y="19">permutation</text>
+    <rect class="frame c" x="744" y="0" width="104" height="28" rx="3" />
+    <text x="756" y="19">SIMD lanes</text>
+  </g>
+
+  <g transform="translate(48 308)">
+    <rect class="frame a" x="0" y="0" width="92" height="28" rx="3" opacity=".72" />
+    <text x="12" y="19">load words</text>
+    <rect class="frame a" x="96" y="0" width="98" height="28" rx="3" opacity=".72" />
+    <text x="108" y="19">sigma mix</text>
+    <rect class="frame a" x="198" y="0" width="110" height="28" rx="3" opacity=".72" />
+    <text x="210" y="19">state update</text>
+    <rect class="frame b" x="436" y="0" width="74" height="28" rx="3" opacity=".72" />
+    <text x="448" y="19">theta</text>
+    <rect class="frame b" x="514" y="0" width="46" height="28" rx="3" opacity=".72" />
+    <text x="526" y="19">rho</text>
+  </g>
+
+  <text class="small" x="48" y="126">How to read this: wider frames consumed more sampled CPU time. Use the generated flamegraph.svg for real measurements.</text>
+</svg>
