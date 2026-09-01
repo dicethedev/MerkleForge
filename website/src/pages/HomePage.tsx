@@ -18,7 +18,7 @@ export function HomePage({ site }: { site: SiteData }) {
         <header className="hero vite-hero">
           <div className="hero-copy hero-copy-centered">
             <h1 className="hero-title">
-              The Merkle toolkit
+              The Merkle Framework
               <span>for verifiable systems.</span>
             </h1>
             <p className="lede hero-lede">
@@ -41,7 +41,7 @@ export function HomePage({ site }: { site: SiteData }) {
 
         <Section
           label="What you get"
-          title="Build, prove, and verify data with one Rust toolkit."
+          title="Build, prove, and verify data with one Rust framework."
           copy="MerkleForge gives you the common pieces needed for authenticated data: hash adapters, tree variants, proofs, examples, and benchmark reports."
         >
           <div className="feature-orbit-grid">
