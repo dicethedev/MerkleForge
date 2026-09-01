@@ -59,7 +59,7 @@ export function DocsPage({ site }: { site: SiteData }) {
             <span className="label">MerkleForge docs / v{site.crateVersion}</span>
             <h1>Build roots and verify proofs without carrying the whole tree.</h1>
             <p>
-              MerkleForge is a Rust toolkit for authenticated data. You put data in, get a Merkle
+              MerkleForge is a Rust framework for authenticated data. You put data in, get a Merkle
               root out, and send small proofs that other apps can verify.
             </p>
 

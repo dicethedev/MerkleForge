@@ -1,4 +1,4 @@
-# MerkleForge
+# MerkleForge Framework
 
 <div align="center">
 
@@ -6,7 +6,7 @@
 
 </div>
 
-### Building a Faster, More Efficient Data Verification Toolkit for Modern Blockchains
+### Data Verification Framework for Modern Blockchains
 
 [![CI](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml/badge.svg)](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml)
 [![Website](https://github.com/dicethedev/MerkleForge/actions/workflows/website.yml/badge.svg)](https://dicethedev.github.io/MerkleForge/index.html)
@@ -40,10 +40,10 @@ The Rust ecosystem makes this worse by being fragmented. Libraries like `rs-merk
 
 ## The Solution
  
-MerkleForge is a high-performance Rust toolkit designed to attack this bottleneck directly. It provides an optimized, energy-efficient engine capable
+MerkleForge is a high-performance Rust framework designed to attack this bottleneck directly. It provides an optimized, energy-efficient engine capable
 of generating fast cryptographic proofs, enabling distributed systems to validate data integrity without overwhelming storage or computational resources.
  
-The toolkit unifies the three Merkle tree variants used across production blockchain systems — binary trees for transaction batching, sparse trees for
+The framework unifies the three Merkle tree variants used across production blockchain systems — binary trees for transaction batching, sparse trees for
 account state, and Patricia tries for Ethereum compatibility — under a single cohesive API with pluggable hash functions and a rigorous benchmarking suite.
  
 This is the implementation artifact of a final-year Software Engineering research project at MIVA Open University, supervised by Dr. Oluwasegun Ishaya Adelaiye.
@@ -102,7 +102,7 @@ This is the implementation artifact of a final-year Software Engineering researc
 
 ## Architecture
 
-The toolkit is structured in two logical layers:
+The framework is structured in two logical layers:
 
 ### Module Organization
 
