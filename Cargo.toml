@@ -8,13 +8,15 @@ members = [
 ]
 
 [workspace.package]
-version = "0.4.0"
+version = "0.4.1"
 edition     = "2024"
 rust-version = "1.97.1"
 authors     = ["Blessing Samuel <dicethedev>"]
 license     = "MIT OR Apache-2.0"
 repository  = "https://github.com/dicethedev/MerkleForge"
-keywords    = ["merkletree", "blockchain", "cryptography", "hashing", "hash functions"]
+homepage    = "https://dicethedev.github.io/MerkleForge/"
+documentation = "https://docs.rs/merkle-core"
+keywords    = ["merkle", "blockchain", "cryptography", "hashing", "proofs"]
 categories  = ["cryptography", "data-structures"]
 
 # Shared dependency versions — bump once, applies everywhere
@@ -34,5 +36,5 @@ criterion  = { version = "0.8.2", features = ["html_reports"] }
 proptest   = "1.11.0"
 
 # Shared internal crates
-merkle-core = { path = "merkle-core", version = ">=0.2.1, <0.5.0" }
-merkleforge-hash = { path = "merkle-hash", version = ">=0.2.1, <0.5.0" }
+merkle-core = { path = "merkle-core", version = "0.4.1" }
+merkleforge-hash = { path = "merkle-hash", version = "0.4.1" }

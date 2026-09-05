@@ -1,0 +1,11 @@
+   Compiling merkle-variants v0.4.0 (/home/dice/Projects/MerkleForge/merkle-variants)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.86s
+     Running tests/patricia_ethereum_vectors.rs (target/debug/deps/patricia_ethereum_vectors-a8740d4bc04bbc96)
+
+running 3 tests
+test empty_trie_root_matches_ethereum_vector ... ok
+test official_trieanyorder_vectors_match_ethereum_roots ... ok
+test official_trietest_vectors_match_ethereum_roots ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+

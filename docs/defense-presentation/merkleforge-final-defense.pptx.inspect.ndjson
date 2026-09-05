@@ -1,0 +1,266 @@
+{"kind":"deck","id":"pr/1vcuq5","name":"Deck"}
+{"kind":"layout","layoutId":"e187e25b-bbc5-43da-b25b-5124ad3db6d8","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"28683381-a5c1-4cf3-a5be-0084daf4b002","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/ajkz28","slide":1,"title":"MerkleForge","textShapes":9}
+{"kind":"textbox","id":"sh/6doja18j","slide":1,"text":"MerkleForge","textPreview":"MerkleForge","textChars":11,"textLines":1,"bbox":[72,80,660,80]}
+{"kind":"textbox","id":"sh/tgfi5wra","slide":1,"text":"Building a faster, unified data verification toolkit for modern blockchains.","textPreview":"Building a faster, unified data verification toolkit for modern blockchains.","textChars":76,"textLines":1,"bbox":[72,166,760,72]}
+{"kind":"textbox","id":"sh/sf61crqp","slide":1,"text":"Blessing Omosehin Samuel","textPreview":"Blessing Omosehin Samuel","textChars":24,"textLines":1,"bbox":[72,520,420,34]}
+{"kind":"textbox","id":"sh/jad0zm9s","slide":1,"text":"Software Engineering - Miva Open University - August 2026","textPreview":"Software Engineering - Miva Open University - August 2026","textChars":57,"textLines":1,"bbox":[72,558,620,30]}
+{"kind":"shape","id":"sh/i94j6h8n","slide":1,"bbox":[790,96,360,430]}
+{"kind":"textbox","id":"sh/5cfi1wry","slide":1,"text":"Binary","textPreview":"Binary","textChars":6,"textLines":1,"bbox":[848,154,180,32]}
+{"kind":"textbox","id":"sh/kb618rqd","slide":1,"text":"Sparse","textPreview":"Sparse","textChars":6,"textLines":1,"bbox":[848,266,180,32]}
+{"kind":"textbox","id":"sh/36hkbq9c","slide":1,"text":"Patricia","textPreview":"Patricia","textChars":8,"textLines":1,"bbox":[848,378,180,32]}
+{"kind":"shape","id":"sh/258jil8r","slide":1,"bbox":[1045,165,28,28]}
+{"kind":"shape","id":"sh/8fido325","slide":1,"bbox":[1010,277,28,28]}
+{"kind":"shape","id":"sh/9grux83q","slide":1,"bbox":[1075,389,28,28]}
+{"kind":"shape","id":"sh/mt0vmdkf","slide":1,"bbox":[990,445,28,28]}
+{"kind":"shape","id":"sh/nu9cvylk","slide":1,"bbox":[72,662,1136,0]}
+{"kind":"textbox","id":"sh/0ridk329","slide":1,"text":"MerkleForge final year project defense","textPreview":"MerkleForge final year project defense","textChars":38,"textLines":1,"bbox":[72,674,520,24]}
+{"kind":"textbox","id":"sh/lsrut83u","slide":1,"text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[1168,674,40,24]}
+{"kind":"notes","id":"nt/ajkz28","slide":1,"text":"[Sources]\nProject documentation PDF supplied by the author.\nRepository: https://github.com/dicethedev/MerkleForge"}
+{"kind":"slide","id":"sl/0lcl82","slide":2,"title":"INTRODUCTION","textShapes":11}
+{"kind":"textbox","id":"sh/9836l4rq","slide":2,"text":"INTRODUCTION","textPreview":"INTRODUCTION","textChars":12,"textLines":1,"bbox":[72,44,640,28]}
+{"kind":"textbox","id":"sh/m5snap8z","slide":2,"text":"The problem is fragmented Merkle tooling.","textPreview":"The problem is fragmented Merkle tooling.","textChars":41,"textLines":1,"bbox":[72,86,840,104]}
+{"kind":"textbox","id":"sh/n6loju9k","slide":2,"text":"Blockchain systems need fast proofs, but Rust developers often combine separate libraries for binary, sparse, and Patricia trees.","textPreview":"Blockchain systems need fast proofs, but Rust developers often combine separate libraries for binary, sparse, and Patricia trees.","textChars":129,"textLines":1,"bbox":[72,178,850,66]}
+{"kind":"shape","id":"sh/03a58fq9","slide":2,"bbox":[94,286,10,10]}
+{"kind":"textbox","id":"sh/l4j6hkru","slide":2,"text":"Different tree types, different APIs","textPreview":"Different tree types, different APIs","textChars":36,"textLines":1,"bbox":[120,278,974,28]}
+{"kind":"textbox","id":"sh/y1sn6583","slide":2,"text":"Developers must switch mental models and dependencies when moving between transaction batches, sparse state maps, and Ethereum-style state.","textPreview":"Developers must switch mental models and dependencies when moving between transaction batches, sparse state maps, and Ethereum-style state.","textChars":139,"textLines":1,"bbox":[120,308,974,44]}
+{"kind":"shape","id":"sh/z21ofa9o","slide":2,"bbox":[94,368,10,10]}
+{"kind":"textbox","id":"sh/kzepkjqd","slide":2,"text":"Research rarely reaches usable crates","textPreview":"Research rarely reaches usable crates","textChars":37,"textLines":1,"bbox":[120,360,974,28]}
+{"kind":"textbox","id":"sh/50n6to7y","slide":2,"text":"Optimizations such as empty-hash caches, shortcut nodes, and batch updates are discussed in papers but are not always available in developer tools.","textPreview":"Optimizations such as empty-hash caches, shortcut nodes, and batch updates are discussed in papers but are not always available in develo...","textChars":147,"textLines":1,"bbox":[120,390,974,44]}
+{"kind":"shape","id":"sh/x8nqpsbi","slide":2,"bbox":[94,450,10,10]}
+{"kind":"textbox","id":"sh/w7e9wnux","slide":2,"text":"Benchmarks are hard to compare","textPreview":"Benchmarks are hard to compare","textChars":30,"textLines":1,"bbox":[120,442,974,28]}
+{"kind":"textbox","id":"sh/b658nitc","slide":2,"text":"Without one repeatable benchmark suite, choosing a hash function or tree variant becomes guesswork.","textPreview":"Without one repeatable benchmark suite, choosing a hash function or tree variant becomes guesswork.","textChars":99,"textLines":1,"bbox":[120,472,974,44]}
+{"kind":"shape","id":"sh/a5wrudcr","slide":2,"bbox":[72,662,1136,0]}
+{"kind":"textbox","id":"sh/94nql8b6","slide":2,"text":"MerkleForge final year project defense","textPreview":"MerkleForge final year project defense","textChars":38,"textLines":1,"bbox":[72,674,520,24]}
+{"kind":"textbox","id":"sh/o3u9s3ul","slide":2,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1168,674,40,24]}
+{"kind":"notes","id":"nt/0lcl82","slide":2,"text":"[Sources]\nProject documentation PDF: Chapter 1, Statement of the Problem.\nResearch background referenced in the project: Nakamoto, Merkle, Ma et al., Kuznetsov et al."}
+{"kind":"slide","id":"sl/t1o7z3","slide":3,"title":"AIM AND OBJECTIVES","textShapes":15}
+{"kind":"textbox","id":"sh/knq9wjit","slide":3,"text":"AIM AND OBJECTIVES","textPreview":"AIM AND OBJECTIVES","textChars":18,"textLines":1,"bbox":[72,44,640,28]}
+{"kind":"textbox","id":"sh/jmh83e18","slide":3,"text":"MerkleForge unifies proofs under one Rust API.","textPreview":"MerkleForge unifies proofs under one Rust API.","textChars":46,"textLines":1,"bbox":[72,86,840,104]}
+{"kind":"textbox","id":"sh/il8ru9kn","slide":3,"text":"The project delivers a typed, modular toolkit for building, proving, verifying, and measuring Merkle data structures.","textPreview":"The project delivers a typed, modular toolkit for building, proving, verifying, and measuring Merkle data structures.","textChars":117,"textLines":1,"bbox":[72,178,850,66]}
+{"kind":"shape","id":"sh/xkzq14ji","slide":3,"bbox":[100,294,310,90]}
+{"kind":"textbox","id":"sh/wjq9sz2x","slide":3,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[124,315,42,42]}
+{"kind":"textbox","id":"sh/vix8ze1c","slide":3,"text":"Design one trait-driven architecture","textPreview":"Design one trait-driven architecture","textChars":36,"textLines":1,"bbox":[176,318,200,42]}
+{"kind":"shape","id":"sh/ahorq9kr","slide":3,"bbox":[460,294,310,90]}
+{"kind":"textbox","id":"sh/hgjad8jm","slide":3,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[484,315,42,42]}
+{"kind":"textbox","id":"sh/gfa943i1","slide":3,"text":"Implement binary, sparse, and Patricia variants","textPreview":"Implement binary, sparse, and Patricia variants","textChars":47,"textLines":1,"bbox":[536,318,200,42]}
+{"kind":"shape","id":"sh/m9wvuxwb","slide":3,"bbox":[820,294,310,90]}
+{"kind":"textbox","id":"sh/7a5wnixw","slide":3,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[844,315,42,42]}
+{"kind":"textbox","id":"sh/8bedwneh","slide":3,"text":"Support SHA-256, Keccak-256, and BLAKE3","textPreview":"Support SHA-256, Keccak-256, and BLAKE3","textChars":39,"textLines":1,"bbox":[896,318,200,42]}
+{"kind":"shape","id":"sh/9cnepsfm","slide":3,"bbox":[100,426,310,90]}
+{"kind":"textbox","id":"sh/ylcvqdwz","slide":3,"text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[124,447,42,42]}
+{"kind":"textbox","id":"sh/z6lwjixk","slide":3,"text":"Benchmark against existing solutions","textPreview":"Benchmark against existing solutions","textChars":36,"textLines":1,"bbox":[176,450,200,42]}
+{"kind":"shape","id":"sh/k7udsne5","slide":3,"bbox":[460,426,310,90]}
+{"kind":"textbox","id":"sh/l8nelsfq","slide":3,"text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[484,447,42,42]}
+{"kind":"textbox","id":"sh/i1gf2hwj","slide":3,"text":"Publish documentation, examples, and crates","textPreview":"Publish documentation, examples, and crates","textChars":43,"textLines":1,"bbox":[536,450,200,42]}
+{"kind":"shape","id":"sh/j2pwvmx4","slide":3,"bbox":[72,662,1136,0]}
+{"kind":"textbox","id":"sh/fmhsnedg","slide":3,"text":"MerkleForge final year project defense","textPreview":"MerkleForge final year project defense","textChars":38,"textLines":1,"bbox":[72,674,520,24]}
+{"kind":"textbox","id":"sh/el8bu9cv","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1168,674,40,24]}
+{"kind":"notes","id":"nt/t1o7z3","slide":3,"text":"[Sources]\nProject documentation PDF: Chapter 1, Aim and Objectives of the Study."}
+{"kind":"slide","id":"sl/qww617","slide":4,"title":"LITERATURE GAP","textShapes":11}
+{"kind":"textbox","id":"sh/hof65gbe","slide":4,"text":"LITERATURE GAP","textPreview":"LITERATURE GAP","textChars":14,"textLines":1,"bbox":[72,44,640,28]}
+{"kind":"textbox","id":"sh/ulonalcn","slide":4,"text":"The gap is between theory and practical tooling.","textPreview":"The gap is between theory and practical tooling.","textChars":48,"textLines":1,"bbox":[72,86,840,104]}
+{"kind":"textbox","id":"sh/vmxo36t8","slide":4,"text":"Merkle tree research improves proof size, update cost, and hashing speed, but implementation support remains scattered.","textPreview":"Merkle tree research improves proof size, update cost, and hashing speed, but implementation support remains scattered.","textChars":119,"textLines":1,"bbox":[72,178,850,66]}
+{"kind":"shape","id":"sh/8zm58buh","slide":4,"bbox":[90,282,318,210]}
+{"kind":"shape","id":"sh/tkf61gb2","slide":4,"bbox":[482,282,318,210]}
+{"kind":"shape","id":"sh/6x4n61cr","slide":4,"bbox":[874,282,318,210]}
+{"kind":"textbox","id":"sh/7ydoz6tw","slide":4,"text":"Academic progress","textPreview":"Academic progress","textChars":17,"textLines":1,"bbox":[124,322,250,34]}
+{"kind":"textbox","id":"sh/sfqpkva1","slide":4,"text":"Batch updates, shortcut nodes, sparse proofs, and faster hashing reduce verification overhead.","textPreview":"Batch updates, shortcut nodes, sparse proofs, and faster hashing reduce verification overhead.","textChars":94,"textLines":1,"bbox":[124,368,232,86]}
+{"kind":"textbox","id":"sh/dgz6d0bm","slide":4,"text":"Developer reality","textPreview":"Developer reality","textChars":17,"textLines":1,"bbox":[516,322,250,34]}
+{"kind":"textbox","id":"sh/98r2ds3m","slide":4,"text":"Existing Rust tools often focus on one variant or expose incompatible APIs.","textPreview":"Existing Rust tools often focus on one variant or expose incompatible APIs.","textChars":75,"textLines":1,"bbox":[516,368,232,86]}
+{"kind":"textbox","id":"sh/87il4nm1","slide":4,"text":"MerkleForge answer","textPreview":"MerkleForge answer","textChars":18,"textLines":1,"bbox":[908,322,250,34]}
+{"kind":"textbox","id":"sh/n69kbilw","slide":4,"text":"One workspace combines variants, hash adapters, proofs, docs, and benchmarks.","textPreview":"One workspace combines variants, hash adapters, proofs, docs, and benchmarks.","textChars":77,"textLines":1,"bbox":[908,368,232,86]}
+{"kind":"shape","id":"sh/m5g32x4b","slide":4,"bbox":[72,662,1136,0]}
+{"kind":"textbox","id":"sh/l4729s3q","slide":4,"text":"MerkleForge final year project defense","textPreview":"MerkleForge final year project defense","textChars":38,"textLines":1,"bbox":[72,674,520,24]}
+{"kind":"textbox","id":"sh/03y10nm5","slide":4,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1168,674,40,24]}
+{"kind":"notes","id":"nt/qww617","slide":4,"text":"[Sources]\nProject documentation PDF: Chapter 2, Literature Review and research gap discussion."}
+{"kind":"slide","id":"sl/2sn0y2","slide":5,"title":"SYSTEM ARCHITECTURE","textShapes":15}
+{"kind":"textbox","id":"sh/476hcbup","slide":5,"text":"SYSTEM ARCHITECTURE","textPreview":"SYSTEM ARCHITECTURE","textChars":19,"textLines":1,"bbox":[72,44,640,28]}
+{"kind":"textbox","id":"sh/j6x03qd4","slide":5,"text":"The implementation is split into small crates.","textPreview":"The implementation is split into small crates.","textChars":46,"textLines":1,"bbox":[72,86,840,104]}
+{"kind":"textbox","id":"sh/i5ozalcj","slide":5,"text":"Each crate has one responsibility, which keeps the system easier to test, document, and extend.","textPreview":"Each crate has one responsibility, which keeps the system easier to test, document, and extend.","textChars":95,"textLines":1,"bbox":[72,178,850,66]}
+{"kind":"shape","id":"sh/twfi90v6","slide":5,"bbox":[160,278,300,110]}
+{"kind":"textbox","id":"sh/sv6hgvul","slide":5,"text":"merkle-core","textPreview":"merkle-core","textChars":11,"textLines":1,"bbox":[184,300,250,30]}
+{"kind":"textbox","id":"sh/rux07qd0","slide":5,"text":"Traits, proof types, metadata, errors","textPreview":"Traits, proof types, metadata, errors","textChars":37,"textLines":1,"bbox":[184,336,245,42]}
+{"kind":"shape","id":"sh/6tozelcf","slide":5,"bbox":[482,278,300,110]}
+{"kind":"textbox","id":"sh/10zid0v2","slide":5,"text":"merkleforge-hash","textPreview":"merkleforge-hash","textChars":16,"textLines":1,"bbox":[506,300,250,30]}
+{"kind":"textbox","id":"sh/gzqhkvux","slide":5,"text":"SHA-256, Keccak-256, BLAKE3 adapters","textPreview":"SHA-256, Keccak-256, BLAKE3 adapters","textChars":36,"textLines":1,"bbox":[506,336,245,42]}
+{"kind":"shape","id":"sh/65gn6hwj","slide":5,"bbox":[804,278,300,110]}
+{"kind":"textbox","id":"sh/76pofmx4","slide":5,"text":"merkle-variants","textPreview":"merkle-variants","textChars":15,"textLines":1,"bbox":[828,300,250,30]}
+{"kind":"textbox","id":"sh/sry58rep","slide":5,"text":"Binary, sparse, and Patricia implementations","textPreview":"Binary, sparse, and Patricia implementations","textChars":44,"textLines":1,"bbox":[828,336,245,42]}
+{"kind":"shape","id":"sh/ts76hwfa","slide":5,"bbox":[322,440,300,110]}
+{"kind":"textbox","id":"sh/ut0nahwf","slide":5,"text":"merkle-bench","textPreview":"merkle-bench","textChars":12,"textLines":1,"bbox":[346,462,250,30]}
+{"kind":"textbox","id":"sh/fu9ojmx0","slide":5,"text":"Criterion benchmarks and comparisons","textPreview":"Criterion benchmarks and comparisons","textChars":36,"textLines":1,"bbox":[346,498,245,42]}
+{"kind":"shape","id":"sh/gvi5crel","slide":5,"bbox":[644,440,300,110]}
+{"kind":"textbox","id":"sh/hwr6lwf6","slide":5,"text":"website","textPreview":"website","textChars":7,"textLines":1,"bbox":[668,462,250,30]}
+{"kind":"textbox","id":"sh/axwnyxgb","slide":5,"text":"Docs, examples, benchmarks, live demo","textPreview":"Docs, examples, benchmarks, live demo","textChars":37,"textLines":1,"bbox":[668,498,245,42]}
+{"kind":"shape","id":"sh/vy5472xw","slide":5,"bbox":[72,662,1136,0]}
+{"kind":"textbox","id":"sh/z21kzydo","slide":5,"text":"MerkleForge final year project defense","textPreview":"MerkleForge final year project defense","textChars":38,"textLines":1,"bbox":[72,674,520,24]}
+{"kind":"textbox","id":"sh/y1s36tw3","slide":5,"text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1168,674,40,24]}
+{"kind":"notes","id":"nt/2sn0y2","slide":5,"text":"[Sources]\nProject documentation PDF: Chapter 4, System Implementation.\nRepository workspace layout."}
+{"kind":"slide","id":"sl/vaq1di","slide":6,"title":"IMPLEMENTATION","textShapes":13}
+{"kind":"textbox","id":"sh/2hwnypor","slide":6,"text":"IMPLEMENTATION","textPreview":"IMPLEMENTATION","textChars":14,"textLines":1,"bbox":[72,44,640,28]}
+{"kind":"textbox","id":"sh/pk76tk72","slide":6,"text":"Three tree variants cover three real use cases.","textPreview":"Three tree variants cover three real use cases.","textChars":47,"textLines":1,"bbox":[72,86,840,104]}
+{"kind":"textbox","id":"sh/4je50f6h","slide":6,"text":"The library exposes familiar operations while allowing each structure to use the storage model that fits its problem.","textPreview":"The library exposes familiar operations while allowing each structure to use the storage model that fits its problem.","textChars":117,"textLines":1,"bbox":[72,178,850,66]}
+{"kind":"shape","id":"sh/fe54nap0","slide":6,"bbox":[100,294,10,10]}
+{"kind":"textbox","id":"sh/udwnu5of","slide":6,"text":"Binary Merkle Tree","textPreview":"Binary Merkle Tree","textChars":18,"textLines":1,"bbox":[126,286,584,28]}
+{"kind":"textbox","id":"sh/hgnmpk76","slide":6,"text":"Best for ordered lists such as transactions, files, logs, and block batches.","textPreview":"Best for ordered lists such as transactions, files, logs, and block batches.","textChars":76,"textLines":1,"bbox":[126,316,584,44]}
+{"kind":"shape","id":"sh/gfe5wf6l","slide":6,"bbox":[100,386,10,10]}
+{"kind":"textbox","id":"sh/7al4jqp4","slide":6,"text":"Sparse Merkle Tree","textPreview":"Sparse Merkle Tree","textChars":18,"textLines":1,"bbox":[126,378,584,28]}
+{"kind":"textbox","id":"sh/6pcnq58j","slide":6,"text":"Best for huge key spaces where most entries are empty and absence proofs matter.","textPreview":"Best for huge key spaces where most entries are empty and absence proofs matter.","textChars":80,"textLines":1,"bbox":[126,408,584,44]}
+{"kind":"shape","id":"sh/876dsrmp","slide":6,"bbox":[100,478,10,10]}
+{"kind":"textbox","id":"sh/t8fulw3a","slide":6,"text":"Merkle Patricia Trie","textPreview":"Merkle Patricia Trie","textChars":20,"textLines":1,"bbox":[126,470,584,28]}
+{"kind":"textbox","id":"sh/6lovqh4z","slide":6,"text":"Best for Ethereum-compatible account, storage, receipt, and state-root workflows.","textPreview":"Best for Ethereum-compatible account, storage, receipt, and state-root workflows.","textChars":81,"textLines":1,"bbox":[126,500,584,44]}
+{"kind":"shape","id":"sh/76xcjmlk","slide":6,"bbox":[760,260,330,270]}
+{"kind":"textbox","id":"sh/kj6do7mt","slide":6,"text":"Common workflow","textPreview":"Common workflow","textChars":15,"textLines":1,"bbox":[800,302,250,36]}
+{"kind":"textbox","id":"sh/lkfuhc3e","slide":6,"text":"insert data\ncompute root\ngenerate proof\nverify statelessly","textPreview":"insert data | compute root | generate proof | verify statelessly","textChars":58,"textLines":4,"bbox":[800,360,240,120]}
+{"kind":"shape","id":"sh/yh4vmx4n","slide":6,"bbox":[72,662,1136,0]}
+{"kind":"textbox","id":"sh/jidcf2l8","slide":6,"text":"MerkleForge final year project defense","textPreview":"MerkleForge final year project defense","textChars":38,"textLines":1,"bbox":[72,674,520,24]}
+{"kind":"textbox","id":"sh/4fqd0bmx","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1168,674,40,24]}
+{"kind":"notes","id":"nt/vaq1di","slide":6,"text":"[Sources]\nProject documentation PDF: Chapter 4, implemented modules and tree variants."}
+{"kind":"slide","id":"sl/yo6d5a","slide":7,"title":"CODE EVIDENCE","textShapes":11}
+{"kind":"textbox","id":"sh/m5k3e9gb","slide":7,"text":"CODE EVIDENCE","textPreview":"CODE EVIDENCE","textChars":13,"textLines":1,"bbox":[72,44,640,28]}
+{"kind":"textbox","id":"sh/98vm9ozm","slide":7,"text":"The trait contract is the center of the design.","textPreview":"The trait contract is the center of the design.","textChars":47,"textLines":1,"bbox":[72,86,840,104]}
+{"kind":"textbox","id":"sh/o72lgjy1","slide":7,"text":"All tree variants are built around a shared interface for mutation, queries, proof generation, metadata, and stateless verification.","textPreview":"All tree variants are built around a shared interface for mutation, queries, proof generation, metadata, and stateless verification.","textChars":132,"textLines":1,"bbox":[72,178,850,66]}
+{"kind":"shape","id":"sh/bad4byhs","slide":7,"bbox":[88,258,550,326]}
+{"kind":"textbox","id":"sh/a943itg7","slide":7,"text":"MerkleTree<H>","textPreview":"MerkleTree<H>","textChars":13,"textLines":1,"bbox":[126,294,300,32]}
+{"kind":"textbox","id":"sh/xcvmdozy","slide":7,"text":"insert(data)\nremove(index)\nroot()\nleaf_count()\ngenerate_proof(index)\nmetadata()","textPreview":"insert(data) | remove(index) | root() | leaf_count() | generate_proof(index) | metadata()","textChars":79,"textLines":6,"bbox":[126,346,462,186]}
+{"kind":"shape","id":"sh/wbmlkjyd","slide":7,"bbox":[690,258,500,326]}
+{"kind":"textbox","id":"sh/re9kfuho","slide":7,"text":"ProofVerifier<H>","textPreview":"ProofVerifier<H>","textChars":16,"textLines":1,"bbox":[728,294,320,32]}
+{"kind":"textbox","id":"sh/qd036pg3","slide":7,"text":"fn verify(\n    expected_root: &H::Digest,\n    leaf_data: &[u8],\n    proof: &MerkleProof<H::Digest>,\n) -> bool;","textPreview":"fn verify( |     expected_root: &H::Digest, |     leaf_data: &[u8], |     proof: &MerkleProof<H::Digest>, | ) -> bool;","textChars":110,"textLines":5,"bbox":[728,350,390,134]}
+{"kind":"textbox","id":"sh/gzy18red","slide":7,"text":"This enables light-client verification: the verifier only needs the trusted root, the target data, and the proof path.","textPreview":"This enables light-client verification: the verifier only needs the trusted root, the target data, and the proof path.","textChars":118,"textLines":1,"bbox":[728,504,386,48]}
+{"kind":"textbox","id":"sh/h072hwvi","slide":7,"text":"Source: merkle-core/src/traits/merkle_tree.rs","textPreview":"Source: merkle-core/src/traits/merkle_tree.rs","textChars":45,"textLines":1,"bbox":[126,606,560,22]}
+{"kind":"shape","id":"sh/uxwj6hw7","slide":7,"bbox":[72,662,1136,0]}
+{"kind":"textbox","id":"sh/vy5kfmds","slide":7,"text":"MerkleForge final year project defense","textPreview":"MerkleForge final year project defense","textChars":38,"textLines":1,"bbox":[72,674,520,24]}
+{"kind":"textbox","id":"sh/43y1cre9","slide":7,"text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[1168,674,40,24]}
+{"kind":"notes","id":"nt/yo6d5a","slide":7,"text":"[Sources]\nTrait signatures summarized from merkle-core/src/traits/merkle_tree.rs in the project repository."}
+{"kind":"slide","id":"sl/1oduyv","slide":8,"title":"METHODOLOGY","textShapes":13}
+{"kind":"textbox","id":"sh/q98fahcz","slide":8,"text":"METHODOLOGY","textPreview":"METHODOLOGY","textChars":11,"textLines":1,"bbox":[72,44,640,28]}
+{"kind":"textbox","id":"sh/dwzylwba","slide":8,"text":"The project used iterative, evidence-driven development.","textPreview":"The project used iterative, evidence-driven development.","textChars":56,"textLines":1,"bbox":[72,86,840,104]}
+{"kind":"textbox","id":"sh/cvqxcrup","slide":8,"text":"Each phase added a working feature, then backed it with tests, docs, and benchmarks before moving forward.","textPreview":"Each phase added a working feature, then backed it with tests, docs, and benchmarks before moving forward.","textChars":106,"textLines":1,"bbox":[72,178,850,66]}
+{"kind":"shape","id":"sh/36hgfmt8","slide":8,"bbox":[104,282,10,10]}
+{"kind":"textbox","id":"sh/25of6hcn","slide":8,"text":"Build","textPreview":"Build","textChars":5,"textLines":1,"bbox":[130,274,904,28]}
+{"kind":"textbox","id":"sh/p8zyhwbe","slide":8,"text":"Implement the core crate, hash adapters, tree variant, and public API.","textPreview":"Implement the core crate, hash adapters, tree variant, and public API.","textChars":70,"textLines":1,"bbox":[130,304,904,44]}
+{"kind":"shape","id":"sh/o7qx8rut","slide":8,"bbox":[104,360,10,10]}
+{"kind":"textbox","id":"sh/f2xgb2tc","slide":8,"text":"Verify","textPreview":"Verify","textChars":6,"textLines":1,"bbox":[130,352,904,28]}
+{"kind":"textbox","id":"sh/e1of2xcr","slide":8,"text":"Run unit, integration, property-based, and Ethereum vector tests.","textPreview":"Run unit, integration, property-based, and Ethereum vector tests.","textChars":65,"textLines":1,"bbox":[130,382,904,44]}
+{"kind":"shape","id":"sh/8vupsfm9","slide":8,"bbox":[104,438,10,10]}
+{"kind":"textbox","id":"sh/9w3qlk3e","slide":8,"text":"Measure","textPreview":"Measure","textChars":7,"textLines":1,"bbox":[130,430,904,28]}
+{"kind":"textbox","id":"sh/mtc7qp43","slide":8,"text":"Use Criterion benchmarks, comparison suites, and energy-aware notes.","textPreview":"Use Criterion benchmarks, comparison suites, and energy-aware notes.","textChars":68,"textLines":1,"bbox":[130,460,904,44]}
+{"kind":"shape","id":"sh/7ul8jalo","slide":8,"bbox":[104,516,10,10]}
+{"kind":"textbox","id":"sh/krapofmx","slide":8,"text":"Publish","textPreview":"Publish","textChars":7,"textLines":1,"bbox":[130,508,904,28]}
+{"kind":"textbox","id":"sh/lsjqhk3i","slide":8,"text":"Expose docs, examples, release automation, website pages, and live demo.","textPreview":"Expose docs, examples, release automation, website pages, and live demo.","textChars":72,"textLines":1,"bbox":[130,538,904,44]}
+{"kind":"shape","id":"sh/yps7m54r","slide":8,"bbox":[72,662,1136,0]}
+{"kind":"textbox","id":"sh/zq18falc","slide":8,"text":"MerkleForge final year project defense","textPreview":"MerkleForge final year project defense","textChars":38,"textLines":1,"bbox":[72,674,520,24]}
+{"kind":"textbox","id":"sh/4nepkzm1","slide":8,"text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1168,674,40,24]}
+{"kind":"notes","id":"nt/1oduyv","slide":8,"text":"[Sources]\nProject documentation PDF: Chapter 4, System Development and Testing Strategies."}
+{"kind":"slide","id":"sl/wuy5rb","slide":9,"title":"TESTING STRATEGY","textShapes":13}
+{"kind":"textbox","id":"sh/wf6h8rql","slide":9,"text":"TESTING STRATEGY","textPreview":"TESTING STRATEGY","textChars":16,"textLines":1,"bbox":[72,44,640,28]}
+{"kind":"textbox","id":"sh/bexgfmp0","slide":9,"text":"Correctness was tested at multiple levels.","textPreview":"Correctness was tested at multiple levels.","textChars":42,"textLines":1,"bbox":[72,86,840,104]}
+{"kind":"textbox","id":"sh/adoz6h8f","slide":9,"text":"The test suite checks single components, combined workflows, generated random cases, and Ethereum compatibility.","textPreview":"The test suite checks single components, combined workflows, generated random cases, and Ethereum compatibility.","textChars":112,"textLines":1,"bbox":[72,178,850,66]}
+{"kind":"shape","id":"sh/l4filw72","slide":9,"bbox":[94,286,510,104]}
+{"kind":"textbox","id":"sh/k36hcrqh","slide":9,"text":"Unit tests","textPreview":"Unit tests","textChars":10,"textLines":1,"bbox":[122,308,240,30]}
+{"kind":"textbox","id":"sh/j2x0j6pw","slide":9,"text":"Core functions, errors, hashing, RLP, and tree operations","textPreview":"Core functions, errors, hashing, RLP, and tree operations","textChars":57,"textLines":1,"bbox":[122,344,430,34]}
+{"kind":"shape","id":"sh/y1oza18r","slide":9,"bbox":[676,286,510,104]}
+{"kind":"textbox","id":"sh/18vy9c7y","slide":9,"text":"Integration tests","textPreview":"Integration tests","textChars":17,"textLines":1,"bbox":[704,308,240,30]}
+{"kind":"textbox","id":"sh/07mh07qd","slide":9,"text":"Combined modules across binary, sparse, and Patricia workflows","textPreview":"Combined modules across binary, sparse, and Patricia workflows","textChars":62,"textLines":1,"bbox":[704,344,430,34]}
+{"kind":"shape","id":"sh/i9srm50r","slide":9,"bbox":[94,438,510,104]}
+{"kind":"textbox","id":"sh/ja18fa1c","slide":9,"text":"Property tests","textPreview":"Property tests","textChars":14,"textLines":1,"bbox":[122,460,240,30]}
+{"kind":"textbox","id":"sh/4ba9ofix","slide":9,"text":"Randomized invariants using Proptest","textPreview":"Randomized invariants using Proptest","textChars":36,"textLines":1,"bbox":[122,496,430,34]}
+{"kind":"shape","id":"sh/5cjahkj2","slide":9,"bbox":[676,438,510,104]}
+{"kind":"textbox","id":"sh/6dsrqp0n","slide":9,"text":"Ethereum vectors","textPreview":"Ethereum vectors","textChars":16,"textLines":1,"bbox":[704,460,240,30]}
+{"kind":"textbox","id":"sh/relsjuh8","slide":9,"text":"Patricia trie roots checked against official test data","textPreview":"Patricia trie roots checked against official test data","textChars":54,"textLines":1,"bbox":[704,496,430,34]}
+{"kind":"shape","id":"sh/sfu9sfit","slide":9,"bbox":[72,662,1136,0]}
+{"kind":"textbox","id":"sh/tg3alkze","slide":9,"text":"MerkleForge final year project defense","textPreview":"MerkleForge final year project defense","textChars":38,"textLines":1,"bbox":[72,674,520,24]}
+{"kind":"textbox","id":"sh/ehcrup0z","slide":9,"text":"09","textPreview":"09","textChars":2,"textLines":1,"bbox":[1168,674,40,24]}
+{"kind":"notes","id":"nt/wuy5rb","slide":9,"text":"[Sources]\nProject documentation PDF: Chapter 4.3 Testing Strategies and Chapter 4.4 Test Cases and Results."}
+{"kind":"slide","id":"sl/jlvpgz","slide":10,"title":"TEST RESULTS","textShapes":17}
+{"kind":"textbox","id":"sh/l4nqdsfu","slide":10,"text":"TEST RESULTS","textPreview":"TEST RESULTS","textChars":12,"textLines":1,"bbox":[72,44,640,28]}
+{"kind":"textbox","id":"sh/y1c72xg3","slide":10,"text":"The implementation passed the recorded verification checks.","textPreview":"The implementation passed the recorded verification checks.","textChars":59,"textLines":1,"bbox":[72,86,840,104]}
+{"kind":"textbox","id":"sh/z258bixo","slide":10,"text":"The report records successful workspace, property, vector, documentation, and website checks.","textPreview":"The report records successful workspace, property, vector, documentation, and website checks.","textChars":93,"textLines":1,"bbox":[72,178,850,66]}
+{"kind":"shape","id":"sh/87ep87yl","slide":10,"bbox":[102,282,300,86]}
+{"kind":"textbox","id":"sh/9snqhcfq","slide":10,"text":"15 passed","textPreview":"15 passed","textChars":9,"textLines":1,"bbox":[128,300,240,30]}
+{"kind":"textbox","id":"sh/m5w76xgf","slide":10,"text":"merkle-core","textPreview":"merkle-core","textChars":11,"textLines":1,"bbox":[128,334,240,22]}
+{"kind":"shape","id":"sh/n658f2x0","slide":10,"bbox":[462,282,300,86]}
+{"kind":"textbox","id":"sh/wvy9c7yh","slide":10,"text":"21 passed","textPreview":"21 passed","textChars":9,"textLines":1,"bbox":[488,300,240,30]}
+{"kind":"textbox","id":"sh/xw7qlcf2","slide":10,"text":"merkleforge-hash","textPreview":"merkleforge-hash","textChars":16,"textLines":1,"bbox":[488,334,240,22]}
+{"kind":"shape","id":"sh/h8jyhkni","slide":10,"bbox":[822,282,300,86]}
+{"kind":"textbox","id":"sh/w7ahof6x","slide":10,"text":"105 passed","textPreview":"105 passed","textChars":10,"textLines":1,"bbox":[848,300,240,30]}
+{"kind":"textbox","id":"sh/v61gfa5c","slide":10,"text":"merkle-variants unit","textPreview":"merkle-variants unit","textChars":20,"textLines":1,"bbox":[848,334,240,22]}
+{"kind":"shape","id":"sh/u5szm5o7","slide":10,"bbox":[102,410,300,86]}
+{"kind":"textbox","id":"sh/5c3ylknu","slide":10,"text":"6 passed","textPreview":"6 passed","textChars":8,"textLines":1,"bbox":[128,428,240,30]}
+{"kind":"textbox","id":"sh/4buhsf69","slide":10,"text":"binary properties","textPreview":"binary properties","textChars":17,"textLines":1,"bbox":[128,462,240,22]}
+{"kind":"shape","id":"sh/jalgja5o","slide":10,"bbox":[462,410,300,86]}
+{"kind":"textbox","id":"sh/i9szqpo3","slide":10,"text":"3 passed","textPreview":"3 passed","textChars":8,"textLines":1,"bbox":[488,428,240,30]}
+{"kind":"textbox","id":"sh/lgzy90na","slide":10,"text":"Patricia vectors","textPreview":"Patricia vectors","textChars":16,"textLines":1,"bbox":[488,462,240,22]}
+{"kind":"shape","id":"sh/kfqxgv6p","slide":10,"bbox":[822,410,300,86]}
+{"kind":"textbox","id":"sh/czuhwvel","slide":10,"text":"passed","textPreview":"passed","textChars":6,"textLines":1,"bbox":[848,428,240,30]}
+{"kind":"textbox","id":"sh/d03y50v6","slide":10,"text":"website build","textPreview":"website build","textChars":13,"textLines":1,"bbox":[848,462,240,22]}
+{"kind":"shape","id":"sh/qxczulwv","slide":10,"bbox":[72,662,1136,0]}
+{"kind":"textbox","id":"sh/bylg3qd0","slide":10,"text":"MerkleForge final year project defense","textPreview":"MerkleForge final year project defense","textChars":38,"textLines":1,"bbox":[72,674,520,24]}
+{"kind":"textbox","id":"sh/0neh0vex","slide":10,"text":"10","textPreview":"10","textChars":2,"textLines":1,"bbox":[1168,674,40,24]}
+{"kind":"notes","id":"nt/jlvpgz","slide":10,"text":"[Sources]\nProject documentation PDF: Chapter 4.3 and Chapter 4.4 local testing results."}
+{"kind":"slide","id":"sl/d1wv2h","slide":11,"title":"PERFORMANCE EVALUATION","textShapes":11}
+{"kind":"textbox","id":"sh/exgr21kz","slide":11,"text":"PERFORMANCE EVALUATION","textPreview":"PERFORMANCE EVALUATION","textChars":22,"textLines":1,"bbox":[72,44,640,28]}
+{"kind":"textbox","id":"sh/107axg3a","slide":11,"text":"Benchmarks show where each design is strongest.","textPreview":"Benchmarks show where each design is strongest.","textChars":47,"textLines":1,"bbox":[72,86,840,104]}
+{"kind":"textbox","id":"sh/gzy94b2p","slide":11,"text":"Criterion measurements were used to compare hashing throughput, tree construction, proof generation, and verification.","textPreview":"Criterion measurements were used to compare hashing throughput, tree construction, proof generation, and verification.","textChars":118,"textLines":1,"bbox":[72,178,850,66]}
+{"kind":"shape","id":"sh/329szqlg","slide":11,"bbox":[90,270,340,245]}
+{"kind":"textbox","id":"sh/210r6lkv","slide":11,"text":"Hashing","textPreview":"Hashing","textChars":7,"textLines":1,"bbox":[122,304,250,32]}
+{"kind":"textbox","id":"sh/p4ra103m","slide":11,"text":"BLAKE3 reached the strongest large-input throughput in the recorded benchmark: 5.99 GiB/s.","textPreview":"BLAKE3 reached the strongest large-input throughput in the recorded benchmark: 5.99 GiB/s.","textChars":90,"textLines":1,"bbox":[122,354,260,88]}
+{"kind":"shape","id":"sh/o3it8v21","slide":11,"bbox":[470,270,340,245]}
+{"kind":"textbox","id":"sh/j65snmlc","slide":11,"text":"Binary tree","textPreview":"Binary tree","textChars":11,"textLines":1,"bbox":[502,304,250,32]}
+{"kind":"textbox","id":"sh/i5wruh4r","slide":11,"text":"100K-leaf construction completed in about 268 ms with SHA-256 in the recorded run.","textPreview":"100K-leaf construction completed in about 268 ms with SHA-256 in the recorded run.","textChars":82,"textLines":1,"bbox":[502,354,260,88]}
+{"kind":"shape","id":"sh/4nyhc3yx","slide":11,"bbox":[850,270,340,245]}
+{"kind":"textbox","id":"sh/po7yl8zi","slide":11,"text":"Comparison","textPreview":"Comparison","textChars":10,"textLines":1,"bbox":[882,304,250,32]}
+{"kind":"textbox","id":"sh/2lgzadgr","slide":11,"text":"MerkleForge remained competitive on proof size and proof verification while offering more variants.","textPreview":"MerkleForge remained competitive on proof size and proof verification while offering more variants.","textChars":99,"textLines":1,"bbox":[882,354,260,88]}
+{"kind":"shape","id":"sh/3mpgjihc","slide":11,"bbox":[72,662,1136,0]}
+{"kind":"textbox","id":"sh/cbyhgnyt","slide":11,"text":"MerkleForge final year project defense","textPreview":"MerkleForge final year project defense","textChars":38,"textLines":1,"bbox":[72,674,520,24]}
+{"kind":"textbox","id":"sh/dcrypsze","slide":11,"text":"11","textPreview":"11","textChars":2,"textLines":1,"bbox":[1168,674,40,24]}
+{"kind":"notes","id":"nt/d1wv2h","slide":11,"text":"[Sources]\nProject documentation PDF: Chapter 4.5 Performance Evaluation and benchmark tables."}
+{"kind":"slide","id":"sl/ewugme","slide":12,"title":"USER INTERFACE","textShapes":8}
+{"kind":"textbox","id":"sh/0jqd4jax","slide":12,"text":"USER INTERFACE","textPreview":"USER INTERFACE","textChars":14,"textLines":1,"bbox":[72,44,640,28]}
+{"kind":"textbox","id":"sh/zihcbetc","slide":12,"text":"The website makes the artifact easier to evaluate.","textPreview":"The website makes the artifact easier to evaluate.","textChars":50,"textLines":1,"bbox":[72,86,840,104]}
+{"kind":"textbox","id":"sh/eh8v29s7","slide":12,"text":"The React and Vite website turns the library into something reviewers can inspect without reading every source file first.","textPreview":"The React and Vite website turns the library into something reviewers can inspect without reading every source file first.","textChars":122,"textLines":1,"bbox":[72,178,850,66]}
+{"kind":"textbox","id":"sh/mlsv6ts3","slide":12,"text":"Landing page","textPreview":"Landing page","textChars":12,"textLines":1,"bbox":[118,530,250,24]}
+{"kind":"textbox","id":"sh/psfu54ba","slide":12,"text":"Docs","textPreview":"Docs","textChars":4,"textLines":1,"bbox":[498,530,250,24]}
+{"kind":"textbox","id":"sh/4r6twzup","slide":12,"text":"Live demo","textPreview":"Live demo","textChars":9,"textLines":1,"bbox":[878,530,250,24]}
+{"kind":"shape","id":"sh/edcfatkn","slide":12,"bbox":[72,662,1136,0]}
+{"kind":"textbox","id":"sh/zelgjyl8","slide":12,"text":"MerkleForge final year project defense","textPreview":"MerkleForge final year project defense","textChars":38,"textLines":1,"bbox":[72,674,520,24]}
+{"kind":"textbox","id":"sh/0fuxc32t","slide":12,"text":"12","textPreview":"12","textChars":2,"textLines":1,"bbox":[1168,674,40,24]}
+{"kind":"image","id":"im/8jat0jul","slide":12,"name":"","geometry":"roundRect","alt":"home-page.png","bbox":[88,260,350,250]}
+{"kind":"image","id":"im/tkju9ov6","slide":12,"name":"","geometry":"roundRect","alt":"docs-page.png","bbox":[468,260,350,250]}
+{"kind":"image","id":"im/6h8bytcf","slide":12,"name":"","geometry":"roundRect","alt":"demo-page.png","bbox":[848,260,350,250]}
+{"kind":"notes","id":"nt/ewugme","slide":12,"text":"[Sources]\nScreenshots generated from the local MerkleForge website build."}
+{"kind":"slide","id":"sl/vsegft","slide":13,"title":"HOW TO TEST","textShapes":11}
+{"kind":"textbox","id":"sh/dsnqpo3y","slide":13,"text":"HOW TO TEST","textPreview":"HOW TO TEST","textChars":11,"textLines":1,"bbox":[72,44,640,28]}
+{"kind":"textbox","id":"sh/qpc7et4n","slide":13,"text":"The panel can verify the artefact with standard commands.","textPreview":"The panel can verify the artefact with standard commands.","textChars":57,"textLines":1,"bbox":[72,86,840,104]}
+{"kind":"textbox","id":"sh/rql8nyl8","slide":13,"text":"These commands reproduce the main quality checks and demonstrate stateless proof verification.","textPreview":"These commands reproduce the main quality checks and demonstrate stateless proof verification.","textChars":94,"textLines":1,"bbox":[72,178,850,66]}
+{"kind":"shape","id":"sh/0vepk3mp","slide":13,"bbox":[92,260,1096,314]}
+{"kind":"textbox","id":"sh/1wnqt83a","slide":13,"text":"$ git clone https://github.com/dicethedev/MerkleForge.git","textPreview":"$ git clone https://github.com/dicethedev/MerkleForge.git","textChars":57,"textLines":1,"bbox":[128,292,980,32]}
+{"kind":"textbox","id":"sh/etw7it4j","slide":13,"text":"$ cargo test --workspace","textPreview":"$ cargo test --workspace","textChars":24,"textLines":1,"bbox":[128,336,980,32]}
+{"kind":"textbox","id":"sh/fu58ryl4","slide":13,"text":"$ cargo doc --workspace --no-deps","textPreview":"$ cargo doc --workspace --no-deps","textChars":33,"textLines":1,"bbox":[128,380,980,32]}
+{"kind":"textbox","id":"sh/oje9o3ml","slide":13,"text":"$ cargo run -p merkle-variants --example light_client","textPreview":"$ cargo run -p merkle-variants --example light_client","textChars":53,"textLines":1,"bbox":[128,424,980,32]}
+{"kind":"textbox","id":"sh/pk7qx836","slide":13,"text":"$ cargo bench --bench comparison","textPreview":"$ cargo bench --bench comparison","textChars":32,"textLines":1,"bbox":[128,468,980,32]}
+{"kind":"textbox","id":"sh/5gbyton6","slide":13,"text":"$ npm --prefix website run build","textPreview":"$ npm --prefix website run build","textChars":32,"textLines":1,"bbox":[128,512,980,32]}
+{"kind":"shape","id":"sh/kf2h0j6l","slide":13,"bbox":[72,662,1136,0]}
+{"kind":"textbox","id":"sh/jetgre5g","slide":13,"text":"MerkleForge final year project defense","textPreview":"MerkleForge final year project defense","textChars":38,"textLines":1,"bbox":[72,674,520,24]}
+{"kind":"textbox","id":"sh/idkfy9ov","slide":13,"text":"13","textPreview":"13","textChars":2,"textLines":1,"bbox":[1168,674,40,24]}
+{"kind":"notes","id":"nt/vsegft","slide":13,"text":"[Sources]\nProject documentation PDF: Chapter 4.6 Application Manual."}
+{"kind":"slide","id":"sl/4e0fdi","slide":14,"title":"CONCLUSION","textShapes":12}
+{"kind":"textbox","id":"sh/wzaxg3qt","slide":14,"text":"CONCLUSION","textPreview":"CONCLUSION","textChars":10,"textLines":1,"bbox":[72,44,640,28]}
+{"kind":"textbox","id":"sh/vy1wny98","slide":14,"text":"MerkleForge meets the project goal.","textPreview":"MerkleForge meets the project goal.","textChars":35,"textLines":1,"bbox":[72,86,840,104]}
+{"kind":"textbox","id":"sh/axsvet8n","slide":14,"text":"It provides a unified Rust toolkit for authenticated data structures, backed by tests, benchmarks, documentation, and a live demo.","textPreview":"It provides a unified Rust toolkit for authenticated data structures, backed by tests, benchmarks, documentation, and a live demo.","textChars":130,"textLines":1,"bbox":[72,178,850,66]}
+{"kind":"shape","id":"sh/5o3et8ra","slide":14,"bbox":[120,306,10,10]}
+{"kind":"textbox","id":"sh/knuxk3qp","slide":14,"text":"Technical contribution","textPreview":"Technical contribution","textChars":22,"textLines":1,"bbox":[146,298,924,28]}
+{"kind":"textbox","id":"sh/jmlwry9k","slide":14,"text":"A modular Rust workspace covering binary, sparse, and Ethereum-compatible Patricia structures.","textPreview":"A modular Rust workspace covering binary, sparse, and Ethereum-compatible Patricia structures.","textChars":94,"textLines":1,"bbox":[146,328,924,44]}
+{"kind":"shape","id":"sh/ilsfit8z","slide":14,"bbox":[120,388,10,10]}
+{"kind":"textbox","id":"sh/ts3ex87m","slide":14,"text":"Evidence contribution","textPreview":"Evidence contribution","textChars":21,"textLines":1,"bbox":[146,380,924,28]}
+{"kind":"textbox","id":"sh/sruxonq1","slide":14,"text":"Tests, Ethereum vectors, Criterion benchmarks, screenshots, and report-ready documentation.","textPreview":"Tests, Ethereum vectors, Criterion benchmarks, screenshots, and report-ready documentation.","textChars":91,"textLines":1,"bbox":[146,410,924,44]}
+{"kind":"shape","id":"sh/ahobahc7","slide":14,"bbox":[120,470,10,10]}
+{"kind":"textbox","id":"sh/b2xs3mts","slide":14,"text":"Practical contribution","textPreview":"Practical contribution","textChars":22,"textLines":1,"bbox":[146,462,924,28]}
+{"kind":"textbox","id":"sh/c36tc7ud","slide":14,"text":"A public developer-facing artifact that can be installed, tested, benchmarked, and extended.","textPreview":"A public developer-facing artifact that can be installed, tested, benchmarked, and extended.","textChars":92,"textLines":1,"bbox":[146,492,924,44]}
+{"kind":"textbox","id":"sh/x4fa5cby","slide":14,"text":"Ready for defense and supervisor review.","textPreview":"Ready for defense and supervisor review.","textChars":40,"textLines":1,"bbox":[120,592,760,36]}
+{"kind":"shape","id":"sh/y5obehcj","slide":14,"bbox":[72,662,1136,0]}
+{"kind":"textbox","id":"sh/z6xs7mt4","slide":14,"text":"MerkleForge final year project defense","textPreview":"MerkleForge final year project defense","textChars":38,"textLines":1,"bbox":[72,674,520,24]}
+{"kind":"textbox","id":"sh/k76tgru9","slide":14,"text":"14","textPreview":"14","textChars":2,"textLines":1,"bbox":[1168,674,40,24]}
+{"kind":"notes","id":"nt/4e0fdi","slide":14,"text":"[Sources]\nProject documentation PDF: conclusion synthesized from the completed implementation, testing evidence, and application manual."}

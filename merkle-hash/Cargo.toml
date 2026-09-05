@@ -1,12 +1,15 @@
 [package]
 name = "merkleforge-hash"
-description = "Pluggable hash function adapters for MerkleForge (SHA-256, Keccak-256, BLAKE3)"
+description = "Pluggable hash adapters for MerkleForge Framework: SHA-256, Keccak-256, and BLAKE3"
+readme = "README.md"
 version.workspace    = true
 edition.workspace    = true
 rust-version.workspace = true
 authors.workspace    = true
 license.workspace    = true
 repository.workspace = true
+homepage.workspace   = true
+documentation = "https://docs.rs/merkleforge-hash"
 keywords.workspace   = true
 
 [dependencies]

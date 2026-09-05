@@ -22,7 +22,8 @@
 //! - **BLAKE3**: Fastest on software paths, good for throughput-sensitive
 //!   workloads where Ethereum compatibility is not required.
 //!
-//! Concrete benchmark numbers will be published in the Phase 5 report.
+//! Concrete benchmark numbers are published in the benchmark dashboard and
+//! workspace benchmark notes.
 
 #![deny(missing_docs)]
 #![forbid(unsafe_code)]

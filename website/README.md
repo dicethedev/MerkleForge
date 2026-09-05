@@ -1,38 +1,57 @@
 # MerkleForge Website
 
-This directory contains the React + TypeScript source for the official
-MerkleForge GitHub Pages site. The app is built with Vite and deployed as
-static files.
+> React + TypeScript documentation site for MerkleForge Framework.
 
-## Structure
+The website is a static Vite app deployed to GitHub Pages. It contains the
+landing page, docs, examples, live demo, benchmark summary, and links to raw
+Criterion reports.
+
+## Directory Layout
 
 ```text
 website/
-├── build.py                  # Criterion data generation + Vite build wrapper
+├── build.py                  # Builds the static site and prepares benchmark data
 ├── index.html                # Vite HTML entrypoint
-├── package.json              # React/Vite toolchain
-├── vite.config.ts            # Pages base-path configuration
+├── package.json              # Node scripts and frontend dependencies
+├── vite.config.ts            # GitHub Pages base-path configuration
 └── src/
-    ├── assets/
-    │   └── styles.css        # shared visual system
-    ├── components/           # reusable UI blocks
-    ├── data/                 # static snippets and default runtime data
-    ├── hooks/                # reusable React hooks
-    ├── layout/               # shared app shell and navigation
-    ├── pages/                # route-level page views
-    ├── types/                # shared TypeScript types
-    ├── utils/                # formatting and path helpers
-    ├── main.tsx              # React entrypoint and page selection
-    └── vite-env.d.ts         # Vite TypeScript types
+    ├── assets/               # Shared CSS and visual assets
+    ├── components/           # Reusable UI components
+    ├── data/                 # Static snippets and default data
+    ├── hooks/                # React hooks
+    ├── layout/               # App shell and navigation
+    ├── pages/                # Route-level page views
+    ├── types/                # Shared TypeScript types
+    ├── utils/                # Formatters and path helpers
+    └── main.tsx              # Route selection and React entrypoint
 ```
 
-Criterion's generated reports are not stored here. The Pages workflow runs
-the benchmarks, copies the reports into `_site/reports/criterion/`, and then
-calls `build.py` to generate the official site.
+Do not edit generated `_site/` output. Update the source files in `website/src`
+instead.
 
-## Local Preview
+## Local Development
 
-Run the benchmarks first when `target/criterion` is missing or outdated:
+Install dependencies:
+
+```bash
+npm --prefix website ci
+```
+
+Start Vite:
+
+```bash
+npm --prefix website run dev
+```
+
+Build the frontend:
+
+```bash
+npm --prefix website run build
+```
+
+## Full Static Site Build
+
+Run benchmark targets first when `target/criterion` is missing or stale:
 
 ```bash
 cargo bench --bench hash_throughput
@@ -41,40 +60,37 @@ cargo bench --bench sparse_tree
 cargo bench --bench patricia_trie
 ```
 
-Build and serve the site:
+Build the deployable site:
 
 ```bash
-npm --prefix website ci
-
-rm -rf /tmp/merkleforge-site
-mkdir -p /tmp/merkleforge-site/reports/criterion
-cp -R target/criterion/. /tmp/merkleforge-site/reports/criterion/
-
 python3 website/build.py \
-  --output /tmp/merkleforge-site \
+  --output _site \
   --criterion-dir target/criterion \
-  --base-path /
+  --base-path /MerkleForge/
+```
 
-python3 -m http.server 8765 \
-  --bind 127.0.0.1 \
-  --directory /tmp/merkleforge-site
+Preview the generated static output:
+
+```bash
+python3 -m http.server 8765 --bind 127.0.0.1 --directory _site
 ```
 
 Open <http://127.0.0.1:8765/>.
 
-For component development, use Vite directly:
+## Editing Guide
 
-```bash
-npm --prefix website run dev
-```
+- Page copy lives in `website/src/pages/`.
+- Shared cards, code blocks, buttons, and visual sections live in
+  `website/src/components/`.
+- Shared shell/navigation lives in `website/src/layout/`.
+- Benchmark parsing and static data generation live in `website/build.py`.
+- Styling lives in `website/src/assets/styles.css`.
 
-## Editing
+Keep UI components reusable and keep route-level content inside `pages/`.
 
-- Edit page-level content in `website/src/pages/`.
-- Edit reusable UI components in `website/src/components/`.
-- Edit shared app chrome in `website/src/layout/`.
-- Edit helper functions in `website/src/utils/` and shared types in
-  `website/src/types/`.
-- Keep common presentation rules in `website/src/assets/styles.css`.
-- Keep benchmark data generation in `website/build.py`.
-- Do not edit generated `_site` output.
+## Deployment
+
+The GitHub Actions workflow at `.github/workflows/website.yml` builds the
+website, prepares the Pages artifact, and deploys it to:
+
+<https://dicethedev.github.io/MerkleForge/>

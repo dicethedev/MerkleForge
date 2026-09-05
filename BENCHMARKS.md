@@ -3,8 +3,8 @@
 MerkleForge uses Criterion benchmarks to compare hash adapters, tree variants,
 proof generation, proof verification, and external Rust Merkle libraries.
 
-Lower latency is better. Higher throughput is better. All final paper numbers
-should be recorded from the same machine and Rust toolchain.
+Lower latency is better. Higher throughput is better. Publishable benchmark
+numbers should be recorded from the same machine and Rust toolchain.
 
 ## Benchmark Environment
 
@@ -59,8 +59,8 @@ cargo bench --bench hash_throughput
 ```
 
 The current benchmark implementation measures 1 KiB, 16 KiB, 64 KiB, and
-1 MiB buffers. The table below reserves the research-paper columns requested
-for small-message latency and large-message throughput.
+1 MiB buffers. The table below keeps the small-message latency and
+large-message throughput columns used by the public benchmark summary.
 
 | Algorithm | 32B latency | 64B latency | 1MB throughput |
 |-----------|-------------|-------------|----------------|
@@ -77,8 +77,8 @@ cargo bench --bench binary_tree
 ```
 
 Benchmarked tree sizes: 100, 1,000, 10,000, and 100,000 leaves across SHA-256,
-Keccak-256, and BLAKE3. The Phase 5 summary table focuses on SHA-256 and
-BLAKE3 because they represent the conservative production baseline and the
+Keccak-256, and BLAKE3. The summary table focuses on SHA-256 and BLAKE3
+because they represent the conservative production baseline and the
 high-throughput baseline.
 
 | Leaves | Construction (SHA-256) | Construction (BLAKE3) | Proof gen | Proof verify |
@@ -183,7 +183,7 @@ cargo bench --bench comparison
 MERKLEFORGE_PRINT_COMPARISON_SIZES=1 cargo bench --bench comparison -- --list
 ```
 
-Current local baseline for Chapter 5 comparisons:
+Current local baseline for library comparisons:
 
 | Metric | MerkleForge | `rs-merkle` | `merkle_light` |
 |--------|-------------|-------------|----------------|
@@ -221,4 +221,4 @@ Notes:
 - [x] No vague placeholder cells remain; incomplete measurements are explicitly
   marked `not captured`.
 - [ ] Regenerate `not captured` rows on a dedicated benchmark machine before
-  final paper submission.
+  publishing a new benchmark report.

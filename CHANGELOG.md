@@ -17,10 +17,39 @@ No unreleased changes yet.
 
 ---
 
+## [0.4.1] — 2026-09-05
+
+Refreshes MerkleForge Framework packaging and public documentation for the
+open-source project rebrand.
+
+### Changed
+
+- Workspace crate version advanced to `0.4.1`.
+- Published crate descriptions now use MerkleForge Framework branding.
+- Published crates now declare explicit `readme`, `homepage`, and
+  crate-specific `documentation` metadata for crates.io and docs.rs.
+- Workspace keywords were tightened for crates.io compatibility.
+
+### Documentation
+
+- Rewrote crate READMEs for `merkle-core`, `merkleforge-hash`, and
+  `merkle-variants` with professional installation, API, examples, safety, and
+  workspace guidance.
+- Refreshed root, benchmark, profiling, and website documentation to present
+  MerkleForge as reusable open-source infrastructure.
+- Added `CONTRIBUTING.md` with development workflow, PR expectations, and
+  security reporting guidance.
+
+### Removed
+
+- Removed the old README wordmark image asset from the repository.
+
+---
+
 ## [0.4.0] — 2026-07-27
 
-Phase 4 complete: Ethereum-compatible Merkle Patricia Trie implementation and
-release.
+Adds the Ethereum-compatible Merkle Patricia Trie implementation, completes the
+published tree variant set, and refreshes the documentation and website.
 
 ### Added — `merkle-variants`
 
@@ -67,7 +96,7 @@ release.
 
 ### Changed
 
-- Workspace crate version advanced to `0.3.0`
+- Workspace crate version advanced to `0.4.0`
 - Sparse tree docs now include the generic `MerkleTree<H>` contract alongside
   the native key-addressed API
 
@@ -81,22 +110,10 @@ release.
 - Added dedicated documentation, examples, benchmark, and Criterion report
   sections under a maintainable `website/` source directory.
 
-### Planned — Phase 5 (Weeks 9–10)
-- Full Criterion benchmark suite at 100 / 1 000 / 10 000 / 100 000 / 1 000 000 leaves
-- Metrics: construction latency, proof generation latency, proof size (bytes), peak memory usage
-- Comparative results vs `rs-merkle` and `merkle_light`
-- HTML benchmark reports committed to `benches/reports/`
-
-### Planned — Phase 6 (Weeks 11–12)
-- Complete rustdoc coverage with copy-pasteable examples for all public items
-- mdBook user guide at `docs/`
-- Research paper draft on benchmark findings and tree-type trade-offs
-
----
-
 ## [0.2.0] — 2026-06-15
 
-Phase 2 complete: binary Merkle tree implementation and release preparation.
+Adds the first concrete tree implementation with binary Merkle tree support and
+stateless inclusion-proof verification.
 
 ### Added — `merkle-variants`
 
@@ -125,9 +142,9 @@ Phase 2 complete: binary Merkle tree implementation and release preparation.
 ### Fixed
 - Edited merkle-lib to MerkleForge Folder name
 
-Phase 1 complete: core infrastructure. Establishes the entire foundation
-the workspace builds on — trait hierarchy, type system, hash adapters, error
-handling, benchmarking scaffold, and CI/CD pipeline.
+Establishes the foundation the workspace builds on: trait hierarchy, type
+system, hash adapters, error handling, benchmarking scaffold, and CI/CD
+pipeline.
 
 ### Added — `merkle-core`
 
@@ -254,7 +271,8 @@ handling, benchmarking scaffold, and CI/CD pipeline.
 
 ---
 
-[Unreleased]: https://github.com/dicethedev/MerkleForge/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/dicethedev/MerkleForge/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/dicethedev/MerkleForge/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/dicethedev/MerkleForge/compare/v0.2.0...v0.4.0
 [0.2.0]: https://github.com/dicethedev/MerkleForge/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/dicethedev/MerkleForge/compare/v0.1.0...v0.1.1

@@ -1,0 +1,258 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.51s
+     Running unittests src/lib.rs (target/debug/deps/merkle_bench-9aaa7338303b0f76)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/merkle_core-3e330f3da5c6fc35)
+
+running 15 tests
+test error::tests::display_empty_tree ... ok
+test error::tests::display_invalid_proof ... ok
+test error::tests::display_out_of_bounds ... ok
+test error::tests::error_is_clone_and_eq ... ok
+test traits::hash_function::tests::empty_is_hash_of_empty_slice ... ok
+test traits::hash_function::tests::hash_deterministic ... ok
+test traits::hash_function::tests::hash_nodes_uses_concatenation ... ok
+test traits::hash_function::tests::metadata ... ok
+test traits::serializable::tests::round_trip_proof ... ok
+test traits::serializable::tests::serialized_size_is_positive ... ok
+test traits::serializable::tests::from_bytes_rejects_garbage ... ok
+test types::common::tests::node_index_root_four_leaves ... ok
+test types::common::tests::node_index_root_single_leaf ... ok
+test types::common::tests::leaf_index_to_node_index ... ok
+test types::common::tests::proof_depth_and_trivial ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/merkle_variants-fcc9316ab2234dcf)
+
+running 105 tests
+test binary::tests::empty_leaf_data_is_rejected ... ok
+test binary::tests::invalid_proof_index_returns_false ... ok
+test binary::tests::capacity_is_padded_to_next_power_of_two ... ok
+test binary::tests::empty_internal_nodes_are_built_bottom_up ... ok
+test binary::tests::invalid_path_length_returns_false ... ok
+test binary::tests::insertion_resizes_and_recomputes_root ... ok
+test binary::tests::every_valid_index_produces_a_root_reconstructing_proof ... ok
+test binary::tests::inserting_one_leaf_produces_root ... ok
+test binary::tests::invalid_sibling_side_returns_false ... ok
+test binary::tests::new_tree_is_empty ... ok
+test binary::tests::out_of_bounds_remove_is_rejected ... ok
+test binary::tests::proof_from_different_tree_fails_verification ... ok
+test binary::tests::proof_generation_rejects_empty_tree ... ok
+test binary::tests::proof_generation_rejects_out_of_bounds_index ... ok
+test binary::tests::removing_from_empty_tree_is_rejected ... ok
+test binary::tests::proof_path_has_one_node_per_non_leaf_level ... ok
+test binary::tests::removing_only_leaf_returns_tree_to_empty_state ... ok
+test binary::tests::removing_trailing_leaf_shrinks_tree ... ok
+test binary::tests::proof_records_correct_siblings_and_sides ... ok
+test binary::tests::trait_methods_delegate_to_binary_tree ... ok
+test binary::tests::tampered_sibling_fails_verification ... ok
+test binary::tests::trivial_proof_verifies ... ok
+test binary::tests::removing_interior_leaf_preserves_later_indices ... ok
+test binary::tests::single_leaf_proof_is_trivial ... ok
+test binary::tests::valid_proof_verifies ... ok
+test binary::tests::zero_capacity_matches_new ... ok
+test binary::tests::wrong_leaf_data_fails_verification ... ok
+test patricia::tests::all_four_node_variants_compile ... ok
+test patricia::tests::insert_rejects_empty_value_without_mutating ... ok
+test patricia::tests::get_missing_key_returns_none ... ok
+test patricia::tests::hash_node_hashes_large_rlp_nodes ... ok
+test patricia::tests::hash_node_inlines_small_rlp_nodes ... ok
+test patricia::tests::empty_trie_root_matches_ethereum_known_hash ... ok
+test patricia::tests::insert_then_get_returns_value ... ok
+test patricia::tests::hp_encode_marks_even_and_odd_leaf_paths ... ok
+test patricia::tests::malformed_hp_prefix_inside_rlp_returns_rlp_error ... ok
+test patricia::tests::inserting_same_key_updates_value ... ok
+test patricia::tests::malformed_rlp_returns_rlp_error ... ok
+test patricia::tests::new_trie_is_empty ... ok
+test patricia::tests::nibble_path_common_prefix_len_counts_matching_nibbles ... ok
+test patricia::tests::nibble_path_from_key_splits_each_byte ... ok
+test patricia::tests::non_membership_proof_for_absent_key_verifies ... ok
+test patricia::tests::membership_proof_for_inserted_key_verifies ... ok
+test patricia::tests::nibble_path_slice_keeps_suffix ... ok
+test patricia::tests::remove_missing_key_returns_error_without_mutating ... ok
+test patricia::tests::node_height_tracks_longest_path_to_leaf ... ok
+test patricia::tests::removing_all_keys_returns_to_empty_trie ... ok
+test patricia::tests::remove_deletes_existing_key ... ok
+test patricia::tests::proof_root_node_hashes_to_trusted_root ... ok
+test patricia::tests::mpt_proof_round_trips_through_serializable ... ok
+test patricia::tests::rlp_encoding_of_empty_node_is_empty_string ... ok
+test patricia::tests::rlp_round_trips_branch_node ... ok
+test patricia::tests::remove_collapses_to_canonical_remaining_subtree ... ok
+test patricia::tests::rlp_round_trips_extension_node ... ok
+test patricia::tests::root_hash_changes_on_distinct_inserts ... ok
+test patricia::tests::rlp_round_trips_leaf_node ... ok
+test patricia::tests::trait_generate_proof_points_to_key_addressed_mpt_proofs ... ok
+test patricia::tests::shared_prefix_keys_are_retrievable_independently ... ok
+test patricia::tests::root_hash_computation_is_deterministic ... ok
+test patricia::tests::tampered_mpt_proof_fails_verification ... ok
+test patricia::tests::stale_proof_fails_after_key_is_removed ... ok
+test patricia::tests::trait_methods_delegate_to_patricia_trie ... ok
+test patricia::tests::trait_remove_uses_deterministic_index_key ... ok
+test sparse::tests::batch_insert_rejects_empty_value_without_mutating ... ok
+test sparse::tests::batch_insert_overwrites_without_double_counting ... ok
+test sparse::tests::bit_at_reads_key_msb_first ... ok
+test sparse::tests::batch_remove_rejects_missing_key_without_mutating ... ok
+test sparse::tests::batch_update_leaf_count_is_correct_after_mixed_operations ... ok
+test sparse::tests::empty_hash_cache_has_one_entry_per_level ... ok
+test sparse::tests::dense_terminal_subtree_is_stored_as_batch ... ok
+test sparse::tests::different_keys_produce_different_roots ... ok
+test sparse::tests::empty_tree_root_is_cached_root_level ... ok
+test sparse::tests::empty_hash_cache_is_derived_bottom_up ... ok
+test sparse::tests::insert_rejects_empty_leaf_data ... ok
+test sparse::tests::first_insert_materializes_one_shortcut_node ... ok
+test sparse::tests::insert_one_key_changes_root_and_stores_leaf_hash ... ok
+test patricia::tests::one_hundred_inserted_pairs_are_retrievable ... ok
+test sparse::tests::insert_then_remove_returns_to_empty_root ... ok
+test sparse::tests::membership_proof_for_inserted_key_verifies ... ok
+test sparse::tests::membership_proof_with_wrong_value_fails ... ok
+test sparse::tests::new_tree_has_empty_sparse_shape ... ok
+test sparse::tests::membership_proof_with_tampered_sibling_fails ... ok
+test sparse::tests::membership_proofs_still_verify_with_batched_storage ... ok
+test sparse::tests::non_membership_proof_for_never_inserted_key_verifies ... ok
+test sparse::tests::non_membership_proof_verifies_after_key_is_removed ... ok
+test sparse::tests::batch_remove_root_matches_sequential_remove ... ok
+test sparse::tests::non_membership_verification_rejects_key_mismatch ... ok
+test sparse::tests::non_membership_proofs_still_verify_with_batched_storage ... ok
+test sparse::tests::proof_for_missing_key_records_non_membership_leaf ... ok
+test sparse::tests::remove_missing_key_is_rejected ... ok
+test sparse::tests::overwriting_same_key_does_not_double_count ... ok
+test sparse::tests::old_non_membership_proof_fails_after_key_is_inserted ... ok
+test sparse::tests::batch_insert_root_matches_sequential_insert ... ok
+test sparse::tests::removing_one_of_two_keys_preserves_other_leaf ... ok
+test sparse::tests::sparse_membership_proof_round_trips_through_serializable ... ok
+test sparse::tests::remove_recollapses_subtree_to_shortcut ... ok
+test sparse::tests::trait_proof_rejects_empty_and_out_of_bounds_indices ... ok
+test sparse::tests::trait_methods_delegate_to_sparse_tree ... ok
+test sparse::tests::trait_remove_returns_to_empty_tree ... ok
+test sparse::tests::tampered_non_membership_proof_fails ... ok
+test sparse::tests::sparse_inserts_touch_far_fewer_than_full_depth ... ok
+test sparse::tests::non_membership_proofs_still_verify_with_shortcuts ... ok
+test sparse::tests::batch_insert_rebuilds_once_for_shared_prefix_updates ... ok
+test sparse::tests::membership_proofs_still_verify_with_shortcuts ... ok
+test sparse::tests::batching_reduces_entry_count_for_ten_thousand_keys ... ok
+
+test result: ok. 105 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.68s
+
+     Running tests/binary_properties.rs (target/debug/deps/binary_properties-f9e7367a8e11a17b)
+
+running 6 tests
+test changing_any_proof_sibling_byte_fails_verification ... ok
+test removing_leaf_invalidates_its_existing_proof ... ok
+test serialized_proof_verifies_like_original ... ok
+test proof_generated_after_insert_verifies ... ok
+test root_changes_on_single_bit_leaf_mutation ... ok
+test proofs_verify_for_every_valid_leaf_index ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.52s
+
+     Running tests/binary_trait_contract.rs (target/debug/deps/binary_trait_contract-cf3c0fe3e4ad3db9)
+
+running 3 tests
+test keccak256_satisfies_merkle_tree_contract ... ok
+test sha256_satisfies_merkle_tree_contract ... ok
+test blake3_satisfies_merkle_tree_contract ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/patricia_ethereum_vectors.rs (target/debug/deps/patricia_ethereum_vectors-577aaa6b8bce1c04)
+
+running 3 tests
+test empty_trie_root_matches_ethereum_vector ... ok
+test official_trieanyorder_vectors_match_ethereum_roots ... ok
+test official_trietest_vectors_match_ethereum_roots ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/patricia_properties.rs (target/debug/deps/patricia_properties-8a89b94f7422f1ce)
+
+running 9 tests
+test remove_then_get_returns_none ... ok
+test rlp_round_trips_generated_nodes ... ok
+test insert_changes_root ... ok
+test insert_then_get_returns_inserted_value ... ok
+test proof_generated_after_insert_verifies ... ok
+test inserting_one_key_preserves_another_key ... ok
+test serialized_proof_verifies_like_original ... ok
+test remove_changes_root ... ok
+test insert_order_is_canonical_for_same_key_set ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.35s
+
+     Running tests/sparse_properties.rs (target/debug/deps/sparse_properties-d8d5c0e4cdcbd64d)
+
+running 7 tests
+test insert_changes_root ... ok
+test membership_proof_round_trips ... ok
+test insert_order_is_commutative_for_distinct_keys ... ok
+test remove_returns_root_to_pre_insert_state ... ok
+test proof_for_never_inserted_key_verifies_non_membership ... ok
+test serialized_proof_verifies_like_original ... ok
+test batch_insert_matches_sequential_insert_for_any_order ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 30.40s
+
+     Running unittests src/lib.rs (target/debug/deps/merkleforge_hash-679178de54644263)
+
+running 21 tests
+test blake3::tests::algorithm_name ... ok
+test blake3::tests::digest_size_is_32 ... ok
+test blake3::tests::hash_deterministic ... ok
+test blake3::tests::empty_matches_runtime_computation ... ok
+test blake3::tests::different_inputs_give_different_digests ... ok
+test blake3::tests::leaf_and_node_contexts_differ ... ok
+test blake3::tests::hash_nodes_non_commutative ... ok
+test blake3::tests::hash_nodes_avalanche ... ok
+test keccak256::tests::digest_size_is_32 ... ok
+test keccak256::tests::algorithm_name ... ok
+test keccak256::tests::hash_and_hash_nodes_differ ... ok
+test keccak256::tests::hash_nodes_non_commutative ... ok
+test sha256::tests::algorithm_name ... ok
+test keccak256::tests::hash_deterministic ... ok
+test keccak256::tests::known_vector_empty_string ... ok
+test sha256::tests::different_inputs_different_hashes ... ok
+test sha256::tests::digest_size_is_32 ... ok
+test sha256::tests::empty_matches_precomputed ... ok
+test sha256::tests::hash_is_deterministic ... ok
+test sha256::tests::hash_nodes_non_commutative ... ok
+test sha256::tests::leaf_and_node_domain_separation ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests merkle_bench
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests merkle_core
+
+running 2 tests
+test merkle-core/src/lib.rs - (line 19) ... ignored
+test merkle-core/src/traits/hash_function.rs - traits::hash_function (line 10) ... ignored
+
+test result: ok. 0 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.43s; merged doctests compilation took 0.43s
+   Doc-tests merkle_variants
+
+running 2 tests
+test merkle-variants/src/binary.rs - binary (line 9) ... ok
+test merkle-variants/src/sparse.rs - sparse (line 10) ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.43s; merged doctests compilation took 0.42s
+   Doc-tests merkleforge_hash
+
+running 3 tests
+test merkle-hash/src/blake3.rs - blake3 (line 17) ... ignored
+test merkle-hash/src/keccak256.rs - keccak256 (line 13) ... ignored
+test merkle-hash/src/sha256.rs - sha256 (line 12) ... ignored
+
+test result: ok. 0 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.19s; merged doctests compilation took 0.19s

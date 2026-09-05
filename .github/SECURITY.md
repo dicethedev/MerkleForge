@@ -41,10 +41,11 @@ MerkleForge does not currently offer a formal bug bounty program. We value
 responsible security research and, with your consent, may recognize your
 contribution in the changelog or release notes.
 
-## Research Software Notice
+## Security Audit Status
 
-MerkleForge is academic research software and has not been independently
-security-audited. It is not currently intended for production systems,
-financial applications, or other security-critical environments.
+MerkleForge Framework has not yet completed an independent security audit.
+Please review the code, threat model, and test coverage before using it in
+production systems, financial applications, or other security-critical
+environments.
 
 Thank you for helping improve the security of MerkleForge.
