@@ -1,38 +1,33 @@
 # merkleforge-hash
 
-> Pluggable cryptographic hash adapters for `MerkleForge` — SHA-256, Keccak-256, and BLAKE3.
+> Official hash adapters for MerkleForge Framework: SHA-256, Keccak-256, and
+> BLAKE3.
 
 [![Crates.io](https://img.shields.io/crates/v/merkleforge-hash.svg)](https://crates.io/crates/merkleforge-hash)
 [![docs.rs](https://docs.rs/merkleforge-hash/badge.svg)](https://docs.rs/merkleforge-hash)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
 
----
-
-> **Research Software — Not Production Ready**
->
-> MerkleForge is a final-year academic research project. This crate has not
-> been independently security-audited. Use at your own risk.
-
----
-
-`merkleforge-hash` provides the hash adapters used by `MerkleForge`. Each
-adapter implements the
-[`HashFunction`](https://docs.rs/merkle-core/latest/merkle_core/traits/hash_function/trait.HashFunction.html)
-trait from `merkle-core`, so every tree in `merkle-variants` can switch hash
-algorithms through a single type parameter.
+`merkleforge-hash` provides ready-made implementations of
+`merkle_core::traits::HashFunction`. These adapters can drive every tree in
+`merkle-variants`, so applications can switch hash algorithms by changing a
+single generic type.
 
 ## Installation
 
 ```toml
 [dependencies]
-merkle-core = "0.4"
-merkleforge-hash = "0.4"
+merkle-core = "0.4.1"
+merkleforge-hash = "0.4.1"
 ```
 
-All three adapters are compiled by default.
+Add `merkle-variants` when you want complete tree implementations:
 
-Add `merkle-variants = "0.4"` when you want to use these adapters with the
-published tree implementations.
+```toml
+[dependencies]
+merkle-core = "0.4.1"
+merkleforge-hash = "0.4.1"
+merkle-variants = "0.4.1"
+```
 
 ## Quick Start
 
@@ -40,18 +35,18 @@ published tree implementations.
 use merkle_core::traits::HashFunction;
 use merkleforge_hash::{Blake3, Keccak256, Sha256};
 
-let sha_digest = Sha256::hash(b"alice:100");
-let keccak_digest = Keccak256::hash(b"alice:100");
-let blake_digest = Blake3::hash(b"alice:100");
+let sha = Sha256::hash(b"alice:100");
+let keccak = Keccak256::hash(b"alice:100");
+let blake = Blake3::hash(b"alice:100");
 
-assert_eq!(sha_digest.len(), 32);
-assert_eq!(keccak_digest.len(), 32);
-assert_eq!(blake_digest.len(), 32);
-assert_ne!(sha_digest, keccak_digest);
-assert_ne!(sha_digest, blake_digest);
+assert_eq!(sha.len(), 32);
+assert_eq!(keccak.len(), 32);
+assert_eq!(blake.len(), 32);
+assert_ne!(sha, keccak);
+assert_ne!(sha, blake);
 ```
 
-Using an adapter with a tree:
+Use an adapter with a tree:
 
 ```rust
 use merkle_variants::BinaryMerkleTree;
@@ -60,17 +55,18 @@ use merkleforge_hash::Sha256;
 let mut tree = BinaryMerkleTree::<Sha256>::new();
 ```
 
-## Adapters
+## Available Adapters
 
-| Adapter | Algorithm | Output | Best for |
+| Adapter | Algorithm | Digest | Best for |
 | --- | --- | --- | --- |
-| `Sha256` | SHA-256 | 32 bytes | Widely interoperable binary and sparse trees |
-| `Keccak256` | Keccak-256 | 32 bytes | Ethereum-compatible `MerklePatriciaTrie` roots |
+| `Sha256` | SHA-256 | 32 bytes | Interoperable binary and sparse trees |
+| `Keccak256` | Keccak-256 | 32 bytes | Ethereum-compatible Patricia trie roots |
 | `Blake3` | BLAKE3 | 32 bytes | High-throughput non-Ethereum workloads |
 
 ## Domain Separation
 
-The adapters separate leaf hashing from internal-node hashing:
+Merkle trees must avoid confusing leaf data with internal node data. The
+official adapters separate those domains:
 
 | Adapter | Leaf domain | Internal-node domain |
 | --- | --- | --- |
@@ -78,20 +74,32 @@ The adapters separate leaf hashing from internal-node hashing:
 | `Keccak256` | `Keccak-256(0x00 || data)` | `Keccak-256(0x01 || left || right)` |
 | `Blake3` | `derive_key("MerkleForge 2026 leaf v1", data)` | `derive_key("MerkleForge 2026 internal-node v1", left || right)` |
 
-This prevents a proof from confusing a leaf pre-image with an encoded internal
-node. Custom `HashFunction` implementations should preserve the same invariant.
+Custom `HashFunction` implementations should preserve the same invariant.
 
-## Choosing An Adapter
+## Choosing an Adapter
 
-- Use `Keccak256` when a `MerklePatriciaTrie` root must match Ethereum tooling.
-- Use `Sha256` when interoperability and hardware SHA support matter.
+- Use `Keccak256` when roots must match Ethereum tooling.
+- Use `Sha256` when broad interoperability or hardware SHA support matters.
 - Use `Blake3` when raw software throughput matters and Ethereum compatibility
   is not required.
 
+Benchmark data is available in [`BENCHMARKS.md`](../BENCHMARKS.md) and on the
+public benchmark dashboard.
+
+## Links
+
+- API docs: <https://docs.rs/merkleforge-hash>
+- Repository: <https://github.com/dicethedev/MerkleForge>
+- Website: <https://dicethedev.github.io/MerkleForge/>
+
 ## Safety
 
-`#[forbid(unsafe_code)]` is set at the crate root. `merkleforge-hash` contains
-no unsafe blocks.
+`merkleforge-hash` uses `#![forbid(unsafe_code)]`. The crate contains no unsafe
+blocks.
+
+Security note: MerkleForge Framework has not yet completed an independent
+security audit. Review the code and threat model before using it in
+security-critical environments.
 
 ## License
 

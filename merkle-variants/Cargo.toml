@@ -1,6 +1,6 @@
 [package]
 name = "merkle-variants"
-description = "Binary, sparse, and Patricia Merkle tree implementations for MerkleForge"
+description = "Binary, sparse, and Patricia Merkle tree implementations for MerkleForge Framework"
 readme = "README.md"
 version.workspace    = true
 edition.workspace    = true
@@ -8,6 +8,8 @@ rust-version.workspace = true
 authors.workspace    = true
 license.workspace    = true
 repository.workspace = true
+homepage.workspace   = true
+documentation = "https://docs.rs/merkle-variants"
 keywords.workspace   = true
 
 [dependencies]

@@ -1,57 +1,49 @@
 # merkle-core
 
-> Shared traits, types, and error handling for the `MerkleForge` workspace.
+> Shared traits, proof types, metadata, serialization helpers, and error types
+> for the MerkleForge Framework workspace.
 
 [![Crates.io](https://img.shields.io/crates/v/merkle-core.svg)](https://crates.io/crates/merkle-core)
 [![docs.rs](https://docs.rs/merkle-core/badge.svg)](https://docs.rs/merkle-core)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
 
----
+`merkle-core` is the small foundation crate behind MerkleForge Framework. It
+contains no concrete tree implementation. Instead, it defines the contracts
+that hash adapters and tree variants use to interoperate.
 
-`merkle-core` is the foundation crate of `MerkleForge`. It defines the **traits, types, and errors** that every other crate in the workspace depends on — with no concrete tree logic of its own. This separation means you can take a dependency on `merkle-core` alone if you want to write your own tree variant or hash adapter without pulling in any implementation code.
- 
----
+Use this crate when you want to:
 
-## Contents
-
-| Module | What's inside |
-|--------|---------------|
-| [`traits::HashFunction`](#hashfunction) | Pluggable crypto abstraction — swap SHA-256 for BLAKE3 at the call site |
-| [`traits::MerkleTree`](#merkletree) | Universal interface every tree variant implements |
-| [`traits::ProofVerifier`](#proofverifier) | Stateless inclusion-proof verification (no tree required) |
-| [`traits::Serializable`](#serializable) | Blanket `serde` + `bincode` impl for proofs and tree state |
-| [`types`](#types) | `LeafIndex`, `NodeIndex`, `MerkleProof`, `ProofNode`, `ProofSide`, `TreeMetadata` |
-| [`error::MerkleError`](#merkleerror) | Unified, `#[non_exhaustive]` error enum |
-
----
+- depend only on the shared Merkle interfaces;
+- implement a custom Merkle tree variant;
+- implement a custom hash adapter;
+- exchange Merkle proofs and metadata without pulling in concrete trees;
+- compile shared proof types in `no_std` + `alloc` environments.
 
 ## Installation
 
 ```toml
 [dependencies]
-merkle-core = "0.4"
+merkle-core = "0.4.1"
 ```
 
-For the ready-made hash adapters (SHA-256, Keccak-256, BLAKE3):
+For bare-metal or embedded targets with `alloc`:
 
 ```toml
 [dependencies]
-merkle-core = "0.4"
-merkleforge-hash = "0.4"
+merkle-core = { version = "0.4.1", default-features = false, features = ["alloc"] }
 ```
 
-### `no_std` / Bare-Metal Builds
+The default `std` feature is recommended for normal server, CLI, and desktop
+applications.
 
-`merkle-core` supports `no_std` when the `alloc` crate is available. This is
-intended for embedded targets, lightweight SPV clients, and other constrained
-environments that still need heap-backed proof paths.
+## Feature Flags
 
-```toml
-[dependencies]
-merkle-core = { version = "0.4", default-features = false, features = ["alloc"] }
-```
+| Feature | Default | Purpose |
+| --- | --- | --- |
+| `std` | Yes | Enables standard-library integration, including `std::error::Error` |
+| `alloc` | Via `std` | Enables heap-backed types such as `Vec` and `String` for `no_std` builds |
 
-To check the core crate against a Cortex-M style bare-metal target:
+Check a bare-metal target:
 
 ```bash
 rustup target add thumbv7em-none-eabihf
@@ -61,335 +53,177 @@ cargo check -p merkle-core \
   --target thumbv7em-none-eabihf
 ```
 
-The default `std` feature remains enabled for normal desktop/server builds.
-With `std`, `MerkleError` also implements `std::error::Error`. With `alloc`
-only, the public proof and error types still support `Vec`, `String`, `Display`,
-`serde`, and `bincode` serialization.
+## API Surface
 
----
+| Module | What it provides |
+| --- | --- |
+| `traits::HashFunction` | Pluggable hash adapter contract |
+| `traits::MerkleTree` | Common tree interface for insert, remove, root, proof, and metadata |
+| `traits::ProofVerifier` | Stateless proof verification contract |
+| `traits::Serializable` | Blanket `serde` + `bincode` serialization helpers |
+| `types` | `LeafIndex`, `NodeIndex`, `MerkleProof`, `ProofNode`, `ProofSide`, `TreeMetadata` |
+| `error::MerkleError` | Unified non-exhaustive error enum |
+| `prelude` | Convenient import set for application code |
 
-## Traits
+## Quick Start
 
-### `HashFunction`
-
-The pluggable cryptographic abstraction at the heart of the library. Every tree type is generic over `H: HashFunction`, so swapping algorithms requires changing one type parameter — zero changes to tree logic, zero runtime overhead (Rust monomorphises the generic away at compile time).
+Most application code imports the prelude and uses a concrete tree from
+`merkle-variants`:
 
 ```rust
-use merkle_core::traits::HashFunction;
+use merkle_core::prelude::*;
+use merkle_variants::BinaryMerkleTree;
+use merkleforge_hash::Sha256;
 
-pub struct Sha256;
+fn main() -> Result<(), MerkleError> {
+    let mut tree = BinaryMerkleTree::<Sha256>::new();
 
-impl HashFunction for Sha256 {
-    type Digest = [u8; 32];
+    tree.insert(b"alice:100")?;
+    tree.insert(b"bob:250")?;
 
-    fn hash(data: &[u8]) -> [u8; 32] {
-        // leaf domain separation: H(0x00 || data)
-        sha2::Sha256::digest([&[0x00], data].concat()).into()
-    }
+    let proof = tree.generate_proof(LeafIndex(0))?;
+    let root = tree.root().expect("tree is not empty");
 
-    fn hash_nodes(left: &[u8; 32], right: &[u8; 32]) -> [u8; 32] {
-        // internal-node domain separation: H(0x01 || left || right)
-        sha2::Sha256::digest([&[0x01], left.as_ref(), right.as_ref()].concat()).into()
-    }
+    assert!(BinaryMerkleTree::<Sha256>::verify(
+        root,
+        b"alice:100",
+        &proof,
+    ));
 
-    fn algorithm_name() -> &'static str { "SHA-256" }
-    fn digest_size() -> usize { 32 }
+    Ok(())
 }
 ```
 
-**Required methods:**
+## Core Traits
 
-| Method | Description |
-|--------|-------------|
-| `hash(data: &[u8]) -> Self::Digest` | Hash a leaf pre-image |
-| `algorithm_name() -> &'static str` | Human-readable name, e.g. `"SHA-256"` |
-| `digest_size() -> usize` | Output size in bytes |
+### `HashFunction`
 
-**Provided methods (override if needed):**
+`HashFunction` lets every tree stay generic over the hashing algorithm.
+Changing from SHA-256 to BLAKE3 is a type-level choice, not a runtime branch.
 
-| Method | Default behaviour |
-|--------|------------------|
-| `hash_nodes(left, right) -> Self::Digest` | Concatenates `left \|\| right` then calls `hash` |
-| `empty() -> Self::Digest` | Returns `hash(&[])` — the canonical empty-slot sentinel |
+```rust
+pub trait HashFunction {
+    type Digest;
 
-**Digest bounds.** The associated type `Digest` must satisfy:
+    fn hash(data: &[u8]) -> Self::Digest;
+    fn algorithm_name() -> &'static str;
+    fn digest_size() -> usize;
 
+    fn hash_nodes(left: &Self::Digest, right: &Self::Digest) -> Self::Digest;
+    fn empty() -> Self::Digest;
+}
 ```
-AsRef<[u8]> + Clone + Debug + PartialEq + Eq + Send + Sync + 'static
-```
 
-`[u8; 32]` satisfies all of these, making it the natural choice for 256-bit hash functions.
-
-**Domain separation.** The adapters in `merkleforge-hash` use prefix bytes to distinguish leaf hashes (`0x00 || data`) from internal-node hashes (`0x01 || left || right`). This prevents second-preimage attacks where an attacker submits an internal node in place of a leaf. If you implement `HashFunction` yourself, follow the same convention.
-
----
+Implementations should domain-separate leaf hashing from internal-node hashing.
+The adapters in `merkleforge-hash` use separate leaf and node domains so proofs
+cannot confuse raw leaf data with encoded internal nodes.
 
 ### `MerkleTree`
 
-The universal interface that `BinaryMerkleTree`, `SparseMerkleTree`, and `MerklePatriciaTrie` all implement. Using this trait as a bound means your code works with every variant without modification.
+`MerkleTree` is the common interface implemented by Binary, Sparse, and
+Patricia variants:
 
 ```rust
-pub trait MerkleTree<H: HashFunction>: Sized {
+pub trait MerkleTree<H: HashFunction> {
     fn insert(&mut self, data: &[u8]) -> Result<LeafIndex, MerkleError>;
     fn remove(&mut self, index: LeafIndex) -> Result<(), MerkleError>;
-
     fn root(&self) -> Option<&H::Digest>;
     fn leaf_count(&self) -> usize;
-    fn is_empty(&self) -> bool;       // provided — delegates to leaf_count
     fn height(&self) -> usize;
-
     fn generate_proof(&self, index: LeafIndex) -> Result<MerkleProof<H::Digest>, MerkleError>;
     fn metadata(&self) -> TreeMetadata;
 }
 ```
 
-Writing generic code over any tree variant:
-
-```rust
-use merkle_core::prelude::*;
-
-fn print_root<H, T>(tree: &T)
-where
-    H: HashFunction,
-    T: MerkleTree<H>,
-{
-    match tree.root() {
-        Some(root) => println!("root: {:?}", root),
-        None       => println!("tree is empty"),
-    }
-}
-```
-
----
+Specialized trees may also expose native APIs. For example,
+`SparseMerkleTree` supports 256-bit key-addressed operations and
+`MerklePatriciaTrie` supports byte-key/value operations for Ethereum-style
+state.
 
 ### `ProofVerifier`
 
-Stateless inclusion-proof verification. An implementor needs **only the root hash and the proof** — it does not hold or reference the tree. This maps directly to the "light client" model: a mobile wallet can verify a transaction exists in a block using just the block header root and a small `O(log n)` proof, without downloading the full block.
+`ProofVerifier` supports light-client style verification. A verifier needs only
+the trusted root, the target value, and the proof.
 
 ```rust
 pub trait ProofVerifier<H: HashFunction> {
     fn verify(
         expected_root: &H::Digest,
-        leaf_data:     &[u8],
-        proof:         &MerkleProof<H::Digest>,
+        leaf_data: &[u8],
+        proof: &MerkleProof<H::Digest>,
     ) -> bool;
 }
 ```
 
-The verification algorithm:
-
-```
-1. current ← H(0x00 || leaf_data)
-2. for each ProofNode { hash: sibling, side } in proof.path:
-     if side == Left:  current ← H(0x01 || sibling || current)
-     if side == Right: current ← H(0x01 || current || sibling)
-3. return current == expected_root
-```
-
-Concrete implementations live in `merkle-variants`. The trait is kept separate so it can be implemented on a **zero-sized struct** with no tree allocation — useful in constrained environments.
-
----
-
 ### `Serializable`
 
-A blanket implementation over any `serde::Serialize + DeserializeOwned` type using `bincode` for compact binary encoding. This means `MerkleProof<D>` and `TreeMetadata` are automatically serialisable with no extra derives.
+`Serializable` provides compact binary encoding through `bincode`:
 
 ```rust
 use merkle_core::prelude::*;
 
-// MerkleProof<[u8; 32]> gets Serializable for free via the blanket impl
-let proof: MerkleProof<[u8; 32]> = /* ... */;
-
-// Persist to bytes (e.g. write to a database or send over a socket)
 let bytes = proof.to_bytes()?;
-
-// Reconstruct on the other side
 let recovered = MerkleProof::<[u8; 32]>::from_bytes(&bytes)?;
-
 assert_eq!(proof, recovered);
 ```
 
-**Methods:**
+## Core Types
 
-| Method | Description |
-|--------|-------------|
-| `to_bytes(&self) -> Result<Vec<u8>, MerkleError>` | Serialise to `bincode` bytes |
-| `from_bytes(bytes: &[u8]) -> Result<Self, MerkleError>` | Deserialise from `bincode` bytes |
-| `serialized_size(&self) -> Result<usize, MerkleError>` | Byte length without retaining the buffer |
+| Type | Purpose |
+| --- | --- |
+| `LeafIndex` | Strongly typed leaf-layer index |
+| `NodeIndex` | Strongly typed flat-array node index |
+| `ProofSide` | Indicates whether a proof sibling is left or right |
+| `ProofNode<D>` | One sibling hash in a proof path |
+| `MerkleProof<D>` | Inclusion proof for one leaf |
+| `TreeMetadata` | Variant, hash algorithm, height, leaf count, and node count |
 
----
+## Error Handling
 
-## Types
-
-### `LeafIndex` and `NodeIndex`
-
-Strongly-typed index wrappers that prevent accidentally passing an internal-node index where a leaf index is expected. A `LeafIndex` can be converted to a `NodeIndex`, but not the other way around.
-
-```rust
-use merkle_core::types::{LeafIndex, NodeIndex};
-
-let leaf = LeafIndex(2);
-let node: NodeIndex = leaf.into();   // fine
-// let leaf2: LeafIndex = node.into();  // compile error — no such impl
-
-// Root index for a tree with 4 leaves: 2*4 - 1 = 7
-assert_eq!(NodeIndex::root(4), NodeIndex(7));
-```
-
----
-
-### `MerkleProof<D>`
-
-An inclusion proof for a single leaf carrying `O(log n)` sibling hashes.
-
-```rust
-pub struct MerkleProof<D> {
-    pub leaf_index: LeafIndex,   // which leaf this proof is for
-    pub leaf_count: usize,       // tree size at proof-generation time
-    pub path:       Vec<ProofNode<D>>,  // siblings, bottom-up
-}
-```
-
-Useful methods:
-
-```rust
-let depth = proof.depth();        // == proof.path.len()
-let trivial = proof.is_trivial(); // true for a single-leaf tree
-```
-
----
-
-### `ProofNode<D>` and `ProofSide`
-
-Each step along the proof path:
-
-```rust
-pub struct ProofNode<D> {
-    pub hash: D,          // the sibling's digest at this level
-    pub side: ProofSide,  // which side the sibling sits on
-}
-
-pub enum ProofSide {
-    Left,   // sibling is left child; current hash is right
-    Right,  // sibling is right child; current hash is left
-}
-```
-
-`ProofSide` determines concatenation order during verification. Getting it wrong would produce a different root, making the proof fail — which is exactly the desired behaviour for a tampered proof.
-
----
-
-### `TreeMetadata`
-
-A lightweight snapshot of a tree's current state, returned by `MerkleTree::metadata()`. Useful for logging and benchmarking without exposing internal structure.
-
-```rust
-pub struct TreeMetadata {
-    pub leaf_count:     usize,
-    pub height:         usize,
-    pub node_count:     usize,
-    pub hash_algorithm: &'static str,   // e.g. "SHA-256"
-    pub variant:        &'static str,   // e.g. "BinaryMerkleTree"
-}
-```
-
----
-
-## `MerkleError`
-
-Every fallible function in the workspace returns `Result<T, MerkleError>`. The enum is `#[non_exhaustive]` so new variants can be added in minor releases without breaking downstream `match` expressions.
+Every fallible API uses `Result<T, MerkleError>`.
 
 ```rust
 use merkle_core::error::MerkleError;
 
 match result {
-    Err(MerkleError::EmptyTree) => { /* no leaves inserted yet */ }
+    Err(MerkleError::EmptyTree) => eprintln!("tree has no leaves"),
     Err(MerkleError::IndexOutOfBounds { index, len }) => {
-        eprintln!("asked for leaf {index} but tree only has {len}");
+        eprintln!("leaf {index} is outside the current leaf count {len}");
     }
-    Err(MerkleError::InvalidProof) => { /* proof tampered or stale */ }
-    Err(MerkleError::EmptyLeafData) => { /* caller passed b"" */ }
-    Err(MerkleError::SerializationError(msg)) => { eprintln!("{msg}") }
-    Err(MerkleError::DeserializationError(msg)) => { eprintln!("{msg}") }
-    Err(MerkleError::RlpError(msg)) => { /* Patricia Trie codec issue */ }
-    Err(_) => { /* forward-compatible catch-all */ }
-    Ok(value) => { /* ... */ }
+    Err(MerkleError::InvalidProof) => eprintln!("proof is stale or tampered"),
+    Err(MerkleError::EmptyLeafData) => eprintln!("empty leaves are rejected"),
+    Err(other) => eprintln!("{other}"),
+    Ok(value) => {
+        // use value
+    }
 }
 ```
 
-All variants implement `Display`. With the default `std` feature,
-`MerkleError` also implements `std::error::Error`. `bincode` encode/decode
-errors convert into `MerkleError::SerializationError` or
-`MerkleError::DeserializationError` via `From`.
+`MerkleError` is `#[non_exhaustive]`, so downstream code should keep a fallback
+match arm for forward compatibility.
 
-**All variants:**
+## Workspace Links
 
-| Variant | When it occurs |
-|---------|----------------|
-| `EmptyTree` | Operation needs ≥1 leaf but the tree is empty |
-| `IndexOutOfBounds { index, len }` | Requested index ≥ current leaf count |
-| `InvalidProof` | Reconstructed root doesn't match expected root |
-| `InvalidProofStructure(String)` | Proof path length inconsistent with stated index/leaf count |
-| `EmptyLeafData` | Caller passed a zero-length byte slice to `insert` |
-| `SerializationError(String)` | `bincode` or other codec failed to encode |
-| `DeserializationError(String)` | Byte slice is malformed or wrong format |
-| `HashError(String)` | Internal hashing step failed unexpectedly |
-| `UnsupportedOperation(&'static str)` | Operation not available for this tree variant |
-| `RlpError(String)` | RLP encode/decode error (Patricia Trie only) |
-
----
-
-## The `prelude`
-
-Import the most commonly used items in one line:
-
-```rust
-use merkle_core::prelude::*;
-
-// Now in scope:
-// MerkleError
-// HashFunction, MerkleTree, ProofVerifier, Serializable
-// LeafIndex, NodeIndex, MerkleProof, ProofNode, ProofSide, TreeMetadata
-```
-
----
-
-## Implementing a custom `HashFunction`
-
-If the three adapters in `merkleforge-hash` don't cover your use case, implement the trait directly. The only hard requirements are:
-
-1. `Digest` satisfies the required bounds.
-2. `hash` and `hash_nodes` are deterministic and collision-resistant.
-3. You use distinct domain prefixes for leaf vs. internal-node hashing.
-
-```rust
-use merkle_core::traits::HashFunction;
-
-/// Example: a test-only XOR hash — never use in production.
-pub struct Xor8;
-
-impl HashFunction for Xor8 {
-    type Digest = [u8; 1];
-
-    fn hash(data: &[u8]) -> [u8; 1] {
-        [data.iter().fold(0u8, |acc, &b| acc ^ b)]
-    }
-
-    // hash_nodes and empty have sensible defaults — override if needed
-
-    fn algorithm_name() -> &'static str { "XOR8" }
-    fn digest_size() -> usize { 1 }
-}
-```
-
----
+- Tree implementations: [`merkle-variants`](https://crates.io/crates/merkle-variants)
+- Hash adapters: [`merkleforge-hash`](https://crates.io/crates/merkleforge-hash)
+- API docs: <https://docs.rs/merkle-core>
+- Repository: <https://github.com/dicethedev/MerkleForge>
+- Website: <https://dicethedev.github.io/MerkleForge/>
 
 ## Safety
 
-`#[forbid(unsafe_code)]` is set at the crate root. `merkle-core` contains no unsafe blocks and never will.
+`merkle-core` uses `#![forbid(unsafe_code)]`. The crate contains no unsafe
+blocks.
 
----
+Security note: MerkleForge Framework has not yet completed an independent
+security audit. Review the code and threat model before using it in
+security-critical environments.
 
 ## License
 
-Licensed under either of [MIT](../LICENSE) or [Apache-2.0](../LICENSE-APACHE) at your option.
+Licensed under either of:
+
+- [MIT License](../LICENSE)
+- [Apache License, Version 2.0](../LICENSE-APACHE)
+
+at your option.

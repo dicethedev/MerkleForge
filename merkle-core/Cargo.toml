@@ -1,12 +1,15 @@
 [package]
 name = "merkle-core"
-description = "Shared traits, types, and error handling for the MerkleForge workspace"
+description = "Shared traits, proof types, and errors for the MerkleForge Framework"
+readme = "README.md"
 version.workspace    = true
 edition.workspace    = true
 rust-version.workspace = true
 authors.workspace    = true
 license.workspace    = true
 repository.workspace = true
+homepage.workspace   = true
+documentation = "https://docs.rs/merkle-core"
 keywords.workspace   = true
 
 [features]

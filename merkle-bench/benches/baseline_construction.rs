@@ -1,14 +1,10 @@
 //! # Baseline construction latency benchmark
 //!
 //! This benchmark measures the time to **hash a single leaf** using each of
-//! the three supported hash adapters.  It corresponds to the "Baseline
-//! Construction Latency Tests Configured" milestone shown in the Week 1-2
-//! progress slide.
+//! the three supported hash adapters.
 //!
-//! Once `merkle-variants` crates are implemented (Phases 2-4) these
-//! benchmarks will be extended to measure full tree construction,
-//! proof generation, and proof verification at tree sizes:
-//! 100 / 1 000 / 10 000 / 100 000 / 1 000 000 leaves.
+//! Use this benchmark as the low-level baseline for full tree construction,
+//! proof generation, and proof verification measurements.
 //!
 //! ## Running
 //! ```bash

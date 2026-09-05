@@ -1,11 +1,5 @@
 # MerkleForge Framework
 
-<div align="center">
-
-<img src="assets/merkleforge-wordmark-outline.svg" alt="MerkleForge" width="760">
-
-</div>
-
 ### Data Verification Framework for Modern Blockchains
 
 [![CI](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml/badge.svg)](https://github.com/dicethedev/MerkleForge/actions/workflows/ci.yml)
@@ -18,35 +12,49 @@
 
 ---
  
-> ⚠️ **Research Software — Not Production Ready**
+> ⚠️ **Security Notice**
 >
-> MerkleForge is a final-year academic research project exploring the design,
-> implementation, and benchmarking of Merkle tree variants in Rust. The codebase
-> has not been independently security-audited. While correctness is a core goal
-> and the library is covered by unit, property-based, and integration tests,
-> no guarantees are made about its fitness for use in production systems,
-> financial applications, or any environment where cryptographic correctness
-> is safety-critical.
+> MerkleForge Framework is open-source infrastructure for verifiable data
+> systems. The codebase is tested with unit, integration, property-based,
+> benchmark, and Ethereum vector tests, but it has not yet completed an
+> independent security audit.
 >
-> Use at your own risk. Feedback and bug reports are welcome.
+> Use carefully in security-critical systems, review the code for your threat
+> model, and please report issues responsibly.
 
 ---
 
 ## The Problem
  
-One of the major bottlenecks in modern blockchain networks is data verification. As blockchain systems process millions of transactions, verifying the integrity of state data becomes increasingly slow and resource-intensive. Every state lookup, transaction batch, and light-client proof depends on the speed, efficiency, and correctness of the underlying data structure.
+One of the major bottlenecks in modern blockchain networks is data
+verification. As blockchain systems process millions of transactions,
+verifying the integrity of state data becomes increasingly slow and
+resource-intensive. Every state lookup, transaction batch, and light-client
+proof depends on the speed, efficiency, and correctness of the underlying data
+structure.
  
-The Rust ecosystem makes this worse by being fragmented. Libraries like `rs-merkle` cover only binary trees, while Ethereum-specific crates are maintained separately and incompatibly. Developers are forced to wire together niche tools that differ in documentation quality, testing coverage, and performance with no way to compare them systematically.
+The Rust ecosystem has strong cryptographic building blocks, but Merkle tree
+support is often fragmented across variant-specific crates. Libraries like
+`rs-merkle` focus on binary trees, while Ethereum-specific implementations are
+maintained separately. Developers often need to combine tools with different
+APIs, documentation depth, test coverage, and benchmark methodology.
 
 ## The Solution
  
-MerkleForge is a high-performance Rust framework designed to attack this bottleneck directly. It provides an optimized, energy-efficient engine capable
-of generating fast cryptographic proofs, enabling distributed systems to validate data integrity without overwhelming storage or computational resources.
+MerkleForge Framework provides a unified Rust foundation for authenticated data
+structures. It generates cryptographic roots and compact proofs so distributed
+systems can validate data integrity without storing or transferring entire
+datasets.
  
-The framework unifies the three Merkle tree variants used across production blockchain systems — binary trees for transaction batching, sparse trees for
-account state, and Patricia tries for Ethereum compatibility — under a single cohesive API with pluggable hash functions and a rigorous benchmarking suite.
+The framework unifies the three Merkle tree variants used across production
+blockchain systems: binary trees for transaction batching, sparse trees for
+account state, and Patricia tries for Ethereum compatibility. All variants sit
+behind a cohesive API with pluggable hash functions, stateless verification,
+and reproducible benchmarks.
  
-This is the implementation artifact of a final-year Software Engineering research project at MIVA Open University, supervised by Dr. Oluwasegun Ishaya Adelaiye.
+The project is published as reusable open-source infrastructure, with crates,
+documentation, examples, live demos, and benchmarks maintained for developers
+building verifiable systems.
  
 ---
  
@@ -62,7 +70,7 @@ This is the implementation artifact of a final-year Software Engineering researc
 - [Stateless Light-Client Demo](#stateless-light-client-demo)
 - [Benchmarking](#benchmarking)
 - [Profiling](#profiling)
-- [Development Status](#development-status)
+- [Project Status](#project-status)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [References](#references)
@@ -149,9 +157,9 @@ MerkleForge/
 ├── merkle-variants/                  # concrete tree implementations
 │   └── src/
 │       ├── lib.rs
-│       ├── binary.rs                 # Phase 2
-│       ├── sparse.rs                 # Phase 3
-│       └── patricia.rs               # Phase 4
+│       ├── binary.rs                 # Binary Merkle tree
+│       ├── sparse.rs                 # Sparse Merkle tree
+│       └── patricia.rs               # Merkle Patricia trie
 │
 ├── merkle-bench/                     # isolated benchmarking crate
 │   ├── benches/
@@ -179,9 +187,9 @@ Add the crates you need to your `Cargo.toml`:
  
 ```toml
 [dependencies]
-merkle-core = "0.4"
-merkleforge-hash = "0.4"
-merkle-variants = "0.4"
+merkle-core = "0.4.1"
+merkleforge-hash = "0.4.1"
+merkle-variants = "0.4.1"
 ```
 
 ### Quick example
@@ -260,9 +268,9 @@ construction time, and external libraries lives in [`BENCHMARKS.md`](BENCHMARKS.
  
 | Crate | Variant | Status | Best for |
 |-------|---------|--------|----------|
-| `merkle-variants` | `BinaryMerkleTree<H>` | ✅ Phase 2 | Transaction batching, Bitcoin-style SPV |
-| `merkle-variants` | `SparseMerkleTree<H>` | ✅ Phase 3 | Account state, Layer-2 rollups |
-| `merkle-variants` | `MerklePatriciaTrie<H>` | ✅ Phase 4 | Ethereum state roots, EVM compatibility |
+| `merkle-variants` | `BinaryMerkleTree<H>` | Available | Transaction batching, Bitcoin-style SPV |
+| `merkle-variants` | `SparseMerkleTree<H>` | Available | Account state, Layer-2 rollups |
+| `merkle-variants` | `MerklePatriciaTrie<H>` | Available | Ethereum state roots, EVM compatibility |
 
 ### Binary Merkle Tree
 Balanced, power-of-two tree with iterative bottom-up construction. Optimised
@@ -369,15 +377,15 @@ Criterion reports.
  
 | Metric | Status |
 |--------|--------|
-| Construction latency — leaf hash + node combine | ✅ Phase 1 |
-| Throughput — sustained MB/s per algorithm (32 B → 1 MB) | ✅ Phase 1 |
-| Binary tree construction — 100 / 1K / 10K / 100K leaves | ✅ Phase 2 |
-| Binary proof generation & verification latency | ✅ Phase 2 |
-| Sparse and Patricia tree benchmarks | ✅ Phase 5 — measured locally |
-| Energy-aware construction benchmark | ✅ Phase 5 — wall-clock captured |
-| Proof size in bytes | ✅ Phase 5 — comparison table captured |
-| Peak memory consumption (RSS) | 🚧 Phase 5 — RSS profiler still pending |
-| Comparative results vs `rs-merkle` and `merkle_light` | ✅ Phase 5 — measured locally |
+| Construction latency — leaf hash + node combine | Available |
+| Throughput — sustained MB/s per algorithm (32 B → 1 MB) | Available |
+| Binary tree construction — 100 / 1K / 10K / 100K leaves | Available |
+| Binary proof generation & verification latency | Available |
+| Sparse and Patricia tree benchmarks | Available from local benchmark runs |
+| Energy-aware construction benchmark | Wall-clock measurements available |
+| Proof size in bytes | Available in comparison table |
+| Peak memory consumption (RSS) | Planned |
+| Comparative results vs `rs-merkle` and `merkle_light` | Available from local benchmark runs |
  
 ---
 
@@ -414,16 +422,19 @@ Reproduction notes and a reference artifact live in [`profiling/`](profiling/).
 
 ---
 
-## Development Status
+## Project Status
  
-| Phase | Scope | Status |
-|-------|-------|--------|
-| 1 — Core Infrastructure | Trait hierarchy, hash adapters, CI/CD | ✅ **Complete** |
-| 2 — Binary Merkle Tree | `BinaryMerkleTree<H>`, property tests | ✅ **Complete** |
-| 3 — Sparse Merkle Tree | `SparseMerkleTree<H>`, node batching | ✅ **Complete** |
-| 4 — Merkle Patricia Trie | Ethereum-compatible MPT, RLP | ✅ **Complete** |
-| 5 — Benchmarking | Criterion suite, energy notes, comparative report | 🚧 In progress — RSS pending |
-| 6 — Docs & Publication | `crates.io` publish, mdBook, paper | 🚧 In progress |
+| Area | Status |
+|------|--------|
+| Core traits, shared proof types, and errors | Stable public API |
+| Hash adapters for SHA-256, Keccak-256, and BLAKE3 | Available |
+| Binary Merkle tree | Available |
+| Sparse Merkle tree | Available |
+| Ethereum-compatible Merkle Patricia trie | Available |
+| Criterion benchmarks and public benchmark dashboard | Available |
+| Energy-aware benchmark notes | Available, with deeper hardware reporting planned |
+| Peak RSS memory benchmark capture | Planned |
+| Long-form user guide | Planned |
  
 ---
 
@@ -433,11 +444,12 @@ Reproduction notes and a reference artifact live in [`profiling/`](profiling/).
 - [x] `SparseMerkleTree<H>` with shortcut nodes and one-phase batch updates
 - [x] `MerklePatriciaTrie<H>` with RLP encoding, validated against Ethereum test vectors
 - [x] Publish `merkle-core`, `merkleforge-hash`, and `merkle-variants` `v0.4.0` to `crates.io`
+- [ ] Publish rebranded crate documentation as `v0.4.1` to `crates.io`
 - [x] Criterion benchmark suite with comparative results vs `rs-merkle` and `merkle_light`
 - [x] Proof-size comparison table for MerkleForge, `rs-merkle`, and `merkle_light`
-- [ ] Peak RSS memory benchmark capture for final Phase 5 evidence
+- [ ] Peak RSS memory benchmark capture for published performance reports
 - [ ] mdBook user guide with copy-pasteable examples for each variant
-- [ ] Research paper on benchmark findings and tree-type trade-off analysis
+- [ ] Public benchmark analysis on tree-type trade-offs and practical selection guidance
 
 ---
 
@@ -459,11 +471,17 @@ make install-release-tools
 
 ## Contributing
  
-This project is currently closed to external contributions while active
-development is underway as part of a final-year research project.
-Watch this space for an announcement when contributions open.
- 
-Bug reports and feedback via GitHub Issues are always welcome.
+MerkleForge Framework is open to community feedback and contributions.
+Good first contributions include documentation fixes, benchmark reproduction
+notes, additional test vectors, example improvements, and performance
+investigations.
+
+Before opening a larger pull request, please start with a GitHub Issue so the
+scope and design can be discussed. Security reports should follow the process
+in [`.github/SECURITY.md`](.github/SECURITY.md).
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup commands, pull request
+guidelines, and good first contribution areas.
  
 ---
 
@@ -478,7 +496,8 @@ This library is informed by the following research:
 - Ouvrard, P. A. (2018/2019) — Sparse Merkle tree performance-oriented implementations
 - Wood, G. (2014) — Ethereum Yellow Paper
 
-Full bibliography in the accompanying research proposal.
+More implementation notes and benchmark references will continue to be added
+as the framework evolves.
 
 ---
 
@@ -493,4 +512,4 @@ at your option.
 
 ---
 
-*Developed by [Blessing Samuel](https://github.com/dicethedev)*
+*Maintained by [Blessing Samuel](https://github.com/dicethedev) and open-source contributors.*
