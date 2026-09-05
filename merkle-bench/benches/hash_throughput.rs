@@ -2,8 +2,7 @@
 //!
 //! Measures sustained hashing throughput (MB/s) for each algorithm using
 //! a large buffer.  This gives the raw "ceiling" that tree construction
-//! can never exceed and directly corresponds to the comparative data
-//! discussed in Section 2.5 of the proposal (AITCS, 2024 benchmarks).
+//! can never exceed and feeds the public benchmark summary.
 //!
 //! ## Running
 //! ```bash

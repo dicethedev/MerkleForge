@@ -1,49 +1,75 @@
 # merkle-bench
 
-> Criterion benchmark suite for MerkleForge hash adapters and tree variants.
+> Criterion benchmark suite for MerkleForge Framework.
 
-This crate is intentionally isolated from the published runtime crates. It can
-pull in comparison libraries, profiling helpers, and measurement-only code
-without changing the public MerkleForge API.
+`merkle-bench` is an internal workspace crate used for measurement only. It is
+not published to crates.io. Keeping benchmarks isolated allows the project to
+depend on comparison libraries and profiling tools without affecting the public
+runtime crates.
 
 ## What It Measures
 
-| Benchmark | Command | Purpose |
+| Benchmark | Command | Measures |
 | --- | --- | --- |
 | Hash throughput | `cargo bench --bench hash_throughput` | SHA-256, Keccak-256, and BLAKE3 latency/throughput |
-| Baseline construction | `cargo bench --bench baseline_construction` | Raw leaf hashing and internal-node combine costs |
+| Baseline construction | `cargo bench --bench baseline_construction` | Leaf hashing and internal-node combine costs |
 | Binary tree | `cargo bench --bench binary_tree` | Construction, proof generation, and proof verification |
 | Sparse tree | `cargo bench --bench sparse_tree` | Inserts, proofs, non-membership, and batch updates |
 | Patricia trie | `cargo bench --bench patricia_trie` | Inserts, reads, proofs, verification, and root computation |
 | Comparison | `cargo bench --bench comparison` | MerkleForge vs `rs-merkle` vs `merkle_light` |
-| Energy-aware run | `cargo bench --bench bench_energy` | 100,000-leaf construction timing for SHA-256, Keccak-256, and BLAKE3 |
+| Energy-aware run | `cargo bench --bench bench_energy` | 100,000-leaf construction timing across hash adapters |
 
-## Run Everything
+## Running Benchmarks
+
+Run everything:
 
 ```bash
 cargo bench --workspace
 ```
 
-Criterion writes HTML reports under:
+Run one benchmark target:
+
+```bash
+cargo bench --bench binary_tree
+```
+
+Criterion writes HTML reports to:
 
 ```text
 target/criterion/
 ```
 
-The official website copies those reports into the deployed Pages artifact so
-the latest dashboard can link back to the raw Criterion output.
+The website build copies those reports into the deployed GitHub Pages artifact
+so the public dashboard can link to the raw Criterion output.
 
-## Results Ledger
+## Comparative Proof Sizes
 
-The human-readable benchmark tables live in the root
-[`BENCHMARKS.md`](../BENCHMARKS.md). That file records:
+The comparison benchmark can print serialized proof sizes:
 
-- Benchmark environment and reproduction commands
-- Hash function latency and throughput
-- Binary, sparse, and Patricia tree measurements
-- Energy-aware construction timings
-- Comparative results against `rs-merkle` and `merkle_light`
+```bash
+MERKLEFORGE_PRINT_COMPARISON_SIZES=1 cargo bench --bench comparison -- --list
+```
 
-Peak RSS memory capture is still tracked as the remaining Phase 5 evidence
-item. Regenerate machine-specific numbers before using them in the research
-paper or release notes.
+Use these numbers with the latency measurements in
+[`BENCHMARKS.md`](../BENCHMARKS.md).
+
+## Reporting Results
+
+When publishing benchmark numbers, record:
+
+- CPU model and core/thread count;
+- RAM size;
+- operating system and kernel;
+- Rust version;
+- command used;
+- date of the run;
+- whether the machine was on battery, plugged in, or thermally constrained.
+
+Benchmark numbers are machine-dependent. Treat them as reproducible evidence
+for a specific environment, not universal constants.
+
+## Related Docs
+
+- Benchmark summary: [`../BENCHMARKS.md`](../BENCHMARKS.md)
+- Energy-aware runs: [`../benchmarks/ENERGY.md`](../benchmarks/ENERGY.md)
+- Profiling guide: [`../profiling/README.md`](../profiling/README.md)

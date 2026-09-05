@@ -9,9 +9,8 @@
 //! context strings, making domain separation trivial without extra length
 //! overhead.
 //!
-//! The proposal benchmarking suite (Phase 5) will produce comparative data
-//! between SHA-256, Keccak-256, and BLAKE3 to guide algorithm selection
-//! for specific hardware environments.
+//! The benchmark suite compares SHA-256, Keccak-256, and BLAKE3 to guide
+//! algorithm selection for specific hardware environments.
 //!
 //! ## Usage
 //! ```rust,ignore
