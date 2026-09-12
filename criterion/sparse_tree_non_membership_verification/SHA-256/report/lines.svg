@@ -9,30 +9,26 @@ Average time (µs)
 Input
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="85,52 85,473 "/>
-<text x="76" y="428" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-58.04
+<text x="76" y="419" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+59.05
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,428 85,428 "/>
-<text x="76" y="359" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-58.05
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,419 85,419 "/>
+<text x="76" y="342" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+59.1
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,359 85,359 "/>
-<text x="76" y="290" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-58.06
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,342 85,342 "/>
+<text x="76" y="264" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+59.15
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,290 85,290 "/>
-<text x="76" y="221" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-58.07
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,264 85,264 "/>
+<text x="76" y="187" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+59.2
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,221 85,221 "/>
-<text x="76" y="152" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-58.08
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,187 85,187 "/>
+<text x="76" y="110" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+59.25
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,152 85,152 "/>
-<text x="76" y="83" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-58.09
-</text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,83 85,83 "/>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,110 85,110 "/>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="86,474 933,474 "/>
 <text x="169" y="484" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 1000.0
@@ -74,11 +70,11 @@ Input
 10000.0
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="933,474 933,479 "/>
-<circle cx="86" cy="332" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<circle cx="93" cy="331" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<circle cx="169" cy="52" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
+<circle cx="86" cy="52" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
+<circle cx="93" cy="405" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
+<circle cx="169" cy="466" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
 <circle cx="933" cy="473" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<polyline fill="none" opacity="1" stroke="#B22222" stroke-width="1" points="86,332 93,331 169,52 933,473 "/>
+<polyline fill="none" opacity="1" stroke="#B22222" stroke-width="1" points="86,52 93,405 169,466 933,473 "/>
 <text x="131" y="67" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 SHA-256
 </text>

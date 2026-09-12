@@ -13,10 +13,10 @@ Input Size (Bytes)
 0.5
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,437 85,437 "/>
-<text x="76" y="379" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+<text x="76" y="378" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 0.6
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,379 85,379 "/>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,378 85,378 "/>
 <text x="76" y="320" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 0.7
 </text>
@@ -80,8 +80,8 @@ Input Size (Bytes)
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="911,474 911,479 "/>
 <circle cx="86" cy="473" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
 <circle cx="142" cy="453" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<circle cx="255" cy="321" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
+<circle cx="255" cy="320" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
 <circle cx="481" cy="174" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
 <circle cx="933" cy="52" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<polyline fill="none" opacity="1" stroke="#B22222" stroke-width="1" points="86,473 142,453 255,321 481,174 933,52 "/>
+<polyline fill="none" opacity="1" stroke="#B22222" stroke-width="1" points="86,473 142,453 255,320 481,174 933,52 "/>
 </svg>

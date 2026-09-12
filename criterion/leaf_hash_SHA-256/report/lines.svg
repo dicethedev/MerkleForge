@@ -79,9 +79,9 @@ Input Size (Bytes)
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="911,474 911,479 "/>
 <circle cx="86" cy="473" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<circle cx="142" cy="402" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
+<circle cx="142" cy="403" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
 <circle cx="255" cy="348" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
 <circle cx="481" cy="250" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
 <circle cx="933" cy="52" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<polyline fill="none" opacity="1" stroke="#B22222" stroke-width="1" points="86,473 142,402 255,348 481,250 933,52 "/>
+<polyline fill="none" opacity="1" stroke="#B22222" stroke-width="1" points="86,473 142,403 255,348 481,250 933,52 "/>
 </svg>

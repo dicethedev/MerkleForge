@@ -9,10 +9,10 @@ Average throughput (MiB/s)
 Input Size (Bytes)
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="85,52 85,473 "/>
-<text x="76" y="451" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+<text x="76" y="452" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 200.0
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,451 85,451 "/>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,452 85,452 "/>
 <text x="76" y="412" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 250.0
 </text>
@@ -37,22 +37,22 @@ Input Size (Bytes)
 500.0
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,217 85,217 "/>
-<text x="76" y="178" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+<text x="76" y="177" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 550.0
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,178 85,178 "/>
-<text x="76" y="139" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,177 85,177 "/>
+<text x="76" y="138" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 600.0
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,139 85,139 "/>
-<text x="76" y="100" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,138 85,138 "/>
+<text x="76" y="99" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 650.0
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,100 85,100 "/>
-<text x="76" y="61" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,99 85,99 "/>
+<text x="76" y="60" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 700.0
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,61 85,61 "/>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,60 85,60 "/>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="86,474 933,474 "/>
 <text x="117" y="484" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 50.0
@@ -95,9 +95,9 @@ Input Size (Bytes)
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="911,474 911,479 "/>
 <circle cx="86" cy="473" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<circle cx="142" cy="340" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<circle cx="255" cy="228" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<circle cx="481" cy="127" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
+<circle cx="142" cy="339" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
+<circle cx="255" cy="226" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
+<circle cx="481" cy="124" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
 <circle cx="933" cy="52" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<polyline fill="none" opacity="1" stroke="#B22222" stroke-width="1" points="86,473 142,340 255,228 481,127 933,52 "/>
+<polyline fill="none" opacity="1" stroke="#B22222" stroke-width="1" points="86,473 142,339 255,226 481,124 933,52 "/>
 </svg>
