@@ -9,30 +9,26 @@ Average time (µs)
 Input
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="85,52 85,473 "/>
-<text x="76" y="433" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-90.92
-</text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,433 85,433 "/>
-<text x="76" y="362" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-90.94
-</text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,362 85,362 "/>
-<text x="76" y="292" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-90.96
-</text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,292 85,292 "/>
-<text x="76" y="221" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-90.98
-</text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,221 85,221 "/>
-<text x="76" y="150" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+<text x="76" y="467" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 91.0
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,150 85,150 "/>
-<text x="76" y="80" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-91.02
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,467 85,467 "/>
+<text x="76" y="379" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+91.5
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,80 85,80 "/>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,379 85,379 "/>
+<text x="76" y="291" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+92.0
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,291 85,291 "/>
+<text x="76" y="203" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+92.5
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,203 85,203 "/>
+<text x="76" y="114" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+93.0
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,114 85,114 "/>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="86,474 933,474 "/>
 <text x="169" y="484" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 1000.0
@@ -74,11 +70,11 @@ Input
 10000.0
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="933,474 933,479 "/>
-<circle cx="86" cy="349" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
+<circle cx="86" cy="448" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
 <circle cx="93" cy="473" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
 <circle cx="169" cy="52" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<circle cx="933" cy="416" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<polyline fill="none" opacity="1" stroke="#B22222" stroke-width="1" points="86,349 93,473 169,52 933,416 "/>
+<circle cx="933" cy="456" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
+<polyline fill="none" opacity="1" stroke="#B22222" stroke-width="1" points="86,448 93,473 169,52 933,456 "/>
 <text x="131" y="67" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 BLAKE3
 </text>

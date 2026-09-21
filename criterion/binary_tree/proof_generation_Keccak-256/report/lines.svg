@@ -9,26 +9,38 @@ Average time (ns)
 Input Size (Elements)
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="85,52 85,473 "/>
-<text x="76" y="417" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-45.0
+<text x="76" y="461" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+28.0
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,417 85,417 "/>
-<text x="76" y="336" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-50.0
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,461 85,461 "/>
+<text x="76" y="405" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+29.0
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,336 85,336 "/>
-<text x="76" y="255" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-55.0
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,405 85,405 "/>
+<text x="76" y="348" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+30.0
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,255 85,255 "/>
-<text x="76" y="174" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-60.0
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,348 85,348 "/>
+<text x="76" y="291" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+31.0
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,174 85,174 "/>
-<text x="76" y="93" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
-65.0
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,291 85,291 "/>
+<text x="76" y="235" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+32.0
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,93 85,93 "/>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,235 85,235 "/>
+<text x="76" y="178" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+33.0
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,178 85,178 "/>
+<text x="76" y="122" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+34.0
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,122 85,122 "/>
+<text x="76" y="65" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+35.0
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,65 85,65 "/>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="86,474 933,474 "/>
 <text x="169" y="484" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 10000.0
@@ -71,10 +83,10 @@ Input Size (Elements)
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="933,474 933,479 "/>
 <circle cx="86" cy="473" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<circle cx="93" cy="361" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<circle cx="169" cy="187" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<circle cx="933" cy="52" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
-<polyline fill="none" opacity="1" stroke="#B22222" stroke-width="1" points="86,473 93,361 169,187 933,52 "/>
+<circle cx="93" cy="52" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
+<circle cx="169" cy="365" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
+<circle cx="933" cy="247" r="3" opacity="1" fill="#B22222" stroke="none" stroke-width="1"/>
+<polyline fill="none" opacity="1" stroke="#B22222" stroke-width="1" points="86,473 93,52 169,365 933,247 "/>
 <text x="131" y="67" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 proof_generation/Keccak-256
 </text>
