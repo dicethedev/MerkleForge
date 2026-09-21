@@ -68,6 +68,7 @@ building verifiable systems.
 - [Tree Variants](#tree-variants)
 - [Proof Generation & Verification](#proof-generation--verification)
 - [Stateless Light-Client Demo](#stateless-light-client-demo)
+- [Projects Using MerkleForge](#projects-using-merkleforge)
 - [Benchmarking](#benchmarking)
 - [Profiling](#profiling)
 - [Project Status](#project-status)
@@ -342,6 +343,18 @@ The tree is built inside a block scope and dropped before verification, so the
 client side authenticates the target transaction using only the trusted root,
 the proof, and the leaf bytes. The same flow is shown visually on the
 [live demo page](https://dicethedev.github.io/MerkleForge/demo/).
+
+## Projects Using MerkleForge
+
+### ProofStream
+
+ProofStream turns live indexed DEX activity into portable proof receipts. It
+normalizes blockchain records into deterministic rows, commits them with a
+MerkleForge `BinaryMerkleTree<Keccak256>`, and lets a browser verify one
+selected activity using only the row, its compact proof, and the dataset root.
+
+- [ProofStream repository](https://github.com/dicethedev/ProofStream)
+- [ETHGlobal Online 2026 showcase](https://ethglobal.com/showcase/proofstream-jvup1)
  
 ---
  
